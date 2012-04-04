@@ -1,0 +1,348 @@
+/* constants */
+/* fonts */
+@font-face {
+  font-family: KBOlsen;
+  font-weight: 300;
+  src: url('fonts/Olsen-Light.otf');
+}
+@font-face {
+  font-family: KBOlsen;
+  font-weight: 300;
+  font-style: italic;
+  src: url('fonts/Olsen-LightItalic.otf');
+}
+@font-face {
+  font-family: KBOlsen;
+  font-weight: 700;
+  src: url('fonts/Olsen-Bold.otf');
+}
+@font-face {
+  font-family: KBOlsen;
+  font-weight: 700;
+  font-style: italic;
+  src: url('fonts/Olsen-BoldItalic.otf');
+}
+@font-face {
+  font-family: KBBrandonGrotesque;
+  font-weight: 700;
+  src: url('fonts/Brandon_bld.otf');
+}
+@font-face {
+  font-family: KBAbsara;
+  font-style: italic;
+  font-weight: 500;
+  src: url('fonts/Absara-RegularItalic.otf');
+}
+/* html5 blockify */
+article,
+aside,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+/* styles */
+body {
+  margin: 0px;
+  background: url(images/light_wool.png);
+  font-family: KBOlsen, serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 26px;
+}
+.hidden {
+  display: none;
+}
+/* global styles */
+a {
+  color: #9d2626;
+  text-decoration: none;
+  font-weight: 700;
+}
+a:hover {
+  text-decoration: underline;
+}
+img,
+.embed > iframe {
+  border: 1px white solid;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
+}
+blockquote {
+  border-left: 1px solid #9d2626;
+  margin-left: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+b,
+strong {
+  font-weight: 700;
+}
+i,
+em {
+  font-style: italic;
+}
+pre {
+  white-space: pre-wrap;
+  margin-left: 5px;
+  padding: 5px;
+  padding-left: 15px;
+  font-size: 12px;
+  line-height: 16px;
+  border-top: 1px dashed #9d2626;
+  border-bottom: 1px dashed #9d2626;
+  background: rgba(0, 0, 0, 0.05);
+}
+code {
+  font-size: 0.8em;
+  border-top: 1px dashed #9d2626;
+  border-bottom: 1px dashed #9d2626;
+  background: rgba(0, 0, 0, 0.05);
+}
+pre > code {
+  border: none;
+  background: transparent;
+}
+.quote {
+  background: url(images/quote.png) 5px 5px no-repeat;
+  padding-left: 30px;
+  font-size: 19px;
+  font-style: italic;
+}
+.quote .attribution {
+  font-style: normal;
+  text-align: right;
+  font-size: 16px;
+  font-weight: 700;
+}
+.quote .attribution:before {
+  content: "—";
+}
+hr {
+  height: 1px;
+  background: #9d2626;
+  border: none;
+}
+/* header! */
+header {
+  height: 180px;
+  background: #282828 url(images/dark_tire.png);
+  color: white;
+  text-align: center;
+  padding-top: 20px;
+  text-shadow: 0px 0px 9px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid white;
+  box-shadow: 0px -6px 21px rgba(0, 0, 0, 0.75) inset;
+  /* TODO: use bg image or figure out how to only shade bottom edge*/
+
+}
+header a {
+  text-decoration: none;
+  color: white;
+}
+header a:hover {
+  text-decoration: none;
+}
+header.fixed {
+  position: fixed;
+  top: -115px;
+  left: 0px;
+  right: 0px;
+}
+#headerPlaceholder.fixed {
+  height: 200px;
+}
+#crown {
+  background: no-repeat center url(images/crown.png);
+  width: 100%;
+  height: 64px;
+  margin: auto;
+}
+#crown.fixed {
+  position: fixed;
+  top: 10px;
+}
+header h1 {
+  font-size: 45px;
+  font-family: KBBrandonGrotesque;
+  font-weight: 700;
+  margin: 0px;
+  margin-top: 15px;
+}
+header p {
+  font-size: 20px;
+  font-family: KBAbsara, serif;
+  font-style: italic;
+}
+/* layout */
+#container {
+  width: 1000px;
+  margin: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+#sidebar {
+  float: left;
+  width: 275px;
+}
+#content {
+  width: 685px;
+  padding-left: 315px;
+  padding-top: 10px;
+}
+footer {
+  margin: 0px;
+}
+footer.fixed {
+  bottom: 20px !important;
+  position: fixed !important;
+}
+/* sidebar */
+#sidebar {
+  font-size: 11px;
+  margin-top: 20px;
+  line-height: 24px;
+}
+#sidebar a {
+  font-weight: 700;
+}
+footer p {
+  margin: 0px;
+}
+nav {
+  margin-bottom: 70px;
+  font-size: 13px;
+}
+nav.fixed {
+  position: fixed;
+  top: 100px;
+  width: 275px;
+}
+nav ul {
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+}
+nav li {
+  margin: 0px;
+  padding: 0px;
+  padding-left: 30px;
+  background: no-repeat left center;
+  min-height: 30px;
+  padding-top: 5px;
+}
+nav .nav-section-title {
+  font-size: 12px;
+  font-family: KBBrandonGrotesque;
+  padding-left: 30px;
+  text-transform: uppercase;
+}
+/* content */
+article {
+  padding-left: 80px;
+  margin-bottom: 70px;
+}
+article h1.title {
+  font-size: 20px;
+  font-weight: 700px;
+}
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+  font-size: 16px;
+  font-weight: 700;
+}
+article .info {
+  width: 50px;
+  float: left;
+  margin-left: -80px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+article .info a {
+  color: black;
+}
+article .info a:hover {
+  color: #9d2626;
+  text-decoration: none;
+}
+article .info a > span {
+  font-family: KBBrandonGrotesque;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  display: block;
+}
+article img {
+  max-width: 605px;
+}
+/* tumblr-specific */
+/* pagination */
+#endless-data {
+  display: none;
+}
+#more .spinner {
+  display: none;
+}
+#more {
+  cursor: pointer;
+}
+#pagination {
+  margin-left: 80px;
+  margin-bottom: 50px;
+}
+/* animation */
+#more .spinner .dot {
+  -webkit-animation-name: spinner-dot;
+  -moz-animation-name: spinner-dot;
+  animation-name: spinner-dot;
+  -webkit-animation-duration: 3s;
+  -moz-animation-duration: 3s;
+  animation-duration: 3s;
+  -webkit-animation-iteration-count: infinite;
+  -moz-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-timing-function: linear;
+  animation-timing-function: linear;
+  border-radius: 50%;
+  background: #9d2626;
+  width: 10px;
+  height: 10px;
+  margin: 3px;
+  float: left;
+}
+@-webkit-keyframes 'spinner-dot' {
+  0% {
+    -webkit-transform: scale(0.5);
+  }
+  35% {
+    -webkit-transform: scale(0.9);
+  }
+  60% {
+    -webkit-transform: scale(1);
+  }
+  100% {
+    -webkit-transform: scale(0.5);
+  }
+}
+@-moz-keyframes spinner-dot {
+  0% {
+    -moz-transform: scale(0.5);
+  }
+  35% {
+    -moz-transform: scale(0.9);
+  }
+  60% {
+    -moz-transform: scale(1);
+  }
+  100% {
+    -moz-transform: scale(0.5);
+  }
+}
