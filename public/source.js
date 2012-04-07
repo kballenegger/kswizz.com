@@ -2,7 +2,7 @@
 // constants
 var footerPositionBottom = 20;
 var headerFadeOutDistance = 200;
-var navPositionTop = 100;
+var navPositionTop = 20;
 
 var imageFullSizeHeight = 1333;
 
