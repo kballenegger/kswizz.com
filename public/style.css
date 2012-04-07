@@ -174,13 +174,17 @@ header p {
 }
 #header-img-toggle {
   background: red;
-  width: 20px;
-  height: 10px;
+  width: 16px;
+  height: 16px;
   position: fixed;
   left: 5px;
   top: 5px;
   cursor: pointer;
   z-index: 10;
+  background: no-repeat url(images/expand.png);
+}
+#header-img-toggle.contract {
+  background-image: url(images/contract.png);
 }
 /* layout */
 #container {

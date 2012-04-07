@@ -43,7 +43,8 @@ positionHeader = function() {
             .css('opacity', 1 - (scrollTop * 1.0 / headerFadeOutDistance))
             .css('margin-top', -1 * (scrollTop / 3));
     }
-    $('header').css('background-position-y', $('header').data('original-header-top-position') + (-1 * scrollTop / 4));
+    if (!$('#header-img-toggle').hasClass('contract'))
+        $('header').css('background-position-y', $('header').data('original-header-top-position') + (-1 * scrollTop / 4));
 };
 
 positionAll = function() {
@@ -55,13 +56,23 @@ positionAll = function() {
 
 toggleHeaderOpen = function () {
     headerExpandAnimationIsRunning = true;
-    $('header').animate({'background-position-y': 0, 'height': imageFullSizeHeight}, function() { headerExpandAnimationIsRunning = false; });
+    var windowHeight = $(window).height();
+    var newHeight = windowHeight;
+    var newBackgroundPosition = 0;
+    if (imageFullSizeHeight < windowHeight) {
+        newHeight = imageFullSizeHeight;
+    } else {
+        newBackgroundPosition = (imageFullSizeHeight - windowHeight) / 2 * -1;
+    }
+    $('header').animate({'background-position-y': newBackgroundPosition, 'height': newHeight}, function() { headerExpandAnimationIsRunning = false; });
     $('#title, #container').fadeOut();
+    $('#header-img-toggle').addClass('contract');
 };
 toggleHeaderClose = function () {
     headerExpandAnimationIsRunning = true;
-    $('header').animate({'background-position-y': originalBgOffset, 'height': originalHeight}, function() { headerExpandAnimationIsRunning = false; });
+    $('header').animate({'background-position-y': $('header').data('original-bg-offset'), 'height': $('header').data('original-height')}, function() { headerExpandAnimationIsRunning = false; });
     $('#title, #container').fadeIn();
+    $('#header-img-toggle').removeClass('contract');
     positionAll();
 };
 
@@ -72,8 +83,8 @@ $(document).ready(function() {
     $('footer').before('<div id="footerPositionMarker"></div>');
 
     // header
-    var originalHeight = $('header').height();
-    var originalBgOffset = $('header').css('background-position-y');
+    $('header').data('original-height', $('header').height());
+    $('header').data('original-bg-offset', $('header').css('background-position-y'));
     $('<div>').attr('id', 'header-img-toggle').appendTo('body').toggle(toggleHeaderOpen, toggleHeaderClose);
 
     $('header').data('original-header-top-position', parseInt($('header').css('background-position-y')));
@@ -82,7 +93,10 @@ $(document).ready(function() {
     $('nav').before('<div id="navPositionMarker"></div>');
     
     // set up for dynamic positioning
-    positionAll();
+
+    // no need to position nav at start, it actually hurts in some cases
+    positionFooter();
+    positionHeader();
     $(window).scroll(function() {
         positionAll();
     });
