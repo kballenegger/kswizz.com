@@ -65,12 +65,14 @@ toggleHeaderOpen = function () {
         newBackgroundPosition = (imageFullSizeHeight - windowHeight) / 2 * -1;
     }
     $('header').animate({'background-position-y': newBackgroundPosition, 'height': newHeight}, function() { headerExpandAnimationIsRunning = false; });
+    $('header').css('border-bottom', 'none');
     $('#title, #container').fadeOut();
     $('#header-img-toggle').addClass('contract');
 };
 toggleHeaderClose = function () {
     headerExpandAnimationIsRunning = true;
     $('header').animate({'background-position-y': $('header').data('original-bg-offset'), 'height': $('header').data('original-height')}, function() { headerExpandAnimationIsRunning = false; });
+    $('header').css('border-bottom', $('header').data('original-border-bottom'));
     $('#title, #container').fadeIn();
     $('#header-img-toggle').removeClass('contract');
     positionAll();
@@ -85,6 +87,7 @@ $(document).ready(function() {
     // header
     $('header').data('original-height', $('header').height());
     $('header').data('original-bg-offset', $('header').css('background-position-y'));
+    $('header').data('original-border-bottom', $('header').css('border-bottom'));
     $('<div>').attr('id', 'header-img-toggle').appendTo('body').toggle(toggleHeaderOpen, toggleHeaderClose);
 
     $('header').data('original-header-top-position', parseInt($('header').css('background-position-y')));
@@ -105,6 +108,20 @@ $(document).ready(function() {
 
 
 
+$(document).ready(function() {
+    $('article a').live('click', function() {
+        var href = $(this).attr('href');
+        if (href.match(/\.(png|jpg|tiff)$/i)) {
+            console.log('should show lightbox here');
+            $('#lightbox').html($('<img>').attr('src', href));
+            $('#lightbox').lightbox_me({
+                onClose: function() { $('#lightbox').html(''); },
+                overlayCSS:{background:"black", opacity:.8}
+            });
+            return false;
+        }
+    });
+});
 
 
 // endless navigation, modified from Jake Paul's solstice
