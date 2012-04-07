@@ -111,7 +111,7 @@ $(document).ready(function() {
 $(document).ready(function() {
     $('article a').live('click', function() {
         var href = $(this).attr('href');
-        if (href.match(/\.(png|jpg|tiff)$/i)) {
+        if (href.match(/\.(png|jpg|tiff)$/i) || href.match(/tumblr\.com\/photo/)) {
             console.log('should show lightbox here');
             $('#lightbox').html($('<img>').attr('src', href));
             $('#lightbox').lightbox_me({
