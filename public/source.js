@@ -112,12 +112,29 @@ $(document).ready(function() {
     $('article a').live('click', function() {
         var href = $(this).attr('href');
         if (href.match(/\.(png|jpg|tiff)$/i) || href.match(/tumblr\.com\/photo/)) {
-            console.log('should show lightbox here');
-            $('#lightbox').html($('<img>').attr('src', href));
-            $('#lightbox').lightbox_me({
-                onClose: function() { $('#lightbox').html(''); },
-                overlayCSS:{background:"black", opacity:.8}
-            });
+            $('#lightbox').html($('<img>').attr('src', href).load(function() {
+                var newWidth = $(this).width();
+                var newHeight = $(this).height();
+                var maxWidth = $(window).width() * 0.9;
+                var maxHeight = $(window).height() * 0.9;
+                // if (newWidth > windowWidth * 0.9 && newHeight > windowHeight * 0.9) {
+                // } else
+                if (newWidth > maxWidth) {
+                    newWidth = maxWidth;
+                    newHeight = newWidth * maxHeight / maxWidth;
+                } else if (newHeight > maxHeight) {
+                    newHeight = maxWidth;
+                    newWidth = newHeight * maxWidth / maxHeight;
+                }
+                $('#lightbox').lightbox_me({
+                    onClose: function() { $('#lightbox').html(''); },
+                    overlayCSS: { background:"black", opacity:.8 },
+                    modalCSS: {
+                        width: newWidth,
+                        height: newHeight
+                    }
+                });
+            }));
             return false;
         }
     });
