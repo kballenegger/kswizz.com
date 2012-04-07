@@ -4,62 +4,87 @@ var footerPositionBottom = 20;
 var headerFadeOutDistance = 200;
 var navPositionTop = 100;
 
+var imageFullSizeHeight = 1333;
+
+// state
+
+var headerExpandAnimationIsRunning = false;
+var scrollTop = 0;
+
 // position functions
 
 positionFooter = function() {
-    if ($(window).scrollTop() > ($('#footerPositionMarker').offset().top + $('footer').outerHeight() + footerPositionBottom) - $(window).height()) {
-        if (!$('footer').hasClass('fixed')) {
-            $('footer').addClass('fixed');
-        }
+    if (scrollTop > ($('#footerPositionMarker').offset().top + $('footer').outerHeight() + footerPositionBottom) - $(window).height()) {
+        $('footer').addClass('fixed');
     } else {
-        if ($('footer').hasClass('fixed'))
-            $('footer').removeClass('fixed');
+        $('footer').removeClass('fixed');
     }
-}
+};
 
 positionNav = function() {
-    if ($(window).scrollTop() > $('#navPositionMarker').offset().top - navPositionTop) {
-        if (!$('nav').hasClass('fixed')) {
-            $('nav').addClass('fixed');
-        }
+    if (scrollTop > $('#navPositionMarker').offset().top - navPositionTop) {
+        $('nav').addClass('fixed');
     } else {
-        if ($('nav').hasClass('fixed'))
-            $('nav').removeClass('fixed');
+        $('nav').removeClass('fixed');
     }
-}
+};
 
 positionHeader = function() {
-    // title
-    if ($(window).scrollTop() == 0) {
-        $('#title').removeClass('hidden');
-        $('#title').css('opacity', 1);
-        $('#title').css('margin-top', 0);
-    } else if ($(window).scrollTop() > headerFadeOutDistance) {
-        console.log('hidden');
-        $('#title').addClass('hidden');
-        $('#title').css('opacity', 0);
+    if (headerExpandAnimationIsRunning) return;
+    if (scrollTop == 0) {
+        $('#title').removeClass('hidden')
+            .css('opacity', 1)
+            .css('margin-top', 0);
+    } else if (scrollTop > headerFadeOutDistance) {
+        $('#title').addClass('hidden')
+            .css('opacity', 0);
     } else {
-        $('#title').removeClass('hidden');
-        $('#title').css('opacity', 1 - ($(window).scrollTop() * 1.0 / headerFadeOutDistance));
-        $('#title').css('margin-top', -1 * ($(window).scrollTop() / 3));
+        $('#title').removeClass('hidden')
+            .css('opacity', 1 - (scrollTop * 1.0 / headerFadeOutDistance))
+            .css('margin-top', -1 * (scrollTop / 3));
     }
-}
+    $('header').css('background-position-y', $('header').data('original-header-top-position') + (-1 * scrollTop / 4));
+};
+
+positionAll = function() {
+    scrollTop = $(window).scrollTop();
+    positionFooter();
+    positionHeader();
+    positionNav();
+};
+
+toggleHeaderOpen = function () {
+    headerExpandAnimationIsRunning = true;
+    $('header').animate({'background-position-y': 0, 'height': imageFullSizeHeight}, function() { headerExpandAnimationIsRunning = false; });
+    $('#title, #container').fadeOut();
+};
+toggleHeaderClose = function () {
+    headerExpandAnimationIsRunning = true;
+    $('header').animate({'background-position-y': originalBgOffset, 'height': originalHeight}, function() { headerExpandAnimationIsRunning = false; });
+    $('#title, #container').fadeIn();
+    positionAll();
+};
 
 // setup the magic
 $(document).ready(function() {
     
+    // footer
     $('footer').before('<div id="footerPositionMarker"></div>');
-    positionFooter();
-    
-    positionHeader();
 
+    // header
+    var originalHeight = $('header').height();
+    var originalBgOffset = $('header').css('background-position-y');
+    $('<div>').attr('id', 'header-img-toggle').appendTo('body').toggle(toggleHeaderOpen, toggleHeaderClose);
+
+    $('header').data('original-header-top-position', parseInt($('header').css('background-position-y')));
+
+    // navigation
     $('nav').before('<div id="navPositionMarker"></div>');
-    positionNav();
     
+    // set up for dynamic positioning
+    positionAll();
     $(window).scroll(function() {
-        positionFooter();
-        positionHeader();
-        positionNav();
+        positionAll();
     });
 });
 

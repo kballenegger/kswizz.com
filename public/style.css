@@ -128,11 +128,13 @@ hr {
 }
 /* header! */
 header {
-  height: 270px;
-  background: #282828 url(images/dark_tire.png);
+  height: 350px;
+  /*    background: #282828 url(images/dark_tire.png);*/
+
+  background: #163434 url(images/header_bg_swiss_landscape.jpg) center -500px fixed no-repeat;
   color: white;
   text-align: center;
-  padding-top: 80px;
+  padding-top: 0px;
   text-shadow: 0px 0px 9px rgba(0, 0, 0, 0.5);
   border-bottom: 1px solid white;
   box-shadow: 0px -6px 21px rgba(0, 0, 0, 0.75) inset;
@@ -147,6 +149,7 @@ header a:hover {
   text-decoration: none;
 }
 #title {
+  padding-top: 80px;
   position: fixed;
   left: 0px;
   right: 0px;
@@ -168,6 +171,16 @@ header p {
   font-size: 20px;
   font-family: KBAbsara, serif;
   font-style: italic;
+}
+#header-img-toggle {
+  background: red;
+  width: 20px;
+  height: 10px;
+  position: fixed;
+  left: 5px;
+  top: 5px;
+  cursor: pointer;
+  z-index: 10;
 }
 /* layout */
 #container {
