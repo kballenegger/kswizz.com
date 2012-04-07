@@ -128,11 +128,11 @@ hr {
 }
 /* header! */
 header {
-  height: 180px;
+  height: 270px;
   background: #282828 url(images/dark_tire.png);
   color: white;
   text-align: center;
-  padding-top: 20px;
+  padding-top: 80px;
   text-shadow: 0px 0px 9px rgba(0, 0, 0, 0.5);
   border-bottom: 1px solid white;
   box-shadow: 0px -6px 21px rgba(0, 0, 0, 0.75) inset;
@@ -146,24 +146,16 @@ header a {
 header a:hover {
   text-decoration: none;
 }
-header.fixed {
+#title {
   position: fixed;
-  top: -115px;
   left: 0px;
   right: 0px;
-}
-#headerPlaceholder.fixed {
-  height: 200px;
 }
 #crown {
   background: no-repeat center url(images/crown.png);
   width: 100%;
   height: 64px;
   margin: auto;
-}
-#crown.fixed {
-  position: fixed;
-  top: 10px;
 }
 header h1 {
   font-size: 45px;
@@ -212,13 +204,14 @@ footer.fixed {
 footer p {
   margin: 0px;
 }
+/*@nav-fixed-position: 100px;*/
 nav {
   margin-bottom: 70px;
   font-size: 13px;
 }
 nav.fixed {
   position: fixed;
-  top: 100px;
+  top: 20px;
   width: 275px;
 }
 nav ul {
