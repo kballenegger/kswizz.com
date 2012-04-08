@@ -1,6 +1,6 @@
 require 'json'
 
-class MainController
+class KudosController
     
     def index kenji
         {hello: :world}

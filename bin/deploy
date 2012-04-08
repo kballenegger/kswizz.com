@@ -1,4 +1,4 @@
 #!/bin/sh
 
 lessc public/style.less > public/style.css
-rsync -r public/. azure:~/www/kenneth.ballenegger.com/public/kswizz
+rsync -r . azure:~/www/static.kswizz.com/
