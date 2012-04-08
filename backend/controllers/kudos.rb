@@ -11,6 +11,8 @@ class KudosController
     end
 
     def count(kenji, id)
+        kenji.header 'Access-Control-Allow-Origin' => '*'
+        
         posts = @db['posts']
 
         post = posts.find_one({tumblr_id: id})
@@ -20,6 +22,8 @@ class KudosController
     end
 
     def increment(kenji, id)
+        kenji.header 'Access-Control-Allow-Origin' => '*'
+        
         posts = @db['posts']
 
         post = posts.find_one({tumblr_id: id})

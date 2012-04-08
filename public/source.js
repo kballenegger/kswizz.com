@@ -152,6 +152,28 @@ $(document).ready(function() {
 });
 
 
+// kudos button
+
+$(document).ready(function() {
+    // TODO: deal with dynamically added items
+    $('article .kudos').each(function() {
+        postId = $(this).data('post-id');
+        console.log('hello world '+postId);
+        $.get('http://app.kswizz.com/kudos/count/'+postId, function(data) {
+            $('#'+postId+' .kudos-value').html(data.count);
+        });
+    });
+    $('article .kudos').on('click', function() {
+        postId = $(this).data('post-id');
+        console.log('hello world '+postId);
+        $.get('http://app.kswizz.com/kudos/increment/'+postId, function(data) {
+            // todo: add neat animation here
+            $('#'+postId+' .kudos-value').html(data.count);
+        });
+    });
+});
+
+
 // endless navigation, modified from Jake Paul's solstice
 
 

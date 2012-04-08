@@ -65,13 +65,11 @@
             {block:Posts}
 
                 {block:Link}
-                    <article>
+                    <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span>{ShortMonth}</span></a>
-                                {block:NoteCount}
-                                    <a href="{Permalink}">{NoteCount} <span>Kudos</span></a>
-                                {/block:NoteCount}
+                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a class="kudos" data-post-id="{PostID}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
                         
@@ -85,13 +83,11 @@
                 {/block:Link}
 
                 {block:Quote}
-                    <article>
+                    <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span>{ShortMonth}</span></a>
-                                {block:NoteCount}
-                                    <a href="{Permalink}">{NoteCount} <span>Kudos</span></a>
-                                {/block:NoteCount}
+                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a class="kudos" data-post-id="{PostID}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
                         
@@ -106,13 +102,11 @@
                 {/block:Quote}
             
                 {block:Video}
-                    <article>
+                    <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span>{ShortMonth}</span></a>
-                                {block:NoteCount}
-                                    <a href="{Permalink}">{NoteCount} <span>Kudos</span></a>
-                                {/block:NoteCount}
+                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a class="kudos" data-post-id="{PostID}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
 
@@ -126,13 +120,11 @@
                 {/block:Video}
 
                 {block:Audio}
-                    <article>
+                    <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span>{ShortMonth}</span></a>
-                                {block:NoteCount}
-                                    <a href="{Permalink}">{NoteCount} <span>Kudos</span></a>
-                                {/block:NoteCount}
+                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a class="kudos" data-post-id="{PostID}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
 
@@ -146,13 +138,11 @@
                 {/block:Audio}
             
                 {block:Photo}
-                    <article>
+                    <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span>{ShortMonth}</span></a>
-                                {block:NoteCount}
-                                    <a href="{Permalink}">{NoteCount} <span>Kudos</span></a>
-                                {/block:NoteCount}
+                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a class="kudos" data-post-id="{PostID}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
 
@@ -167,13 +157,11 @@
 
 
         		{block:Text}
-                    <article>
+                    <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span>{ShortMonth}</span></a>
-                                {block:NoteCount}
-                                    <a href="{Permalink}">{NoteCount} <span>Kudos</span></a>
-                                {/block:NoteCount}
+                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a class="kudos" data-post-id="{PostID}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
 
