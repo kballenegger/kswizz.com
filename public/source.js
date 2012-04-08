@@ -109,32 +109,43 @@ $(document).ready(function() {
 
 
 $(document).ready(function() {
-    $('article a').live('click', function() {
+    $(document).on('click', 'article a', function() {
         var href = $(this).attr('href');
         if (href.match(/\.(png|jpg|tiff)$/i) || href.match(/tumblr\.com\/photo/)) {
-            $('#lightbox').html($('<img>').attr('src', href).load(function() {
-                var newWidth = $(this).width();
-                var newHeight = $(this).height();
+            img = new Image();
+            img.src = href;
+            $('#lightbox').html($('<img>').load(function() {
+                var newWidth = img.width;
+                var newHeight = img.height;
                 var maxWidth = $(window).width() * 0.9;
                 var maxHeight = $(window).height() * 0.9;
-                // if (newWidth > windowWidth * 0.9 && newHeight > windowHeight * 0.9) {
-                // } else
                 if (newWidth > maxWidth) {
+                    newHeight = newHeight * maxWidth / newWidth;
                     newWidth = maxWidth;
-                    newHeight = newWidth * maxHeight / maxWidth;
-                } else if (newHeight > maxHeight) {
-                    newHeight = maxWidth;
-                    newWidth = newHeight * maxWidth / maxHeight;
                 }
+                if (newHeight > maxHeight) {
+                    newWidth = newWidth * maxHeight / newHeight;
+                    newHeight = maxHeight;
+                }
+                $(this).css('width', newWidth);
+                $(this).css('height', newHeight);
+                console.log('lightbox display for image size: '+newWidth+'px x '+newHeight+'px');
                 $('#lightbox').lightbox_me({
+                    centered: true,
                     onClose: function() { $('#lightbox').html(''); },
-                    overlayCSS: { background:"black", opacity:.8 },
+                    overlayCSS: { background: 'black', opacity:.9 },
                     modalCSS: {
+                        top: '50%',
+                        'margin-top': -1 * (newHeight / 2) + scrollTop, 
+                        left: '50%',
+                        'margin-left': -1 * (newWidth / 2), 
+                        position: 'absolute',
                         width: newWidth,
                         height: newHeight
                     }
                 });
-            }));
+            }).attr('src', href));
+            
             return false;
         }
     });
