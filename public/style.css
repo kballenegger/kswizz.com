@@ -221,7 +221,6 @@ footer.fixed {
 footer p {
   margin: 0px;
 }
-/*@nav-fixed-position: 100px;*/
 nav {
   margin-bottom: 70px;
   font-size: 13px;
@@ -251,6 +250,9 @@ nav .nav-section-title {
   text-transform: uppercase;
 }
 /* content */
+#content {
+  padding-top: 15px;
+}
 article {
   padding-left: 80px;
   margin-bottom: 70px;
@@ -274,19 +276,33 @@ article .info {
   margin-left: -80px;
   text-align: center;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
+  line-height: 1.3rem;
 }
 article .info a {
-  color: black;
+  color: white;
+  background: #9d2626;
+  background-image: linear-gradient(top, #ae3737 0%, #9d2626 100%);
+  background-image: -o-linear-gradient(top, #ae3737 0%, #9d2626 100%);
+  background-image: -moz-linear-gradient(top, #ae3737 0%, #9d2626 100%);
+  background-image: -webkit-linear-gradient(top, #ae3737 0%, #9d2626 100%);
+  background-image: -ms-linear-gradient(top, #ae3737 0%, #9d2626 100%);
+  display: block;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #8c1515;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
+  padding: 3px;
 }
 article .info a:hover {
-  color: #9d2626;
   text-decoration: none;
+  text-shadow: 0px 0px 2px white;
+  box-shadow: 0px 0px 5px #9d2626;
 }
 article .info a > span {
   font-family: KBBrandonGrotesque;
   text-transform: uppercase;
-  font-size: 0.8em;
+  font-size: 0.6rem;
   display: block;
 }
 article img {

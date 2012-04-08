@@ -15,6 +15,32 @@
 /* html5 blockify */
 article, aside, figure, footer, header, hgroup, menu, nav, section { display: block; }
 
+
+// general mixins
+
+.linear-gradient-2col (@direction, @from, @to) {
+    background-image: linear-gradient(@direction, @from 0%, @to 100%);
+    background-image: -o-linear-gradient(@direction, @from 0%, @to 100%);
+    background-image: -moz-linear-gradient(@direction, @from 0%, @to 100%);
+    background-image: -webkit-linear-gradient(@direction, @from 0%, @to 100%);
+    background-image: -ms-linear-gradient(@direction, @from 0%, @to 100%);
+}
+
+.animate (@name, @duration, @count: infinite, @function: linear) {
+    -webkit-animation-name: @name;
+	-moz-animation-name: @name;
+	animation-name: @name;
+	-webkit-animation-duration: @duration;
+	-moz-animation-duration: @duration;
+	animation-duration: @duration;
+	-webkit-animation-iteration-count: @count;
+	-moz-animation-iteration-count: @count;
+	animation-iteration-count: @count;
+	-webkit-animation-timing-function: @function;
+	-moz-animation-timing-function: @function;
+	animation-timing-function: @function;
+}
+
 /* styles */
 
 body {
@@ -231,7 +257,6 @@ footer p {
     margin: 0px;
 }
 
-/*@nav-fixed-position: 100px;*/
 @nav-fixed-position: 20px;
 
 nav {
@@ -268,6 +293,10 @@ nav .nav-section-title {
 
 /* content */
 
+#content {
+    padding-top: 15px;
+}
+
 article {
     padding-left: 80px;
     margin-bottom: 70px;
@@ -283,28 +312,40 @@ article h1, article h2, article h3, article h4, article h5,  article h6 {
     font-weight: 700;
 }
 
+@highlight-screen: @highlight + #111;
+@highlight-multiply: @highlight - #111;
 article .info {
     width: 50px;
     float: left;
     margin-left: -80px;
     text-align: center;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 14px;
+    line-height: 1.3rem;
 }
 
 article .info a {
-    color: black;
+    color: white;
+    background: @highlight;
+    .linear-gradient-2col(top, @highlight-screen, @highlight);
+    display: block;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid @highlight-multiply;
+    box-shadow: 0px 0px 5px rgba(0,0,0,0.35);
+    padding: 3px;
 }
 
 article .info a:hover {
-    color: @highlight;
     text-decoration: none;
+    text-shadow: 0px 0px 2px white;
+    box-shadow: 0px 0px 5px @highlight;
 }
 
 article .info a > span {
     font-family: KBBrandonGrotesque;
     text-transform: uppercase;
-    font-size: 0.8em;
+    font-size: 0.6rem;
     display: block;
 }
 
@@ -342,21 +383,6 @@ article img {
 
 
 /* animation */
-
-.animate (@name, @duration, @count: infinite, @function: linear) {
-    -webkit-animation-name: @name;
-	-moz-animation-name: @name;
-	animation-name: @name;
-	-webkit-animation-duration: @duration;
-	-moz-animation-duration: @duration;
-	animation-duration: @duration;
-	-webkit-animation-iteration-count: @count;
-	-moz-animation-iteration-count: @count;
-	animation-iteration-count: @count;
-	-webkit-animation-timing-function: @function;
-	-moz-animation-timing-function: @function;
-	animation-timing-function: @function;
-}
 
 #more .spinner .dot {
     .animate(spinner-dot, 3s);
