@@ -157,18 +157,21 @@ $(document).ready(function() {
 $(document).ready(function() {
     // TODO: deal with dynamically added items
     $('article .kudos').each(function() {
-        postId = $(this).data('post-id');
-        console.log('hello world '+postId);
+        var postId = $(this).data('post-id');
+        var originalNotesCount = parseInt($(this).data('tumblr-notes'));
         $.get('http://app.kswizz.com/kudos/count/'+postId, function(data) {
-            $('#'+postId+' .kudos-value').html(data.count);
+            $('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
         });
     });
     $('article .kudos').on('click', function() {
-        postId = $(this).data('post-id');
-        console.log('hello world '+postId);
+        var postId = $(this).data('post-id');
+        var originalNotesCount = parseInt($(this).data('tumblr-notes'));
+        // put in tmp value to make it appear instant
+        $('#'+postId+' .kudos-value').html(parseInt($('#'+postId+' .kudos-value').html()) + 1);
         $.get('http://app.kswizz.com/kudos/increment/'+postId, function(data) {
             // todo: add neat animation here
-            $('#'+postId+' .kudos-value').html(data.count);
+            //$('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
+            console.log('new kudos count returned from server: '+data.count);
         });
     });
 });

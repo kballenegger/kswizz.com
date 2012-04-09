@@ -298,6 +298,7 @@ article .info a:hover {
   text-decoration: none;
   text-shadow: 0px 0px 2px white;
   box-shadow: 0px 0px 5px #9d2626;
+  cursor: pointer;
 }
 article .info a > .info-caption {
   font-family: KBBrandonGrotesque;
