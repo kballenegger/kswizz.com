@@ -2,3 +2,5 @@
 
 lessc public/style.less > public/style.css
 rsync -r . azure:~/www/static.kswizz.com/
+ssh azure 'cd www/static.kswizz.com/backend && bundle install'
+ssh azure 'touch www/static.kskwizz.com/backend/tmp/restart.txt'

@@ -4,8 +4,8 @@ require 'memcache'
 class KudosController
     
   def initialize
-    @db = Mongo::Connection.new.db('kswizz')
-    @cache = Memcache::NativeServer.new(:server => 'localhost:11211')
+    @db = Mongo::Connection.new('localhost').db('kswizz')
+    #@cache = Memcache::NativeServer.new(:server => 'localhost:11211')
   end
     
   def index(kenji)
