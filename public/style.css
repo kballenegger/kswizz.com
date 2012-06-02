@@ -72,6 +72,11 @@ img,
   border: 1px white solid;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
 }
+iframe.photoset {
+  border: 1px white solid !important;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
+  background: white !important;
+}
 blockquote {
   border-left: 1px solid #9d2626;
   margin-left: 5px;
