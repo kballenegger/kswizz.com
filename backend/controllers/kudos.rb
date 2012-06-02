@@ -1,18 +1,18 @@
 require 'mongo'
-require 'memcache'
+#require 'memcache'
 
-class KudosController
+class KudosController < Kenji::Controller
     
   def initialize
     @db = Mongo::Connection.new('localhost').db('kswizz')
     #@cache = Memcache::NativeServer.new(:server => 'localhost:11211')
   end
     
-  def index(kenji)
-    {hello: :world}
+  get '/' do
+    {hello: kenji, db: @db}
   end
 
-  def count(kenji, id)
+  get '/count/:id' do |id|
     kenji.header 'Access-Control-Allow-Origin' => '*'
         
     key = "kudos-#{id}"
@@ -31,7 +31,7 @@ class KudosController
     response
   end
 
-  def increment(kenji, id)
+  get '/increment/:id' do |id|
     kenji.header 'Access-Control-Allow-Origin' => '*'
 
     posts = @db['posts']

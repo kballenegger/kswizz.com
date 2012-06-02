@@ -1,6 +1,6 @@
 gem 'rack'
 gem 'mongo'
 gem 'kenji'
-gem 'memcache'
+#gem 'memcache'
 
 source :rubygems
