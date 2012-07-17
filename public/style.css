@@ -45,6 +45,10 @@ nav,
 section {
   display: block;
 }
+.pictos {
+  font-family: 'Pictos Custom';
+  -webkit-font-smoothing: antialiased;
+}
 /* styles */
 body {
   margin: 0px;
@@ -254,6 +258,12 @@ nav li {
   background: no-repeat left center;
   min-height: 30px;
   padding-top: 5px;
+}
+nav li .pictos {
+  float: left;
+  margin-left: -30px;
+  font-size: 25px;
+  color: #9d2626;
 }
 nav .nav-section-title {
   font-size: 12px;

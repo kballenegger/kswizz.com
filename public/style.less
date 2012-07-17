@@ -15,6 +15,12 @@
 /* html5 blockify */
 article, aside, figure, footer, header, hgroup, menu, nav, section { display: block; }
 
+// pictos
+.pictos {
+    font-family: 'Pictos Custom';
+    -webkit-font-smoothing: antialiased;
+}
+
 
 // general mixins
 
@@ -299,6 +305,13 @@ nav li {
     background: no-repeat left center;
     min-height: 30px;
     padding-top: 5px;
+}
+
+nav li .pictos {
+    float: left;
+    margin-left: -30px;
+    font-size: 25px;
+    color: @highlight;
 }
 
 nav .nav-section-title {
