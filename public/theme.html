@@ -3,7 +3,7 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 
     <title>{Title}{block:PostSummary} &mdash; {PostSummary}{/block:PostSummary}{block:SearchPage} &mdash; Search: {SearchQuery}{/block:SearchPage}</title>
-	<meta name="description" content="{MetaDescription}" />
+    <meta name="description" content="{MetaDescription}" />
 
     <link rel="alternate" type="application/rss+xml" href="{RSS}" />
 
@@ -34,21 +34,21 @@
 
         <div id="sidebar">
 
-            <p><img src="http://static.kswizz.com/images/photo.png" alt="Kenneth Ballenegger" /></p>
+            <p><img id="headshot" src="http://static.kswizz.com/images/photo.png" alt="Kenneth Ballenegger" /></p>
             <p id="about">
                 {Description}
             </p>
 
             <nav>
                 <ul>
-                    <li style="background-image:url(http://static.kswizz.com/images/email_icon.png);"><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
-                    <li style="background-image:url(http://static.kswizz.com/images/resume_icon.png);"><a href="http://kenneth.ballenegger.com/dl/resume2012.pdf" target="_blank">View my resum&eacute;</a></li>
+                    <li><span class="pictos">@</span><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
+                    <li><span class="pictos">r</span><a href="http://kenneth.ballenegger.com/dl/resume2012.pdf" target="_blank">View my resum&eacute;</a></li>
                     <hr />
                     <div class="nav-section-title">Categories</div>
-                    <li style="background-image:url(http://static.kswizz.com/images/articles_icon.png);padding-top:10px;"><a href="http://kswizz.com/tagged/articles">Articles</a></li>
-                    <li style="background-image:url(http://static.kswizz.com/images/software_icon.png);"><a href="http://kswizz.com/tagged/development">Software &amp; Development</a></li>
-                    <li style="background-image:url(http://static.kswizz.com/images/schoolwork_icon.png);"><a href="http://kswizz.com/tagged/schoolwork">Schoolwork</a></li>
-                    <li style="background-image:url(http://static.kswizz.com/images/photo_icon.png);"><a href="http://kswizz.com/tagged/photography">Photography</a></li>
+                    <li><span class="pictos">a</span></li>
+                    <li><span class="pictos">d</span><a href="http://kswizz.com/tagged/development">Software &amp; Development</a></li>
+                    <li><span class="pictos">s</span><a href="http://kswizz.com/tagged/schoolwork">Schoolwork</a></li>
+                    <li><span class="pictos">p</span><a href="http://kswizz.com/tagged/photography">Photography</a></li>
                 </ul>
             </nav>
 
@@ -97,7 +97,8 @@
                                 <div class="attribution">{Source}</div>
                             {/block:Source}
                         </div>
-
+
+
                     </article>
                 {/block:Quote}
             
@@ -156,7 +157,7 @@
                 {/block:Photo}
 
 
-        		{block:Text}
+                {block:Text}
                     <article id="{PostID}">
                         {block:Date}
                             <div class="info">
