@@ -46,7 +46,7 @@ section {
   display: block;
 }
 .pictos {
-  font-family: 'Pictos Custom';
+  font-family: 'Pictos Custom', LastResort;
   -webkit-font-smoothing: antialiased;
 }
 /* styles */
