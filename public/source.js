@@ -4,7 +4,7 @@ var footerPositionBottom = 20;
 var headerFadeOutDistance = 200;
 var navPositionTop = 20;
 
-var imageFullSizeHeight = 1333;
+var imageFullSizeHeight = 1080;
 
 // state
 
