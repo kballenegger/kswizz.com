@@ -53,10 +53,12 @@ section {
 body {
   margin: 0px;
   background: url(images/light_wool.png);
+  background-size: 95px 95px;
   font-family: KBOlsen, serif;
   font-size: 14px;
   font-weight: 300;
   line-height: 26px;
+  color: #331111;
 }
 .hidden {
   display: none;
