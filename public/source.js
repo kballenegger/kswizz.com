@@ -152,19 +152,22 @@ $(document).ready(function() {
 });
 
 
-// kudos button
+// info section
 
 $(document).ready(function() {
 
     var year = ((new Date()).getYear() + 1900) + '';
-    var on_each_kudos = function(el) {
-        var postId = $(el).data('post-id');
-        var originalNotesCount = parseInt($(el).data('tumblr-notes'));
+    var on_each_info = function(el) {
+
+        // kudos button
+        var kudos = $(el).find('.kudos');
+        var postId = $(kudos).data('post-id');
+        var originalNotesCount = parseInt($(kudos).data('tumblr-notes'));
         $.get('http://app.kswizz.com/kudos/count/'+postId, function(data) {
             $('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
         });
 
-        $(el).on('click', function() {
+        $(kudos).on('click', function() {
             var postId = $(this).data('post-id');
             var originalNotesCount = parseInt($(this).data('tumblr-notes'));
             // put in tmp value to make it appear instant
@@ -176,20 +179,21 @@ $(document).ready(function() {
             });
         });
 
-        if ($(el).children('.year').html() != year) {
-            $(el).children('.day').remove();
+        // date
+        if ($(el).find('.year').html() != year) {
+            $(el).find('.day').remove();
         }
     };
-    var refresh_kudos = function() {
-        $('article .kudos').each(function() {
+    var refresh_infos = function() {
+        $('article .info').each(function() {
             if ($(this).data('processed') != '1') {
                 $(this).data('processed', '1');
-                on_each_kudos(this);
+                on_each_info(this);
             }
         });
     };
-    refresh_kudos();
-    $(document).change(refresh_kudos);
+    refresh_infos();
+    $(document).change(refresh_infos);
 });
 
 // endless navigation, modified from Jake Paul's solstice
