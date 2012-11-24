@@ -155,27 +155,42 @@ $(document).ready(function() {
 // kudos button
 
 $(document).ready(function() {
-    // TODO: deal with dynamically added items
-    $('article .kudos').each(function() {
-        var postId = $(this).data('post-id');
-        var originalNotesCount = parseInt($(this).data('tumblr-notes'));
+
+    var year = ((new Date()).getYear() + 1900) + '';
+    var on_each_kudos = function(el) {
+        var postId = $(el).data('post-id');
+        var originalNotesCount = parseInt($(el).data('tumblr-notes'));
         $.get('http://app.kswizz.com/kudos/count/'+postId, function(data) {
             $('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
         });
-    });
-    $('article .kudos').on('click', function() {
-        var postId = $(this).data('post-id');
-        var originalNotesCount = parseInt($(this).data('tumblr-notes'));
-        // put in tmp value to make it appear instant
-        $('#'+postId+' .kudos-value').html(parseInt($('#'+postId+' .kudos-value').html()) + 1);
-        $.get('http://app.kswizz.com/kudos/increment/'+postId, function(data) {
-            // todo: add neat animation here
-            //$('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
-            console.log('new kudos count returned from server: '+data.count);
-        });
-    });
-});
 
+        $(el).on('click', function() {
+            var postId = $(this).data('post-id');
+            var originalNotesCount = parseInt($(this).data('tumblr-notes'));
+            // put in tmp value to make it appear instant
+            $('#'+postId+' .kudos-value').html(parseInt($('#'+postId+' .kudos-value').html()) + 1);
+            $.get('http://app.kswizz.com/kudos/increment/'+postId, function(data) {
+                // todo: add neat animation here
+                //$('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
+                console.log('new kudos count returned from server: '+data.count);
+            });
+        });
+
+        if ($(el).children('.year').html() != year) {
+            $(el).children('.day').remove();
+        }
+    };
+    var refresh_kudos = function() {
+        $('article .kudos').each(function() {
+            if ($(this).data('processed') != '1') {
+                $(this).data('processed', '1');
+                on_each_kudos(this);
+            }
+        });
+    };
+    refresh_kudos();
+    $(document).change(refresh_kudos);
+});
 
 // endless navigation, modified from Jake Paul's solstice
 

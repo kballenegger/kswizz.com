@@ -6,9 +6,9 @@
     <meta name="description" content="{MetaDescription}" />
 
     <link rel="alternate" type="application/rss+xml" href="{RSS}" />
-
+    
     <link href="//get.pictos.cc/fonts/2215/1" rel="stylesheet" type="text/css" />
-
+    
     <link rel="stylesheet" href="http://static.kswizz.com/style.css" type="text/css" media="screen" charset="utf-8" />
 
     <link rel="icon" href="http://static.kswizz.com/images/favicon.png" type="image/png" />
@@ -70,7 +70,11 @@
                     <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                    </a>
                                 <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
@@ -88,7 +92,11 @@
                     <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
                                 <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
@@ -108,7 +116,11 @@
                     <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
                                 <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
@@ -126,7 +138,11 @@
                     <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
                                 <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
@@ -144,7 +160,11 @@
                     <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
                                 <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
@@ -163,7 +183,11 @@
                     <article id="{PostID}">
                         {block:Date}
                             <div class="info">
-                                <a href="{Permalink}">{DayOfMonth}{DayOfMonthSuffix} <span class="info-caption">{ShortMonth}</span></a>
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
                                 <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
                             </div>
                         {/block:Date}
@@ -210,3 +234,4 @@
     
 </body>
 </html>
+
