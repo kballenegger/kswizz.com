@@ -141,7 +141,8 @@ hr {
 /* header! */
 header {
   height: 350px;
-  background: #4e5c69 url(images/header_bg_pier7.jpg) center -400px fixed no-repeat;
+  background: #4e5c69 url(images/header_bg_hawaii.jpg) center center fixed no-repeat;
+  background-size: cover;
   color: white;
   text-align: center;
   padding-top: 0px;
