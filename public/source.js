@@ -43,8 +43,8 @@ positionHeader = function() {
             .css('opacity', 1 - (scrollTop * 1.0 / headerFadeOutDistance))
             .css('margin-top', -1 * (scrollTop / 3));
     }
-    if (!$('#header-img-toggle').hasClass('contract'))
-        $('header').css('background-position-y', $('header').data('original-header-top-position') + (-1 * scrollTop / 4));
+    //if (!$('#header-img-toggle').hasClass('contract'))
+        //$('header').css('background-position-y', $('header').data('original-header-top-position') + (-1 * scrollTop / 4));
 };
 
 positionAll = function() {
