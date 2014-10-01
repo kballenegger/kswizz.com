@@ -1,0 +1,53 @@
+---
+layout: tumblr
+title: The Ultimate Solution For Xcode Auto-Versioning With Git
+date: '2011-01-10T10:58:10-08:00'
+tags:
+- development
+- articles
+tumblr_url: http://kswizz.com/post/2686511526/git-xcode-versioning
+tumblr_id: '2686511526'
+tumblr_note_count: 3
+---
+
+                        
+                            <div class="info">
+                                <a href="http://kswizz.com/2011-01-10/git-xcode-versioning">
+                                    <div class="day">10th</div>
+                                    <div class="month">Jan</div>
+                                    <div class="year">2011</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="2686511526" data-tumblr-notes="3"><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        
+
+                        
+                            <h1 class="title">The Ultimate Solution For Xcode Auto-Versioning With Git</h1>
+                        
+
+                        <p>After struggling with several suboptimal solutions for years, I have finally come to find the best Xcode versioning solution for git users. First off, tip of the hat to <a href="http://www.cimgf.com/2008/04/13/git-and-xcode-a-git-build-number-script/" target="_blank">Marcus Zarra</a> and <a href="http://heipei.net/2009/02/23/xcode-git-describe-in-your-infoplist/" target="_blank">Johannes Gilger</a> for posting their solutions, which inspired me in my search for the ultimate solution.</p>
+
+<p>A couple advantages that make this solution better than those I’ve used in the past:</p>
+
+<ul>
+<li>It’s completely filesystem independent. Save for the git binary location requirement, this would work across any Mac with no additional setup. (It should also be quite easy to edit the script to detect git using <code>which</code>.)</li>
+<li>It works across clones and systems.</li>
+<li>Because the version is the current git SHA1 hash, it always refer to a specific commit you can get back to when debugging later.</li>
+<li>It processes the version number at every build immediately. Some of the solutions I’ve used in the past required a double-build, because of Xcode’s tendency to run scripts after the preprocessor. Not so here.</li>
+<li>No duplication of code in projects with multiple targets.</li>
+<li>Works for iPhone, Mac App Store and Mac apps.</li>
+</ul>
+<p>So without further ado, my solution: I rely on an external target of type Shell Script which I call <em>Versioning.</em> Every other target sets <em>Versioning</em> as a Direct Dependency, ensuring its script is run before the preprocessor. <em>Versioning</em> contains the following Run Script:</p>
+
+<pre><code>cd "$PROJECT_DIR"
+VERSION=`/usr/local/bin/git rev-parse --short HEAD`
+
+cd "$PROJECT_TEMP_DIR"
+echo "#define GIT_VERSION $VERSION" &gt; revision.prefix
+
+cd "$PROJECT_DIR"
+touch Info.plist
+</code></pre>
+
+<p>In Info.plist, the <em>CFBundleShortVersionString</em> is set to <code>GIT_VERSION</code>. In the project’s main build settings, <em>Preprocess Info.plist</em> is turned on and <em>Info.plist Preprocessor Prefix File</em> is set to <code>$PROJECT_TEMP_DIR/revision.prefix</code>.</p>
+                    

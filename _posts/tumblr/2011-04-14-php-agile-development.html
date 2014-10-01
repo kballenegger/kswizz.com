@@ -1,0 +1,91 @@
+---
+layout: tumblr
+title: Running a Modern Startup on PHP
+date: '2011-04-14T15:07:00-07:00'
+tags:
+- development
+- work
+- articles
+tumblr_url: http://kswizz.com/post/4616115078/php-agile-development
+tumblr_id: '4616115078'
+tumblr_note_count: 3
+---
+
+                        
+                            <div class="info">
+                                <a href="http://kswizz.com/2011-04-14/php-agile-development">
+                                    <div class="day">14th</div>
+                                    <div class="month">Apr</div>
+                                    <div class="year">2011</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="4616115078" data-tumblr-notes="3"><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        
+
+                        
+                            <h1 class="title">Running a Modern Startup on PHP</h1>
+                        
+
+                        <p><em>I originally wrote this for the <a href="http://blog.chartboost.com/post/4591949888/php-agile-development" target="_blank">ChartBoost Blog</a>.</em></p>
+
+<p>In the modern world of agile startups and silicon valley, the buzz is all about Ruby, Python, and whatever the latest cool programming language or framework to come out is. Older technologies don’t get much love, and PHP especially has a bad reputation. In this post, I’m gonna go over why and how we use PHP as a modern technology, and the various other tools, techniques and development methodologies we employ to run as agilely and elegantly.</p>
+
+<h2>PHP</h2>
+
+<p>PHP is regarded as a clumsy and amateurish technology, best left to development newbies and $5-an-hour consultants. It’s almost bad enough to make me feel shame when I tell people we run on PHP. However, I don’t think this reputation is entirely deserved.</p>
+
+<p>The language itself is, after Perl, the oldest language to be adopted en-mass as a web technology. Its roots are as a text pre-processor, and over the past 16 years it has evolved from that into something much broader. Many of its fault stems from the way it has evolved, rather than being designed the way it is today from the ground up.</p>
+
+<p>I’m not going to argue PHP is the best language—it clearly isn’t. Frankly, it’s a mess. There’s no consistency in function and class names, even within the core library itself. The Object-Oriented features were tacked on at a later point and, while they’re getting better, are somewhat fragile. Here at ChartBoost, the core requirement is that we run on at least PHP 5.3, which introduced Late Static Bindings. Before that, building serious object-oriented code in PHP was impossible.</p>
+
+<p>Even for all its faults, PHP remains a major player online, and some of the most impressive technology companies (like Facebook) are using it. PHP remains one of the fastest language to code with, deploy and execute. Lastly, while this is mostly due to personal preference, I find its C-inspired syntax to be one of the best in the web development world. Braces, parenthesis and semicolons make it extremely clear what the code is doing, as opposed to Ruby’s mess of symbols, implied parenthesis and lack of statement endings.</p>
+
+<h2>MVC</h2>
+
+<p>It’s paramount for a modern web app to run on an MVC (Model-View-Controller) architecture. Unfortunately, PHP offers very little in terms of modern and agile MVC frameworks. The big ones (CodeIgniter, Symphony, etc.) are extremely bloated and actually tend to get in your way more than help. Also, most impose their vision of what the model &amp; database layers should look like.</p>
+
+<h3>Paraglide</h3>
+
+<p>Fortunately, one framework stands out from the pack. <a href="https://github.com/bgoldman/Paraglide" target="_blank">Paraglide</a> is a minimalist framework that takes care of routing requests to controllers, rendering views, and little else. It offers the basics in terms of setting up the environment, providing basic helpers and organizing your code. It also works on the command line and from a shell (more on this later.)</p>
+
+<p>Believe me when I say this, but Paraglide in mind-blowingly cool. It makes coding in PHP as elegant, and in some ways even more elegant, than the equivalent in Rails. It’s faster and lighter weight than Rails, but is easily extensible and works with pretty much any other code or package you throw its way.</p>
+
+<h2>MongoDB</h2>
+
+<p>Another decision core to our design ideals was the choice of <a href="http://www.mongodb.org/" target="_blank">MongoDB</a> as our main model layer. Mongo is an incredibly powerful and scalable database system. It’s fundamentally different from MySQL in that it is at its core a key-value store. Mongo is so incredibly efficient that we have in fact completely skipped the usually required step of using Memcached. Mongo also offers greater reliablility and safety than MySQL with features such as failure-proof replica sets, and a querying interface that’s invulnerable to injection attacks. Avoiding SQL altogether has also been extremely pleasant. One of Mongo’s biggest advantages is easy and powerful scaling through replica sets. When a node goes down, or is added, Mongo will automatically recognize it and rebalance itself, without causing any downtime. There is no single-point-of-failure.</p>
+
+<h3>MongoModel</h3>
+
+<p>A pet project of mine has been <a href="https://github.com/kballenegger/MongoModel" target="_blank">MongoModel</a>, and it is what we use as the third leg of our architecutre. MongoModel is an ORM which uses Mongo as its datastore, and adds features vital to a full-featured web application. It provides object-mapping, relationships, validations and is extremely elegant to use. Much like with Rails’ ActiveRecord, sensible defaults are deduced, and it’s schema-agnostic. You do not need to setup or even define what your database looks like. Rather, you just use the objects and MongoModel takes care of everything else.</p>
+
+<h2>Unit Testing</h2>
+
+<p>While we don’t practice Test-Driven-Development, we do have unit tests in place. PHP does not provide an elegant test library, so we built our own (soon-to-be open-sourced.)</p>
+
+<h2>Shell Development &amp; Scripting</h2>
+
+<p>Paraglide is, to my knowledge, the only PHP framework that works in command-line scripts and from an interactive shell. Script functionality is extremely important in order to run cron scripts and various other maintenance and administration tasks. Interactive shell access is a boon for quick development and debugging. We use <a href="http://jan.kneschke.de/projects/php-shell/" target="_blank">PHP-Shell</a> to interact with our code directly from the command line. This is quite similar to Rails’ <code>script/console</code>.</p>
+
+<h2>Git</h2>
+
+<p>Everything we do is stored in Git. Git’s virtues are well-known within the community, so I will only say that git has been incredibly useful in keeping track of our code, the history, and for collaboration. We even use git as a wiki, to keep track of our documentation and various other internal documents.</p>
+
+<h3>GitHub</h3>
+
+<p>All our git repositories are hosted on <a href="https://github.com/" target="_blank">GitHub</a>. The main value of this, besides the hosting and gorgeous user interface, has been to use the social features to keep track of who’s been doing what. GitHub makes it really easy to have an overview of what’s happening. It also manages user accounts and rights beautifully.</p>
+
+<h3>Capistrano</h3>
+
+<p>Our main server-side code lives in a Git repository. We have dedicated branches for production code. We use <a href="http://www.capistranorb.com/" target="_blank">Capistrano</a> for deployments. The git repository has a dedicated branch for production code, which we merge to as we deploy stuff. A script will automatically run unit tests on anything that is pushed to production.</p>
+
+<h2>Amazon Web Services</h2>
+
+<p>ChartBoost relies on Amazon Web Services’ many products, including <a href="http://aws.amazon.com/ec2/" target="_blank">EC2</a> for cloud servers, <a href="http://aws.amazon.com/s3/" target="_blank">S3</a> for data storage, <a href="http://aws.amazon.com/ses/" target="_blank">SES</a> for emailing and various other smaller services. This lets us pay for how much we use only, and allows for simple and fast scaling. We have an image ready to be deployed to new nodes, so we can handle any traffic thrown at our app.</p>
+
+<h2>Communications &amp; Internal Tools</h2>
+
+<p>Last but not least, there’s the tools we use internally to keep in sync. <a href="http://lighthouseapp.com/" target="_blank">Lighthouse</a> takes care of our bug-tracking needs, while its companion, <a href="http://tenderapp.com/" target="_blank">Tender</a> handles support. We use <a href="http://campfirenow.com/" target="_blank">Campfire</a> for group chats, and AIM for one-on-ones. Google Apps &amp; Gmail take care of our emails. Also check out companion Mac apps <a href="http://www.mcubedsw.com/software/lighthousekeeper" target="_blank">Lighthouse Keeper</a> for Lighthouse, and <a href="http://propaneapp.com/" target="_blank">Propane</a> for Campfire.</p>
+
+<p><br>
+If you read this far, you now have a good overview of the various tools and techniques we use to code agilely at <a href="http://www.chartboost.com" target="_blank">ChartBoost</a>. Even though we chose an unpopular language to base our technology on, I think it has helped us tremendously. With this post, I hope to spread the love again for PHP and these various ways of using it in a modern environment.</p>
+                    

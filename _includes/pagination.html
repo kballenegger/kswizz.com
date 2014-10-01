@@ -1,0 +1,10 @@
+    <div id="pagination">
+        <div id="endless">
+            <a id="more"><div class="spinner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div class="label">More</div></a>
+            <div id="endless-data"><span class="startpage">{{ paginator.page }}</span><span class="totalpages">{{ paginator.total_pages }}</span></div>
+        </div>
+        <div id="classic">
+            {% if paginator.next_page_path %}<a href="{{ paginator.next_page_path }}" id="older">Older posts</a>{% endif %}
+            {% if paginator.previous_page_path %}<a href="{{ paginator.previous_page_path }}" id="newer">Newer posts</a>{% endif %}
+        </div>
+    </div>

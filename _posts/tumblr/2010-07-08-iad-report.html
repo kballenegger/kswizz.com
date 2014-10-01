@@ -1,0 +1,47 @@
+---
+layout: tumblr
+title: Report on iAd
+date: '2010-07-08T12:00:00-07:00'
+tags:
+- articles
+- development
+tumblr_url: http://kswizz.com/post/786160311/iad-report
+tumblr_id: '786160311'
+tumblr_note_count: 4
+---
+
+                        
+                            <div class="info">
+                                <a href="http://kswizz.com/2010-07-08/iad-report">
+                                    <div class="day">8th</div>
+                                    <div class="month">Jul</div>
+                                    <div class="year">2010</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="786160311" data-tumblr-notes="4"><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        
+
+                        
+                            <h1 class="title">Report on iAd</h1>
+                        
+
+                        <p>I’ve been running iAd on relatively high traffic since day one. Here’s how – for me – it’s been performing, and how it breaks down against competing ad networks.</p>
+
+<p>First, the good. The eCPM is amazing. <a href="http://news.ycombinator.com/item?id=1496742" target="_blank">Some dude</a> reports getting $150 eCPM on his first day on iAd. While this is mind-blowingly high and in no way representative of the average on the network, eCPMs can be expected to be quite high. My eCPM averages $10-$15, which is quite good.</p>
+
+<p>Of course, we have to put these numbers in perspective. We cannot do a 1-to-1 comparaison with competing networks. Another important factor to consider: Most competing ad networks refresh their ads every 30s. iAd does it every 3min. Thus, for the time it takes iAd to display one ad, another network gets to show 6.</p>
+
+<p>For a fair comparaison, we need to adjust the eCPM. Taking the above into account, let’s divide the number by 6 to get something we can compare to networks that refresh every 30s. The resulting figure isn’t really an “effective cost per thousand impressions,” but rather something more like an “effective cost per 500min of ads being displayed.”</p>
+
+<p>Compared thusly, the eCPM on iAd is only worth about $1.60-$2.50. While still quite high, this is nowhere near the mind-blowing figures that have been thrown around.</p>
+
+<p><img src="http://akhun.com/seo/skitch/ecpm-20100708-115651.png" alt="eCPM"></p>
+
+<p>Last thing to consider: fill rates. They’re are appallingly low. Though this seems to be slowly improving, they remain below 10%. Compare this with most other non-premium networks which often get you 100% fill rate. A solution would be to run iAd as a first option, and fall back to another network for failed requests. Also, I would suggest keeping the ADBannerView around even when not displayed, leaving it to refresh in the background and once it does return an ad, displaying it.</p>
+
+<p><img src="http://akhun.com/seo/skitch/My_Apps-20100708-115815.png" alt="Fill Rate"></p>
+
+<p>I’m sure the fill rates will improve over time, and that iAd wil become a worthy competitor over time. Right now though, the reality is iAd generates less revenue than my previous first option, Google AdSense for mobile.</p>
+
+<p><strong>Update</strong>: Greg Yardley rightly <a href="http://yardley.ca/2010/07/08/iads-performance-now-and-later/" target="_blank">calls me out</a> on mistakenly stating Apple’s figures included their 40% cut. Article updated accordingly.</p>
+                    

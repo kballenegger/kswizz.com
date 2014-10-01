@@ -1,0 +1,55 @@
+---
+layout: tumblr
+title: A critique of the Apple indie developer community
+date: '2012-08-04T11:43:00-07:00'
+tags:
+- articles
+- development
+tumblr_url: http://kswizz.com/post/28710957277/critique-apple-developers
+tumblr_id: '28710957277'
+tumblr_note_count: 1
+---
+
+                        
+                            <div class="info">
+                                <a href="http://kswizz.com/2012-08-04/critique-apple-developers">
+                                    <div class="day">4th</div>
+                                    <div class="month">Aug</div>
+                                    <div class="year">2012</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="28710957277" data-tumblr-notes="1"><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        
+
+                        
+                            <h1 class="title">A critique of the Apple indie developer community</h1>
+                        
+
+                        <p>The Apple developer community has bred some of the most skilled engineers I know. Specifically, I’m talking about those who, like me, were writing Objective-C code before the iPhone and before there was any money in it.</p>
+
+<p>Objective-C is a hard language to learn. It’s unsafe, manually memory managed, and full of easy mistakes. But once learnt, it’s one of the most rewarding programming languages to know. It will teach you about fundamental concepts like memory, pointers, and object-orientation. Indie developers also have Apple’s mostly exemplary lead when it comes to crafting easy to use software. It’s no wonder, then, that skilled independent Mac and iPhone developers make some of the best software I’ve had the pleasure of using.</p>
+
+<p>And yet, for all of their application-crafting prowesses, they fail to understand the internet. They look at every problem as a nail for their Cocoa hammer. We’ve moved beyond the point where software is downloaded and installed, and simply runs on the host computer. Today, software is social, cloud-hosted, and continuously updated. When’s the last time you updated Chrome? Right… Never, because it updates itself transparently. Even apps that would traditionally have been perfect candidates for a desktop application, such as a <a href="http://culturedcode.com/things/" target="_blank">todo manager</a>, are moving onto the cloud.</p>
+
+<p>We have many computing devices; Macs, iPhones, and iPads, and we want to be able to pick up any of them and have access to our data. They need to sync instantly and effortlessly. This means that they require a backend web software component. This means running and maintaining servers. Writing code in a foreign programming language and dealing with a wholly new class of problems. (How do you scale your backend software? Which language / platform / framework do you use? At which point do you re-architect for a distributed system? Wait, this shit runs on <em>Linux</em>?)</p>
+
+<p>Your average indie Mac developer is wholly unprepared for this. He’s been living in a perfect and comfortable little bubble, shielded from the ugliness of web programming, and the cloud just popped it.</p>
+
+<p>Take Panic’s <a href="http://www.panic.com/Coda/" target="_blank">Coda</a>, for example. I really hate to criticize Panic, because they’re probably one of the best development shop out there. But Coda is an example of this mentality; it’s built for a world where web development meant throwing a website together with Apache, PHP, and MySQL. And when it came to interacting with software, the <a href="http://weblog.rogueamoeba.com/2012/06/30/the-developer-news-window/" target="_blank">backend for Mac software</a> would simply be a <code>.php</code> file that generated a <a href="https://en.wikipedia.org/wiki/Plist" target="_blank">property list</a>. But that world died back in the mid-’00s. Today, web development involves MVC, newer NoSQL data stores, caching layers, load balancing, message queues, background job processing, service-oriented architectures, version control (git), code deployment systems, and so on. These make the Coda approach of editing PHP files on a live server and checking the output in a preview tab completely obsolete.<sup id="fnref:p28710957277-1"><a href="#fn:p28710957277-1" rel="footnote" target="_blank">1</a></sup></p>
+
+<p>Independent developers wanting to get in on the cloud action have been avoiding the problem, by taking the approach of building third-party clients for first-party providers. Witness the inundation of the app stores with client apps for Twitter, Instagram, or Google Reader. There’s even a series of app that use a Dropbox folder as an alternative to a web backend. That’s all well and good, and the community makes some fantastic client software that I use daily, but that approach can backfire when the first-party provider changes its mind. When Twitter decides to kill access to its API, or when Apple decides to throw you off their store for a bullshit reason.</p>
+
+<p>I grew up writing Mac applications, and I used to be very involved in the Apple developer community. To this day, Objective-C remains my favorite programming language for its speed, power, and elegance. And yet, I’ve lost touch with the community as I moved beyond just Cocoa software. I realized that there’s more to be done. I didn’t want to spend the rest of my life writing client software, I wanted to write the next world-changing service that spawns countless clients. And that was never going to happen writing just Cocoa software.</p>
+
+<p>There’s a ton of smart people doing great things in the wider software development community that Apple developers could learn from. And inversely, the rest of the software development community could greatly benefit from an influx of smart and quality-driven Cocoa developers. My hope is that Cocoa developers will come to embrace polyglotism and web software and make software that truly makes a difference.</p>
+
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn:p28710957277-1">
+<p>It could be said that Coda is just not meant for web developers, it’s meant for making restaurant websites… <a href="#fnref:p28710957277-1" rev="footnote" target="_blank">↩</a></p>
+</li>
+
+</ol>
+</div>
+                    

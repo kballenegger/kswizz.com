@@ -1,0 +1,141 @@
+{% include post-pre-content.html %}
+
+{block:Posts}
+
+    {block:Link}
+        <article id="{PostID}">
+            {block:Date}
+                <div class="info">
+                    <a href="{Permalink}">
+                        <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                        <div class="month">{ShortMonth}</div>
+                        <div class="year">{Year}</div>
+                        </a>
+                    <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                </div>
+            {/block:Date}
+
+            <h1><a class="title" href="{URL}">{Name}</a></h1>
+
+            {block:Description}
+                {Description}
+            {/block:Description}
+
+        </article>
+    {/block:Link}
+
+    {block:Quote}
+        <article id="{PostID}">
+            {block:Date}
+                <div class="info">
+                    <a href="{Permalink}">
+                        <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                        <div class="month">{ShortMonth}</div>
+                        <div class="year">{Year}</div>
+                    </a>
+                    <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                </div>
+            {/block:Date}
+
+            <div class="quote">
+                {Quote}
+                {block:Source}
+                    <div class="attribution">{Source}</div>
+                {/block:Source}
+            </div>
+
+
+        </article>
+    {/block:Quote}
+
+    {block:Video}
+        <article id="{PostID}">
+            {block:Date}
+                <div class="info">
+                    <a href="{Permalink}">
+                        <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                        <div class="month">{ShortMonth}</div>
+                        <div class="year">{Year}</div>
+                    </a>
+                    <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                </div>
+            {/block:Date}
+
+            <p class="embed">{Video-500}</p>
+
+            {block:Caption}
+                {Caption}
+            {/block:Caption}
+
+        </article>
+    {/block:Video}
+
+    {block:Audio}
+        <article id="{PostID}">
+            {block:Date}
+                <div class="info">
+                    <a href="{Permalink}">
+                        <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                        <div class="month">{ShortMonth}</div>
+                        <div class="year">{Year}</div>
+                    </a>
+                    <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                </div>
+            {/block:Date}
+
+            <p class="embed">{AudioPlayerGrey}</p>
+
+            {block:Caption}
+                {Caption}
+            {/block:Caption}
+
+        </article>
+    {/block:Audio}
+
+    {block:Photo}
+        <article id="{PostID}">
+            {block:Date}
+                <div class="info">
+                    <a href="{Permalink}">
+                        <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                        <div class="month">{ShortMonth}</div>
+                        <div class="year">{Year}</div>
+                    </a>
+                    <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                </div>
+            {/block:Date}
+
+            <p>{LinkOpenTag}<img src="{PhotoURL-HighRes}" alt="{PhotoAlt}" />{LinkCloseTag}</p>
+
+            {block:Caption}
+                <p>{Caption}</p>
+            {/block:Caption}
+
+        </article>
+    {/block:Photo}
+
+
+    {block:Text}
+        <article id="{PostID}">
+            {block:Date}
+                <div class="info">
+                    <a href="{Permalink}">
+                        <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                        <div class="month">{ShortMonth}</div>
+                        <div class="year">{Year}</div>
+                    </a>
+                    <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                </div>
+            {/block:Date}
+
+            {block:Title}
+                <h1 class="title">{Title}</h1>
+            {/block:Title}
+
+            {Body}
+        </article>
+    {/block:Text}
+
+{/block:Posts}
+
+{% include post-post-content.html %}
