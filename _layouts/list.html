@@ -1,0 +1,10 @@
+{% include post-pre-content.html %}
+
+{% for page in paginator.posts %}
+    <article id="{% if page.tumblr_id %}{{ page.tumblr_id }}{% else %}{{ page.slug }}{% endif %}">
+        {% include info.html post=page %}
+        {{ page.content }}
+    </article>
+{% endfor %}
+
+{% include post-post-content.html %}

@@ -1,0 +1,14 @@
+{% assign p = include.post %}
+{% assign d = p.date | date: '%-d' %}
+{% assign m = p.date | date: '%B' %}
+<div class="info">
+    <a href="{{ p.url }}">
+         <div class="day">{{ d }}{% case d %}{% when '1' or '21' or '31' %}st{% when '2' or '22' %}nd{% when '3' or '23' %}rd{% else  %}th{% endcase %}</div>
+        <div class="month">{{ m | truncate: 3,'' }}</div>
+        <div class="year">{{ p.date | date: "%Y" }}</div>
+    </a>
+    <a class="kudos"
+        data-post-id="{% if p.tumblr_id %}{{ p.tumblr_id }}{% else %}{{ p.id | replace_first: '/','' | replace: '/','-' }}{% endif %}"
+        data-tumblr-notes="{% if p.tumblr_note_count %}{{ p.tumblr_note_count }}{% else %}0{% endif %}"
+    ><span class="kudos-value">{% if p.tumblr_note_count %}{{ p.tumblr_note_count }}{% else %}0{% endif %}</span> <span class="info-caption">Kudos</span></a>
+</div>
