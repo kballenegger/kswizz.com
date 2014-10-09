@@ -3,7 +3,7 @@
 
 set -e
 
-if [ -n "$(git status --porcelain)" ]; then
+if [ -z "$(git status --porcelain)" ]; then
     ls | grep -v CNAME | grep -v _site | xargs echo rm -rf
     echo mv _site/* .
     echo rm -rf _site
