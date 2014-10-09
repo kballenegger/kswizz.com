@@ -1,8 +1,5 @@
 {% include post-pre-content.html %}
 
-<article id="{{ page.tumblr_id }}">
-    {% include info.html post=page %}
-    {{ content }}
-</article>
+{% include post.html post=page %}
 
 {% include post-post-content.html %}

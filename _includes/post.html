@@ -1,0 +1,6 @@
+{% assign post = include.post %}
+
+<article id="{% if post.tumblr_id %}{{ post.tumblr_id }}{% else %}{{ post.slug }}{% endif %}">
+    {% include info.html post=post %}
+    {{ post.content }}
+</article>
