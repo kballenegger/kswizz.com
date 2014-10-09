@@ -5,6 +5,7 @@ set -e
 
 if [ -z "$(git status --porcelain)" ]; then
     branch="$(git rev-parse --abbrev-ref HEAD)"
+    jekyll build
     git checkout gh-pages
     ls | grep -v CNAME | grep -v _site | xargs rm -rf
     mv _site/* .
