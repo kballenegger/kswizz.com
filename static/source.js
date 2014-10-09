@@ -1,3 +1,4 @@
+var PROTOCOL = ('https:' == document.location.protocol ? 'https:' : 'http:');
 
 // constants
 var footerPositionBottom = 20;
@@ -163,7 +164,7 @@ $(document).ready(function() {
         var kudos = $(el).find('.kudos');
         var postId = $(kudos).data('post-id');
         var originalNotesCount = parseInt($(kudos).data('tumblr-notes'));
-        $.get('http://app.kswizz.com/kudos/count/'+postId, function(data) {
+        $.get(PROTOCOL + '//app.kswizz.com/kudos/count/'+postId, function(data) {
             $('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
         });
 
@@ -172,7 +173,7 @@ $(document).ready(function() {
             var originalNotesCount = parseInt($(this).data('tumblr-notes'));
             // put in tmp value to make it appear instant
             $('#'+postId+' .kudos-value').html(parseInt($('#'+postId+' .kudos-value').html()) + 1);
-            $.get('http://app.kswizz.com/kudos/increment/'+postId, function(data) {
+            $.get(PROTOCOL + '//app.kswizz.com/kudos/increment/'+postId, function(data) {
                 // todo: add neat animation here
                 //$('#'+postId+' .kudos-value').html(data.count + originalNotesCount);
                 console.log('new kudos count returned from server: '+data.count);
