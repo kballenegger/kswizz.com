@@ -80,7 +80,7 @@ toggleHeaderClose = function () {
 
 // setup the magic
 $(document).ready(function() {
-    
+
     // footer
     $('footer').before('<div id="footerPositionMarker"></div>');
 
@@ -94,7 +94,7 @@ $(document).ready(function() {
 
     // navigation
     $('nav').before('<div id="navPositionMarker"></div>');
-    
+
     // set up for dynamic positioning
 
     // no need to position nav at start, it actually hurts in some cases
@@ -136,16 +136,16 @@ $(document).ready(function() {
                     overlayCSS: { background: 'black', opacity:.9 },
                     modalCSS: {
                         top: '50%',
-                        'margin-top': -1 * (newHeight / 2) + scrollTop, 
+                        'margin-top': -1 * (newHeight / 2) + scrollTop,
                         left: '50%',
-                        'margin-left': -1 * (newWidth / 2), 
+                        'margin-left': -1 * (newWidth / 2),
                         position: 'absolute',
                         width: newWidth,
                         height: newHeight
                     }
                 });
             }).attr('src', href));
-            
+
             return false;
         }
     });
@@ -200,37 +200,37 @@ $(document).ready(function() {
 
 
 $(document).ready(function() {
-    
+
 	var start_page = $("#endless-data .startpage").text();
 	var next_page = parseInt(start_page) + 1;
-	var total_pages = $("#endless-data .totalpages").text();	
+	var total_pages = $("#endless-data .totalpages").text();
 	var loading_next_page = false;
 	var new_posts = "";
 	var path = (window.location.pathname.match(/^\/(tagged|search)\//)) ? window.location.pathname : "";
-	
-	if ((navigator.userAgent.toLowerCase().match(/iPhone/i) != "iphone" ) && 
+
+	if ((navigator.userAgent.toLowerCase().match(/iPhone/i) != "iphone" ) &&
 		(navigator.userAgent.toLowerCase().match(/iPod/i) != "ipod" ) )	{
 			$("#classic").hide();
 			$("#endless").show();
 			$("#endless #more").bind("click", function(){newPosts();});
-	}		
-	
+	}
+
 	function newPosts(){
 		if ( (next_page <= total_pages) && (! loading_next_page) ){
 			loading_next_page = true;
 			$("#endless #more .label").hide();
 			$("#endless #more .spinner").show();
 
-			$.get(path + "/page/" + next_page + "?cb=" + Math.random(), function(data){
+			$.get(path + "/p/" + next_page, function(data){
 				new_posts = data.split('<!-- posts-start -->')[1].split('<!-- posts-end -->')[0];
 				next_page++;
 				loading_next_page = false;
 				$("#endless #more .spinner").hide();
 				$("#endless #more .label").show();
-				if (next_page > total_pages) { $("#endless").hide(); };  // Hide the button if we run out of pages 
+				if (next_page > total_pages) { $("#endless").hide(); };  // Hide the button if we run out of pages
 				$("article:last").after(new_posts);
 		  	});
-		}	
+		}
 	}
 
 });
