@@ -10,6 +10,7 @@ if [ -z "$(git status --porcelain)" ]; then
     mv _site/* .
     rm -rf _site
     git add -A . && git commit -m 'automated deploy'
+    git push origin -u gh-pages:gh-pages
     git checkout --force "$branch"
 else
     echo Repo not clean, cannot deploy.
