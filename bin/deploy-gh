@@ -4,10 +4,13 @@
 set -e
 
 if [ -z "$(git status --porcelain)" ]; then
-    ls | grep -v CNAME | grep -v _site | xargs echo rm -rf
-    echo mv _site/* .
-    echo rm -rf _site
-    echo git add -A . && echo git commit -m 'automated deploy'
+    branch="$(git rev-parse --abbrev-ref HEAD)"
+    git checkout gh-pages
+    ls | grep -v CNAME | grep -v _site | xargs rm -rf
+    mv _site/* .
+    rm -rf _site
+    git add -A . && git commit -m 'automated deploy'
+    git checkout --force "$branch"
 else
     echo Repo not clean, cannot deploy.
     exit 1
