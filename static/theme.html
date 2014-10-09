@@ -1,0 +1,237 @@
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+    <title>{Title}{block:PostSummary} &mdash; {PostSummary}{/block:PostSummary}{block:SearchPage} &mdash; Search: {SearchQuery}{/block:SearchPage}</title>
+    <meta name="description" content="{MetaDescription}" />
+
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+    
+    <link href="//get.pictos.cc/fonts/2215/1" rel="stylesheet" type="text/css" />
+    
+    <link rel="stylesheet" href="//static.kswizz.com/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <link rel="icon" href="//static.kswizz.com/images/favicon.png" type="image/png" />
+
+    <script src="//static.kswizz.com/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//static.kswizz.com/jquery.lightbox.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//static.kswizz.com/less-1.3.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//static.kswizz.com/source.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <header>
+        <div id="title">
+            <a href="/">
+                <div id="crown"></div>
+                <h1>Kenneth Ballenegger</h1>
+                <p>“I’m a developer and designer. I love making cool stuff.”</p>
+            </a>
+        </div>
+    </header>
+
+    <div id="lightbox" class="hidden"></div>
+
+    <div id="container">
+
+        <div id="sidebar">
+
+            <p><img id="headshot" src="//static.kswizz.com/images/photo.png" alt="Kenneth Ballenegger" /></p>
+            <p id="about">
+                {Description}
+            </p>
+
+            <nav>
+                <ul>
+                    <li><span class="pictos">@</span><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
+                    <li><span class="pictos">r</span><a href="http://kenneth.ballenegger.com/dl/resume2014.pdf" target="_blank">View my resum&eacute;</a></li>
+                    <hr />
+                    <div class="nav-section-title">Categories</div>
+                    <li><span class="pictos">a</span><a href="//kswizz.com/tagged/articles">Articles</a></li>
+                    <li><span class="pictos">d</span><a href="//kswizz.com/tagged/development">Software &amp; Development</a></li>
+                    <li><span class="pictos">s</span><a href="//kswizz.com/tagged/schoolwork">Schoolwork</a></li>
+                    <li><span class="pictos">p</span><a href="//kswizz.com/tagged/photography">Photography</a></li>
+                </ul>
+            </nav>
+
+            <footer>
+                <p><a href="//kswizz.com/archive">Archive</a></p>
+                <p>Copyright © Kenneth Ballenegger</p>
+            </footer>
+            
+        </div>
+
+        <div id="content">
+
+            <!-- posts-start -->
+            {block:Posts}
+
+                {block:Link}
+                    <article id="{PostID}">
+                        {block:Date}
+                            <div class="info">
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                    </a>
+                                <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        {/block:Date}
+                        
+                        <h1><a class="title" href="{URL}">{Name}</a></h1>
+
+                        {block:Description}
+                            {Description}
+                        {/block:Description}
+
+                    </article>
+                {/block:Link}
+
+                {block:Quote}
+                    <article id="{PostID}">
+                        {block:Date}
+                            <div class="info">
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        {/block:Date}
+                        
+                        <div class="quote">
+                            {Quote}
+                            {block:Source}
+                                <div class="attribution">{Source}</div>
+                            {/block:Source}
+                        </div>
+
+
+                    </article>
+                {/block:Quote}
+            
+                {block:Video}
+                    <article id="{PostID}">
+                        {block:Date}
+                            <div class="info">
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        {/block:Date}
+
+                        <p class="embed">{Video-500}</p>
+
+                        {block:Caption}
+                            {Caption}
+                        {/block:Caption}
+
+                    </article>
+                {/block:Video}
+
+                {block:Audio}
+                    <article id="{PostID}">
+                        {block:Date}
+                            <div class="info">
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        {/block:Date}
+
+                        <p class="embed">{AudioPlayerGrey}</p>
+
+                        {block:Caption}
+                            {Caption}
+                        {/block:Caption}
+
+                    </article>
+                {/block:Audio}
+            
+                {block:Photo}
+                    <article id="{PostID}">
+                        {block:Date}
+                            <div class="info">
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        {/block:Date}
+
+                        <p>{LinkOpenTag}<img src="{PhotoURL-HighRes}" alt="{PhotoAlt}" />{LinkCloseTag}</p>
+
+                        {block:Caption}
+                            <p>{Caption}</p>
+                        {/block:Caption}
+
+                    </article>
+                {/block:Photo}
+
+
+                {block:Text}
+                    <article id="{PostID}">
+                        {block:Date}
+                            <div class="info">
+                                <a href="{Permalink}">
+                                    <div class="day">{DayOfMonth}{DayOfMonthSuffix}</div>
+                                    <div class="month">{ShortMonth}</div>
+                                    <div class="year">{Year}</div>                      
+                                </a>
+                                <a class="kudos" data-post-id="{PostID}" data-tumblr-notes="{NoteCount}"><span class="kudos-value">{NoteCount}</span> <span class="info-caption">Kudos</span></a>
+                            </div>
+                        {/block:Date}
+
+                        {block:Title}
+                            <h1 class="title">{Title}</h1>
+                        {/block:Title}
+
+                        {Body}
+                    </article>
+                {/block:Text}
+
+            {/block:Posts}
+            <!-- posts-end -->
+
+            {block:Pagination}
+                <div id="pagination">
+                    <div id="endless">
+                        <a id="more"><div class="spinner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div class="label">{lang:More}</div></a>
+                        <div id="endless-data"><span class="startpage">{CurrentPage}</span><span class="totalpages">{TotalPages}</span></div>
+                    </div>
+                    <div id="classic">
+                        {block:NextPage}<a href="{NextPage}" id="older">{lang:Older posts}</a>{/block:NextPage}
+                        {block:PreviousPage}<a href="{PreviousPage}" id="newer">{lang:Newer posts}</a>{/block:PreviousPage}
+                    </div>
+                </div>
+            {/block:Pagination}
+            
+        </div>
+        
+    </div>
+
+
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-215884-12']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    
+</body>
+</html>
+

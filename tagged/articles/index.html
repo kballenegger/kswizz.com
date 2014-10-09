@@ -1,0 +1,1839 @@
+
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+    <title>Posts Tagged &ldquo;articles&rdquo; &mdash; Kenneth Ballenegger</title>
+    <meta name="description" content="Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at FreshPay. Previously, I was the architect behind Chartboost. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+" />
+
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+
+    <link href="//get.pictos.cc/fonts/2215/1" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <link rel="icon" href="/static/images/favicon.png" type="image/png" />
+
+    <script src="/static/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/jquery.lightbox.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/less-1.3.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/source.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <header>
+        <div id="title">
+            <a href="/">
+                <div id="crown"></div>
+                <h1>Kenneth Ballenegger</h1>
+                <p>“I’m a developer and designer. I love making cool stuff.”</p>
+            </a>
+        </div>
+    </header>
+
+    <div id="lightbox" class="hidden"></div>
+
+    <div id="container">
+
+        <div id="sidebar">
+
+    <p><img id="headshot" src="/static/images/photo.png" alt="Kenneth Ballenegger" /></p>
+    <p id="about">
+        Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at <a href="http://hello.freshpay.com/">FreshPay</a>. Previously, I was the architect behind <a href="https://www.chartboost.com">Chartboost</a>. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+
+    </p>
+
+    <nav>
+        <ul>
+            <li><span class="pictos">@</span><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
+            <li><span class="pictos">r</span><a href="http://kenneth.ballenegger.com/dl/resume2014.pdf" target="_blank">View my resum&eacute;</a></li>
+            <hr />
+            <div class="nav-section-title">Categories</div>
+            <li><span class="pictos">a</span><a href="/tagged/articles">Articles</a></li>
+            <li><span class="pictos">d</span><a href="/tagged/development">Software &amp; Development</a></li>
+            <li><span class="pictos">s</span><a href="/tagged/schoolwork">Schoolwork</a></li>
+            <li><span class="pictos">p</span><a href="/tagged/photography">Photography</a></li>
+        </ul>
+    </nav>
+
+    <footer>
+        <p><a href="/archive">Archive</a></p>
+        <p>Copyright © Kenneth Ballenegger</p>
+    </footer>
+
+</div>
+
+
+
+        <div id="content">
+
+            <!-- posts-start -->
+
+
+
+    <article id="50429268286">
+        
+
+
+<div class="info">
+    <a href="/2013-05-14/fibonacci-the-y-combinator-in-c">
+         <div class="day">14th</div>
+        <div class="month">May</div>
+        <div class="year">2013</div>
+    </a>
+    <a class="kudos"
+        data-post-id="50429268286"
+        data-tumblr-notes="4"
+    ><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Fibonacci &amp; the Y-Combinator in C</h1>
+                        
+
+                        <p>Be warned, this post describes something you should <em>never</em> actually use in production code. However, we will get to play with some very cool concepts and techniques: <strong>functional programming in C</strong>, closures, implementing autorelease pools from scratch, data structures (linked lists and b-trees), bitwise operations, recursivity, memoization, and the Y-Combinator. If this sounds crazy, don’t be scared. It’s all fairly simple when broken down.</p>
+
+<p>Let’s back up for a second, however. What we’re going to create here is a program that returns a number in the <a href="https://en.wikipedia.org/wiki/Fibonacci_number" target="_blank">Fibonacci sequence</a>. The Fibonacci sequence is a sequence of numbers in which each integer is equal to the previous two integers added: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, etc.</p>
+
+<p>There are many ways of calculating Fibonacci numbers, but the naïve implementation which follows the mathematical definition is this:</p>
+
+<pre><code>unsigned long long fib(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+}
+</code></pre>
+
+<p>So let’s make a program out of this:</p>
+
+<pre><code>// fib.c
+
+#import &lt;stdlib.h&gt;
+#import &lt;stdio.h&gt;
+
+// let's make life easier for ourselves:
+typedef unsigned long long ull;
+
+ull fib(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+}
+
+int main(int argc, char **argv) {
+    int upto = 20; // which number to compute
+    if (argc &gt;= 2) upto = strtol(argv[1], NULL, 10);
+    printf("Calculating fib(%d)...\n", upto);
+    ull solution = fib(upto);
+    printf("fib(%d) == %llu\n", upto, solution);
+}
+</code></pre>
+
+<p>We’re going to be using <a href="http://clang.llvm.org/" target="_blank">clang</a> as our compiler. Let’s compile and run our program:</p>
+
+<pre><code>$ clang -o fib -O3 fib.c
+$ ./fib 17
+Calculating fib(17)...
+fib(17) == 1597
+</code></pre>
+
+<p>However, as you’ll see if you try to compute <code>fib(200)</code>, this will not scale. In computer science terms, fib is a function which requires exponential time as <code>n</code> increases. <code>O(2^n)</code>. For example:</p>
+
+<pre><code>fib(5) [A] calls fib(4) [B] and fib(3) [C]
+fib(4) [B] calls fib(3) [D] and fib(2) [E]
+fib(3) [C] calls fib(2) [F] and fib(1) [G]
+fib(3) [D] calls fib(2) [H] and fib(1) [I]
+fib(2) [E] returns 1
+fib(2) [F] returns 1
+fib(1) [G] returns 1
+fib(2) [H] returns 1
+fib(1) [I] returns 1
+</code></pre>
+
+<p>As you can see, the function is called multiple times with the same argument, and for every time <code>n</code> is decremented (until you reach 1 or 2), the number of function calls increases by a power of two. Imagine how much worse it would be for <code>fib(200)</code>. The number is so great that even given unlimited memory and energy, your computer would require billions of years to finish the computation.</p>
+
+<h3>Closures</h3>
+
+<p>A closure is an anonymous function which may use and capture variables from its parent scope. Imagine this code, in JavaScript:</p>
+
+<pre><code>function print_element_plus(x) {
+    return function(e) {
+        console.log("-&gt; " + (x + e));
+    }
+}
+[1, 2, 3].forEach(print_element_plus(2));
+// -&gt; 3
+// -&gt; 4
+// -&gt; 5
+</code></pre>
+
+<p><code>print_element_plus</code> returns an anonymous function (aka. a closure) which takes one argument and adds it to <code>x</code>. The variable <code>x</code> is captured by the closure, and even though it goes out of scope when <code>print_element_plus</code> returns, it is still retained by the closure until the closure itself goes out of scope and is freed.</p>
+
+<p>C does not natively support closures. Although similar functionality can be implemented in pure C fairly easily using a struct containing the environment and a function pointer, we’re going to instead take advantage of clang’s built-in support for the blocks extension to the language:</p>
+
+<pre><code>$ clang -fblocks -o fib -O3 fib.c -lBlocksRuntime
+</code></pre>
+
+<p>In C, a block is simply another name for a closure, and its syntax is very similar to defining a function pointer. So with that in mind, let’s rewrite our <code>fib</code> function as a block.</p>
+
+<pre><code>__block ull(^fib)(int) = ^ull(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+};
+</code></pre>
+
+<p><em>Note: this should go in <code>main()</code> and the <code>__block</code> is necessary to enable explicit recursion, so that the block may reference itself.</em></p>
+
+<h3>The Y-Combinator</h3>
+
+<p>Recursion implies that a function has a name by which to refer to itself, so it may call itself. While the example above works, it relies on the block capturing the variable to which it is assigned from the parent scope. This is not super clean, and relies on a implementation detail of the C programming language. Identical code would not work in, for example, lisp.</p>
+
+<p>Since we are giving ourself the restriction of not explicitly using the <code>fib</code> variable in order to recur, we will wrap the function in a function whose first and only argument is a function with which to recur. We’ll call this function the generator, because when called with <code>fib</code> as its argument, it will return the correct <code>fib</code> function.</p>
+
+<pre><code>typedef ull(^fib_f)(int);
+fib_f(^fib_generator)(fib_f) = ^fib_f(fib_f recur) {
+    return ^ull(int n) {
+        if (n &lt; 3) return 1;
+        return recur(n-1) + recur(n-2);
+    };
+};
+</code></pre>
+
+<p>This is where the Y-Combinator comes in handy. The <a href="http://mvanier.livejournal.com/2897.html" target="_blank">Y-Combinator</a> is a function which enables recursion, using only anonymous functions, and without using recursion in its implementation. It looks somewhat like this (in Scheme):</p>
+
+<pre><code>(define Y 
+  (lambda (f)
+    ((lambda (x) (x x))
+     (lambda (x) (f (lambda (y) ((x x) y)))))))
+</code></pre>
+
+<p><a href="http://mvanier.livejournal.com/2897.html" target="_blank">This article</a> by Mike Vanier does a far better job of explaining the Y-Combinator than I ever could. Suffice to say that when called with a generator function, as defined above, the Y-Combinator will return the recursive <code>fib</code> function. With the Y-Combinator, we could say:</p>
+
+<pre><code>fib_f fib = Y(fib_generator);
+</code></pre>
+
+<p>Due to C’s explicit typing, declaring higher-order functions can quickly become cumbersome, even with <code>typedef</code>s. So in order to get around that, we’re going to declare a single type to hold every function in our program. We’re going to call it <code>_l</code>, short for lambda.</p>
+
+<pre><code>typedef union _l_t *_l;
+typedef union _l_t {
+    ull(^function_f)(int);
+    _l(^generator_f)(_l);
+} _l_t;
+</code></pre>
+
+<p>Wrapping the type in an union allows it to refer to itself. We’ll be adding a couple more block types to this union shortly, but for now our only two options are: the signature of the fib function, and the generator which both takes and returns a lambda (containing a fib function, though that is unspecified).</p>
+
+<p>Since this type is declared as a pointer, it should live on the heap, and therefore we should write initializer functions for it:</p>
+
+<pre><code>_l function(ull(^f)(int)) {
+    _l data = malloc(sizeof(_l_t));
+    data-&gt;function_f = Block_copy(f);
+    return data;
+}
+_l generator(_l(^f)(_l)) { /* ... same thing ... */ }
+</code></pre>
+
+<p>Let’s ignore the fact that we’re leaking tons of memory for a moment (we’ll come back to that), and instead refactor our fib generator to use this new type:</p>
+
+<pre><code>_l fib_generator = generator(^_l(_l recur) {
+    return function(^ull(int n) {
+        if (n &lt;= 2) return 1;
+        return recur-&gt;function_f(n-1) + recur-&gt;function_f(n-2);
+    });
+});
+</code></pre>
+
+<p>In C, the basic Y-combinator above looks somewhat like this:</p>
+
+<pre><code>_l y_combine(_l fn) {
+    _l x = combiner(^_l(_l recur) {
+        return function(^ull(int n) {
+            _l resp = recur-&gt;combiner_f(recur);
+            return fn-&gt;generator_f(resp)-&gt;function_f(n);
+        });
+    });
+    return x-&gt;combiner_f(x);
+}
+</code></pre>
+
+<p>You will also need to add the combiner function type to your union, and create a constructor for it:</p>
+
+<pre><code>_l(^combiner_f)(_l);
+
+_l combiner(_l(^f)(_l)) { /* ... same as above ... */ }
+</code></pre>
+
+<p>We now have all the pieces in place to use the Y-combinator to replace our natively recursive implementation of <code>fib</code>:</p>
+
+<pre><code>_l fibonacci = y_combine(fib_generator);
+int upto = 20;
+if (argc &gt;= 2) upto = strtol(argv[1], NULL, 10);
+ull fib = fibonacci-&gt;function_f(upto);
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<h3>Auto-release pools</h3>
+
+<p>As you have probably noticed, the code above is unfortunately leaking tons of memory. Many of the functions we’ve written allocate <code>_l</code> unions, and these are never released. While we could attempt to always correctly release these as soon as they are no longer needed, a more interesting solution is to use an auto-release pool.</p>
+
+<p>Auto-release pools are a concept familiar to Objective-C programmers, since they are used extensively in all of Apple’s APIs. They work like this: You can create and flush pools, which nest like a stack. You can auto-release a pointer, which means that it is added to the topmost pool, and is freed when the pool is flushed.</p>
+
+<p>The simplest way of implementing auto-release pools is with two linked lists: the first to contain the objects that have been auto-released (this is the pool itself), and the second to contain the stack of pools. Lastly we’re going to need a static variable to refer to the top of the pool stack.</p>
+
+<pre><code>typedef struct autorelease_pool_t *autorelease_pool;
+typedef struct autorelease_pool_t {
+    void *p;
+    void(*fn)(void*);
+    autorelease_pool next;
+} autorelease_pool_t;
+
+typedef struct autorelease_pool_stack_t     *autorelease_pool_stack;
+typedef struct autorelease_pool_stack_t {
+    autorelease_pool head;
+    autorelease_pool_stack parent;
+} autorelease_pool_stack_t;
+
+static autorelease_pool_stack current_pool = NULL;
+</code></pre>
+
+<p>Creating a pool is easy, we just allocate a reference and push it to the top of the stack:</p>
+
+<pre><code>void push_autorelease_pool() {
+    autorelease_pool_stack new_pool = malloc(sizeof(autorelease_pool_stack_t));
+    new_pool-&gt;parent = current_pool;
+    new_pool-&gt;head = NULL;
+    current_pool = new_pool;
+}
+</code></pre>
+
+<p>Then we can write a function to add pointers to the pool. Since different types may have different free functions, we will also take a reference to the free function to use on the pointer as the second argument to the autorelease function:</p>
+
+<pre><code>void autorelease(void *p, void(*fn)(void*)) {
+    // If there is no current pool, we leak memory.
+    if (current_pool == NULL) return;
+
+    autorelease_pool head = malloc(sizeof(autorelease_pool_t));
+    head-&gt;p = p;
+    head-&gt;fn = fn;
+    head-&gt;next = current_pool-&gt;head;
+    current_pool-&gt;head = head;
+}
+</code></pre>
+
+<p>And finally, the magic happens when we flush the pool. We’ll simply loop through the current pool, call each element’s free function, and free the reference, and finally pop the pool off the stack:</p>
+
+<pre><code>void flush_autorelease_pool() {
+    while (current_pool-&gt;head != NULL) {
+        (*current_pool-&gt;head-&gt;fn)(current_pool-&gt;head-&gt;p);
+        autorelease_pool next = current_pool-&gt;head-&gt;next;
+        free(current_pool-&gt;head);
+        current_pool-&gt;head = next;
+    }
+    autorelease_pool_stack parent = current_pool-&gt;parent;
+    free(current_pool);
+    current_pool = parent;
+}
+</code></pre>
+
+<p>Now, in order to solve our memory leak issues in the code we wrote earlier, we must add code to auto-release the <code>_l</code> unions we allocate, and wrap <code>main</code> with an auto-release pool:</p>
+
+<pre><code>_l function(ull(^f)(int)) {
+    _l data = malloc(sizeof(_l_t));
+    data-&gt;function_f = Block_copy(f);
+
+    // these two lines have been added:
+    autorelease(data-&gt;function_f, (void(*)(void*))&amp;_Block_release);
+    autorelease(data, &amp;free);
+
+    return data;
+}
+</code></pre>
+
+<p>Since both y-combination and final execution allocate lambdas, we’ll want to wrap both main, and then the final execution itself in an auto-release pool:</p>
+
+<pre><code>int main(int argc, char **argv) {
+    // wrap in pool
+    push_autorelease_pool();
+
+    // ...
+
+    _l fibonacci = y_combine(fib_generator);
+    // ...
+
+    push_autorelease_pool();
+    ull fib = fibonacci-&gt;function_f(upto);
+    flush_autorelease_pool();
+
+    printf("Fibonacci number %d is %llu.\n", upto, fib);
+    flush_autorelease_pool();
+    return 0;
+}
+</code></pre>
+
+<h3>Memoization: Wrapping</h3>
+
+<p>While our code is now fully functional (ha, ha, coder pun…), it still is horribly inefficient. That’s because we still have not solved the inherent problem of the function having a time complexity of <code>O(2^n)</code>. This can be solved using <a href="https://en.wikipedia.org/wiki/Memoization" target="_blank">memoization</a>.</p>
+
+<p>Memoization is an optimization technique which consists of storing computations in memory when completed, so that they can be retrieved later on, instead of having to be re-computed. For <code>fib</code>, using memoization reduces the time complexity down to <code>O(n)</code>.</p>
+
+<p>In order to use memoization, we need a way to inject a function that will be executed before executing the <code>fib</code> function. We’ll call this wrapping, and as a first example, let’s just use wrapping to demonstrate how bad <code>O(2^n)</code> really is.</p>
+
+<pre><code>_l wrap(_l fn, _l wrap_with) {
+    return generator(^_l(_l recur) {
+        return function(^ull(int n) {
+
+            _l fn_ = function(^ull(int n) {
+                return fn-&gt;generator_f(recur)-&gt;function_f(n);
+            });
+            _l wrapped = function(^ull(int n) {
+                return wrap_with-&gt;wrapper_f(fn_, n);
+            });
+
+            return wrapped-&gt;function_f(n);
+        });
+    });
+}
+</code></pre>
+
+<p>Understanding this wrapping function still makes my brain hurt, but suffice to say that it takes a generator and a wrapper as arguments, and returns a generator. The resulting generator can be used in the Y-combinator, and every recursion of the original function will be replaced with a recursion of the wrapper function, which itself calls the original function.</p>
+
+<p>A simple wrapper function that will log every iteration looks like this:</p>
+
+<pre><code>_l log_wrapper = wrapper(^ull(_l f, int n) {
+    printf("About to generate # %d\n", n);
+    return f-&gt;function_f(n);
+});
+</code></pre>
+
+<p>And the final code that uses this looks like this:</p>
+
+<pre><code>_l wrapped_fibonacci = y_combine(wrap(fib_generator, log_wrapper));
+ull fib = wrapped_fibonacci-&gt;function_f(upto);
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<p>Your output should look <a href="https://gist.github.com/kballenegger/5566093" target="_blank">somewhat like this</a>. As you can see, calling <code>fib(20)</code> evaluates the function 13,529 times.</p>
+
+<h3>Memoization: Implementation</h3>
+
+<p>In order to write a memoization wrapper function, we need a data structure in which to store the results. Most examples of memoization use a hash table, but since the key in our case is an integer, I decided to go for something a little more exotic: a binary tree, based on the bits of the integer key.</p>
+
+<pre><code>typedef struct cache_node_t *cache_node;
+typedef struct cache_node_t {
+    bool is_leaf;
+    union {
+        struct {
+            cache_node one;
+            cache_node zero;
+        } node;
+        ull leaf;
+    } self;
+} cache_node_t;
+</code></pre>
+
+<p>We’ll also create some simple methods to create and destroy trees:</p>
+
+<pre><code>cache_node cache_tree_new() {
+    return calloc(1, sizeof(cache_node_t));
+}
+void cache_tree_free(cache_node node) {
+    if (!node-&gt;is_leaf) {
+        if (node-&gt;self.node.one != NULL) cache_tree_free(node-&gt;self.node.one);
+        if (node-&gt;self.node.zero != NULL) cache_tree_free(node-&gt;self.node.zero);
+    }
+    free(node);
+}
+</code></pre>
+
+<p>In order to store a value in the tree, we iterate through every bit in the int, traversing either through the <code>one</code> or <code>zero</code> node of the tree, and finally setting the <code>leaf</code> to the value we’re trying to cache:</p>
+
+<pre><code>void cache_tree_store(cache_node root, int key, ull value) {
+    cache_node node = root;
+    for (size_t i = 0; i &lt; sizeof(int) * 8; i++) {
+        bool direction = (bool)((key &gt;&gt; i) &amp; (unsigned int)1);
+        if (direction == 1) {
+            if (node-&gt;self.node.one == NULL) {
+                node-&gt;self.node.one = calloc(1, sizeof(cache_node_t));
+            }
+            node = node-&gt;self.node.one;
+        } else {
+            if (node-&gt;self.node.zero == NULL) {
+                node-&gt;self.node.zero = calloc(1, sizeof(cache_node_t));
+            }
+            node = node-&gt;self.node.zero;
+        }
+    }
+    // the last node should already be a leaf, if it isn't, we just created it
+    if (!node-&gt;is_leaf) {
+        node-&gt;is_leaf = true;
+    }
+    node-&gt;self.leaf = value;
+}
+</code></pre>
+
+<p>Looking up a value is essentially the same thing, with some additional code to report failures:</p>
+
+<pre><code>ull cache_tree_lookup(cache_node root, int key, bool *found) {
+    cache_node node = root;
+    for (size_t i = 0; i &lt; sizeof(int) * 8; i++) {
+        if (node == NULL || node-&gt;is_leaf) {
+            if (found) *found = false;
+            return 0;
+        }
+        bool direction = (bool)((key &gt;&gt; i) &amp; (unsigned int)1);
+        if (direction == 1) {
+            node = node-&gt;self.node.one;
+        } else {
+            node = node-&gt;self.node.zero;
+        }
+    }
+    if (node == NULL || !node-&gt;is_leaf) {
+        if (found) *found = false;
+        return 0;
+    }
+    if (found) *found = true;
+    return node-&gt;self.leaf;
+}
+</code></pre>
+
+<p>And finally, now that we have a tree in which to store cached results, we can write our memoization function. Here, we’re actually adding creating a function called <code>new_memoizer</code> which returns a new instance of the wrapper function with its own (auto-released) cache.</p>
+
+<pre><code>_l(^new_memoizer)() = ^_l {
+    cache_node root = cache_tree_new();
+    autorelease(root, (void(*)(void*))&amp;cache_tree_free);
+
+    return wrapper(^ull(_l f, int n) {
+        bool found;
+        ull cached = cache_tree_lookup(root, n, &amp;found);
+        if (found == true) {
+            return cached;
+        } else {
+            ull value = f-&gt;function_f(n);
+            cache_tree_store(root, n, value);
+            return value;
+        }
+    });
+};
+</code></pre>
+
+<p>So, with that, let’s try our program again, but with memoization:</p>
+
+<pre><code>_l fibonacci = y_combine(wrap(wrap(fib_generator, log_wrapper), new_memoizer()));
+
+push_autorelease_pool();
+ull fib = fibonacci-&gt;function_f(upto);
+flush_autorelease_pool();
+
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<p>As you can see in the output, this runs significantly faster:</p>
+
+<pre><code>Generate up to fib # 20...
+About to generate # 20
+About to generate # 19
+About to generate # 18
+About to generate # 17
+About to generate # 16
+About to generate # 15
+About to generate # 14
+About to generate # 13
+About to generate # 12
+About to generate # 11
+About to generate # 10
+About to generate # 9
+About to generate # 8
+About to generate # 7
+About to generate # 6
+About to generate # 5
+About to generate # 4
+About to generate # 3
+About to generate # 2
+About to generate # 1
+Fibonacci number 20 is 6765.
+</code></pre>
+
+<h3>Conclusion</h3>
+
+<p>You can peruse the final code used in this article in <a href="https://gist.github.com/kballenegger/5566254" target="_blank">this gist</a>.</p>
+
+<p>Now, that being said, if you ever have a need to implement a function to return a number in the Fibonacci sequence, it would be wise to forget everything I’ve said above, and just use the following:</p>
+
+<pre><code>ull fib(int n) {
+    if (n &lt;= 2) return 1;
+    ull first = 1, second = 1, tmp;
+    while (--n&gt;1) {
+        tmp = first + second;
+        first = second;
+        second = tmp;
+    }
+    return second;
+}
+</code></pre>
+                    
+
+    </article>
+
+    <article id="36222697891">
+        
+
+
+<div class="info">
+    <a href="/2012-11-21/web-3-0-help-site-chartboost">
+         <div class="day">21st</div>
+        <div class="month">Nov</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="36222697891"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://blog.chartboost.com/post/36221629171/web-3-0-help-site">Web 3.0 at Chartboost</a></h1>
+
+                        
+                            <p><em>This is an article I originally wrote for the Chartboost blog.</em></p>
+
+<p>For the sake of brevity, we’re going to dub the next generation of web app development “Web 3.0.” This entails a collection of new technologies and new ideas, which have become possible only recently with the large advances made by modern browsers.</p>
+
+<p>What does this mean? This means creating web <em>applications</em>, not sites. We believe the server side is a web <em>service</em>, while the client side is the <em>application</em>. The server provides an API, and the client is a self-contained app which uses this API. A mobile app would be an equal citizen and use the exact same API.</p>
+
+<p>We think these ideas are the future, and as we grow our team and our capabilities, we are diving into them head first. The first of these projects—and somewhat of a testbed for what our dashboard is going to become—is none other than the new <a href="https://help.chartboost.com" target="_blank">Chartboost Help site</a>.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/desktop.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">The help site.</p>
+
+<p>So without further ado, these are some of the cool new things we’re trying with the new help site:</p>
+
+<h5>Push State</h5>
+
+<p>Perhaps the first thing you will notice is that navigating the site does not involve any page refreshes. Rather, this is done through a new technology called “Push State.” It lets a web app manipulate the browser history, essentially faking navigation and inserting its own JavaScript callbacks instead of reloads.</p>
+
+<p>When moving between pages, the HTML is never replaced, which means that elements of the app can stay on screen, and even be animated, while the new content is being loaded. On the help site, a great example of this is the animation in the title part of the content, as well as the bouncing icons on the left.</p>
+
+<p>This also makes the entire site feel more responsive and faster, since the user can be kept busy with animations, while a request to the server is happening in the background. That, and the requests are much smaller, since all that’s needed is the article content, and none of the layout or supporting files. Routing is done purely in JavaScript, and loading any URL natively from the server simply returns the same HTML file and routing code, which knows how to directly load the requested article.</p>
+
+<h5>JSON-API driven</h5>
+
+<p>This goes hand in hand with the above: now that we don’t require fully rendered HTML pages to be returned from the server, the server can now simply provide an elegant REST API. This API uses the full power of HTTP: versioning and authentication is done through headers, input is sent as JSON in the request body, and HTTP verbs are used.</p>
+
+<h5>Responsive</h5>
+
+<p>In an ever-connected world, and with the proliferation of mobile devices from smartphones to tablets, we think it’s becoming ever more important for the web to look its best on every device out there. Mobile-optimized sites just don’t cut it; a smartphone deserves to have the same full experience as a widescreen desktop computer.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/mobile.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">The help site, on an iPhone.</p>
+
+<p>The help site, as well as this very blog, are responsive designs. They adjust and are fully functional on all devices from iPhone to Cinema Displays. To achieve that, we make use of CSS <code>@media</code> queries as well as <code>rem</code> and percent-based sizing. We used the <a href="http://foundation.zurb.com/" target="_blank">Foundation</a> framework for its built-in responsive grid.</p>
+
+<h5>Vector (Icon Fonts &amp; CSS)</h5>
+
+<p>Another big recent change is the proliferation of “retina” (high-resolution) screens. They’ve been around for a while on iPhones, and are now expanding to Android devices, tablets, and computers. This is most commonly done by doubling the pixel-to-point ratio, and on iOS it is common to include double resolution assets by suffixing <code>@2x</code> to the image name.</p>
+
+<p>We think, however, that for UI work, native rendering and vector are much better options than images. So for the help site, we use a combination of icon fonts and CSS3 properties to build up the entirety of the UI. <strong>There are practically no images in the help site’s UI!</strong></p>
+
+<h5>SCSS</h5>
+
+<p>Another new technology we’ve made use of is CSS-preprocessing, through <a href="http://sass-lang.com/" target="_blank">SCSS</a>. This helps make our CSS code a lot cleaner and re-usable: using mixins (which are kind of like functions) for common prefixed properties, and variable dependencies on colors:</p>
+
+<pre><code>$button-green-one-textcolor : #FFFFFF;
+$button-green-one-border : saturate(darken($primary-    color,11%), 1%);
+$button-green-one-light-inset : #FFFFFF; /* Will be used inside an RGBA with opacity */
+$button-green-bg-gradient-start : darken($primary-color, 1%);
+$button-green-bg-gradient-end : saturate(lighten($primary-color, 7%), 7.5%); 
+</code></pre>
+
+<p>You might have noticed that this blog and the new help site look similar. They actually share the same SCSS source, with only few differences, like the primary color being changes from blue to green. That, along with some other neat SCSS features like nesting allow for much cleaner and much more reusable CSS code.</p>
+
+<h5>Markdown</h5>
+
+<p>We believe the entire team should be able to write and edit help articles. <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> is a fantastically simple markup language designed around the idea that it should look like plain text. A Markdown source file should be as readable as the output it produces; and indeed, it is far more natural to write in Markdown than HTML. Thus, our help articles are written in <a href="http://github.github.com/github-flavored-markdown/" target="_blank">GitHub-flavored Markdown</a>.</p>
+
+<p>Since our documentation contains a fair amount of code samples, it was important for us to support GitHub-style code blocks, as well as native syntax highlighting. As a simple example, here is our <a href="https://help.chartboost.com/documentation/ios" target="_blank">iOS Integration article</a>, and its <a href="https://raw.github.com/ChartBoost/articles/master/documentation/ios/index.md" target="_blank">source code</a>.</p>
+
+<h5>GitHub</h5>
+
+<p>Help content, much like source code, is something that multiple people collaborate on, and which can benefit from versioning and branching. Instead of re-inventing the wheel ourselves, we decided to pick a tool we already use every day as a team: git and <a href="https://www.github.com/" target="_blank">GitHub</a>. The source code for all of our help articles (and its messy history) is all hosted publicly on our GitHub. <a href="https://www.github.com/ChartBoost/articles" target="_blank">Check it out!</a> And who knows, maybe somebody will even send us a Pull Request at some point.</p>
+
+<h5>Design</h5>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/sketches.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">Original paper sketches</p>
+
+<p>Going into it, we knew design was going to be a crucial part of this. What we had before really sucked, and was not up to our standard.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/mocks.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">Alternate directions</p>
+
+<p>We went through several iterations over a week, before settling on the current design.</p>
+
+<hr>
+<p>We believe that the web is finally reaching a tipping point. The culmination of a decade of incremental improvements to web technologies is upon us, and lets us do things in a way that is radically new and better. If this is as exciting to you as it is to us, why don’t you throw us a line? <a href="https://chartboost.com/web/jobs" target="_blank">We’re hiring!</a></p>
+<p>(Source: <a href="http://chartboost.tumblr.com/post/36221629171/web-3-0-help-site" title="chartboost">chartboost</a>)</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="28710957277">
+        
+
+
+<div class="info">
+    <a href="/2012-08-04/critique-apple-developers">
+         <div class="day">4th</div>
+        <div class="month">Aug</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="28710957277"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">A critique of the Apple indie developer community</h1>
+                        
+
+                        <p>The Apple developer community has bred some of the most skilled engineers I know. Specifically, I’m talking about those who, like me, were writing Objective-C code before the iPhone and before there was any money in it.</p>
+
+<p>Objective-C is a hard language to learn. It’s unsafe, manually memory managed, and full of easy mistakes. But once learnt, it’s one of the most rewarding programming languages to know. It will teach you about fundamental concepts like memory, pointers, and object-orientation. Indie developers also have Apple’s mostly exemplary lead when it comes to crafting easy to use software. It’s no wonder, then, that skilled independent Mac and iPhone developers make some of the best software I’ve had the pleasure of using.</p>
+
+<p>And yet, for all of their application-crafting prowesses, they fail to understand the internet. They look at every problem as a nail for their Cocoa hammer. We’ve moved beyond the point where software is downloaded and installed, and simply runs on the host computer. Today, software is social, cloud-hosted, and continuously updated. When’s the last time you updated Chrome? Right… Never, because it updates itself transparently. Even apps that would traditionally have been perfect candidates for a desktop application, such as a <a href="http://culturedcode.com/things/" target="_blank">todo manager</a>, are moving onto the cloud.</p>
+
+<p>We have many computing devices; Macs, iPhones, and iPads, and we want to be able to pick up any of them and have access to our data. They need to sync instantly and effortlessly. This means that they require a backend web software component. This means running and maintaining servers. Writing code in a foreign programming language and dealing with a wholly new class of problems. (How do you scale your backend software? Which language / platform / framework do you use? At which point do you re-architect for a distributed system? Wait, this shit runs on <em>Linux</em>?)</p>
+
+<p>Your average indie Mac developer is wholly unprepared for this. He’s been living in a perfect and comfortable little bubble, shielded from the ugliness of web programming, and the cloud just popped it.</p>
+
+<p>Take Panic’s <a href="http://www.panic.com/Coda/" target="_blank">Coda</a>, for example. I really hate to criticize Panic, because they’re probably one of the best development shop out there. But Coda is an example of this mentality; it’s built for a world where web development meant throwing a website together with Apache, PHP, and MySQL. And when it came to interacting with software, the <a href="http://weblog.rogueamoeba.com/2012/06/30/the-developer-news-window/" target="_blank">backend for Mac software</a> would simply be a <code>.php</code> file that generated a <a href="https://en.wikipedia.org/wiki/Plist" target="_blank">property list</a>. But that world died back in the mid-’00s. Today, web development involves MVC, newer NoSQL data stores, caching layers, load balancing, message queues, background job processing, service-oriented architectures, version control (git), code deployment systems, and so on. These make the Coda approach of editing PHP files on a live server and checking the output in a preview tab completely obsolete.<sup id="fnref:p28710957277-1"><a href="#fn:p28710957277-1" rel="footnote" target="_blank">1</a></sup></p>
+
+<p>Independent developers wanting to get in on the cloud action have been avoiding the problem, by taking the approach of building third-party clients for first-party providers. Witness the inundation of the app stores with client apps for Twitter, Instagram, or Google Reader. There’s even a series of app that use a Dropbox folder as an alternative to a web backend. That’s all well and good, and the community makes some fantastic client software that I use daily, but that approach can backfire when the first-party provider changes its mind. When Twitter decides to kill access to its API, or when Apple decides to throw you off their store for a bullshit reason.</p>
+
+<p>I grew up writing Mac applications, and I used to be very involved in the Apple developer community. To this day, Objective-C remains my favorite programming language for its speed, power, and elegance. And yet, I’ve lost touch with the community as I moved beyond just Cocoa software. I realized that there’s more to be done. I didn’t want to spend the rest of my life writing client software, I wanted to write the next world-changing service that spawns countless clients. And that was never going to happen writing just Cocoa software.</p>
+
+<p>There’s a ton of smart people doing great things in the wider software development community that Apple developers could learn from. And inversely, the rest of the software development community could greatly benefit from an influx of smart and quality-driven Cocoa developers. My hope is that Cocoa developers will come to embrace polyglotism and web software and make software that truly makes a difference.</p>
+
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn:p28710957277-1">
+<p>It could be said that Coda is just not meant for web developers, it’s meant for making restaurant websites… <a href="#fnref:p28710957277-1" rev="footnote" target="_blank">↩</a></p>
+</li>
+
+</ol>
+</div>
+                    
+
+    </article>
+
+    <article id="24615424676">
+        
+
+
+<div class="info">
+    <a href="/2012-06-07/best-job">
+         <div class="day">7th</div>
+        <div class="month">Jun</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="24615424676"
+        data-tumblr-notes="4"
+    ><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p>I have the best job in the world.</p>
+
+<p>Every day, I show up to work and create something awesome. It’s like being a kid again except this time, instead of Lego bricks, the building blocks are Objective-C blocks, WebSockets and ØMQ. Clojure, Ruby, and Assembly. I make things that I want to use. I solve problems for the sake of curiosity. I’m like a child in Disneyland, having the time of my life, and I’m being paid to do it.</p>
+
+<p>I’m not doing it because it will make me a bajillionaire. It will, eventually, but that’s besides the point. I do it because I absolutely love being a programmer. I’d spend my time hacking even if it wasn’t my day job. Until recently, actually, it wasn’t. I was three years into a degree in graphic design when I decided that I really wanted to spend my days working on making cool stuff and solving hard problems.</p>
+
+<p>Sure, it’s stressful sometimes. Meetings can eat into your productivity and Mongo can wake you up at two in the morning when an onslaught of asian traffic brings it to its knees. But at the end of the day, these are good problems to have.</p>
+
+<p>If you don’t love your job; if you don’t think it’s the most interesting thing you could be doing right now; if you don’t feel immensely grateful at the universe for having such an awesome gig… quit! Right fucking now. Money, mortgages, degrees, social expectations and obligations are just distractions. A waste of time. Humans are incredibly resilient creatures; we can figure pretty much anything out on the fly. The world is a fantastic place to be, and right now is probably the best time yet to be in it, so why waste your time selling sugared water?</p>
+                    
+
+    </article>
+
+    <article id="20535041240">
+        
+
+
+<div class="info">
+    <a href="/2012-04-05/app-store-retrospective">
+         <div class="day">5th</div>
+        <div class="month">Apr</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="20535041240"
+        data-tumblr-notes="4"
+    ><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">App Store Retrospective</h1>
+                        
+
+                        <p>Three years ago, I wrote a summary of the major problems with Apple’s App Store as an email on the <a href="https://groups.google.com/forum/?fromgroups#!forum/iphonesb" target="_blank">iphonesb</a> mailing list. Three years later, I think it’s a good time to look back and see how Apple has handled the situation, and assess whether we’re better off.</p>
+
+<blockquote>
+  <h3>App Store:</h3>
+  
+  <p><em>Junk Apps</em>: The App Store is filled with junk apps made in, at most, ten minutes. The proliferation of iPhone success stories has given rise to an epidemic of hopeful developers taking shortcuts hoping to make a quick buck. These apps make up 98% of the App Store’s 50k apps. This creates needless clutter that makes it hard for the real apps that real developer spent real time and real money on to get noticed.</p>
+  
+  <p><em>App Store Reviews</em>: There are plenty of problems with the reviews on the store: they’re nearly always of terrible quality. There’s no way to contest or respond to an erroneous review. There’s not even a way to respond to a review saying there’s a problem with the app with a solution, or a “that’s coming in the next update—hang tight.”</p>
+  
+  <p><em>Rate On Delete</em>: Apple is artificially creating needless bad ratings by asking users to rate an app when they delete it, which quite obviously only creates 1-star ratings. For example: iLaugh Lite 1.0 had over a third of a million users, and many of them were happy and kept coming back to the application, I could see from the analytics. Yet, my rating was 2 stars, because a couple thousands (out of a quarter of a million) users didn’t like the app and deleted it and rated it 1 star. The hundreds of thousands of happy users, though, didn’t delete the app and therefore were not asked to rate the app. This creates artificially low ratings.</p>
+  
+  <p><em>Search is broken</em>. Either you’ve got to put a whole lot of keywords in your application name, which sucks for plenty of reasons, or you’ll fall behind the ones who do. Often, you just won’t show up in search that should totally return you first. Advanced search is useless and impractical.</p>
+  
+  <p><em>Top Apps Charts</em>: These charts have so much effect on whether an application gets noticed and downloaded that whether you show up on these charts can decide the fate of your application. Which also causes the next point. </p>
+  
+  <p><em>Ringtone ($0.99) Apps</em>: As has been very <a href="http://furbo.org/2008/12/09/ring-tone-apps/" target="_blank">well discussed</a> by Craig Hockenberry on his furbo.org blog, app prices have become a race to $0.99. Since the charts are counted by downloads, no matter the price of the app, it means that a lower price which causes more downloads will make your app more likely to succeed.</p>
+  
+  <p><em>Upgrades, Promotions, Variable Pricing</em>: No way to offer paid upgrades, which is a HUGE problem. There’s still no way to give out copies of your app over the 50 promo codes limit, which only work in the US. You can’t do bundle promotions, discounts or anything of the sort either.</p>
+  
+  <p><em>Customer Data</em>: Your customer data is hidden. There’s no way you can promote another app by you or a paid 2.0 upgrade (since you’ll have to create a new app for that). There’s no way you can switch an app to another iTunes Connect account if it gets acquired, without losing all customers and not giving them any further updates. (Check out futuretap.com’s <a href="http://www.futuretap.com/blog/transferring-an-iphone-app-last-episode/" target="_blank">blog post</a>.)</p>
+  
+  <h3>App Review:</h3>
+  
+  <p><em>Lack of Transparency</em>: There is no communication between us and Apple. Apple doesn’t want communication. They specifically block communications. Emails to their support never get answered, and phone calls just tell us to email. Often, they reject apps on no grounds, or simply obscurely and vaguely referring to some TOS article that only partly applies to the situation, leaving you no way to communicate back and contest the decision.</p>
+  
+  <p><em>Updates</em>: Updates take ages to get approved. They sometimes get rejected while being only a bug-fix update to an app that got approved. (This has happened to me.) And even when they get approved, it takes forever, possibly leaving some critical bug or crash in your application and costing you tons of negative reviews and ratings. (Has also happened to me.) Garrett Murray posted a couple interesting <a href="http://log.maniacalrage.net/post/98510137/" target="_blank">articles on the topic</a>.</p>
+  
+  <p><em>Review Time</em>: Apple often takes many weeks to review anything posted to them. Some of my reviews took up to three months. (No kidding!) This is just not viable. Period.</p>
+  
+  <p><em>Arbitrary Rejections</em>: There have been countless examples of arbitrary and unwarranted rejection. <a href="http://www.seoxys.com/apples-increasingly-ridiculous-rejections/" target="_blank">I have my very own</a>. There have been countless more examples reported.</p>
+  
+  <p><em>iTunes Connect</em>: It is a piece of garbage. There is simply no other polite way to put it. It is painfully slow. It is awfully designed. For example, not too long ago I was editing the description for my application, iLaugh. I had opened iTunes Connect’s page for my application in one tab and in another tab I opened another of my application’s info for reference. When I was done, I submitted the changes and, to my horror, instead of updating the description as it should have it overwrote the info of the other application I had open in the other tab with what I had submitted in the first tab. This is just an example, but there are plenty more ways in which iTunes Connect constantly screws up. There’s no way to delete an application, or change an update’s version number. It also gave me erroneous sales reports a few days back. Overall, it easily wins as the worst web app I have ever used. Period.</p>
+</blockquote>
+
+<p>If this list of complaints sounds oddly familiar, it should, because it’s surprisingly still relevant today. While Apple has made a few steps forward—for example, by getting rid of rate-on-delete—it has made an equal number of steps back. An example is the recent UDID fiasco.</p>
+
+<p>But what’s even more scary, to me, than a mistake Apple might have made recently (such as its deprecation of UDIDs) is how relevant this old list of complaints remains. Remember, when I wrote this, the App Store was just one year old. I figured, they might just not have had time to get to these items, and that they’d improve as time went by. But, since then, they’ve had time to replay the entire life of the App Store thrice more, and for the most part, nothing has changed.</p>
+
+<p>This indicates apathy. Apple just <em>doesn’t care</em> about its third-party developers. Their business, at the end of the day, is in selling hardware. They have no motivation to make it easy for developers to build a business on top of their platform. They don’t even care, it seems, about fostering innovation.</p>
+
+<p>The App Store’s biggest flaw, at the end of the day, is that it is not a free market. It is not a meritocracy, and app success is slave to the whim of a corporate overlord that changes it mind without explanation more often than a 5 year old.</p>
+
+<p><em>Disclaimer: this is my own opinion and in no way reflects my employer’s.</em></p>
+                    
+
+    </article>
+
+    <article id="19480586195">
+        
+
+
+<div class="info">
+    <a href="/2012-03-17/america-is-nice">
+         <div class="day">17th</div>
+        <div class="month">Mar</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="19480586195"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p>America is one of the most hospitable countries. The American people are genuinely nice: they give a lot to charity, they like to have fun, they <em>smile</em>. It’s hard to realize how much of a difference this makes until you spend some time living somewhere else. In Russia, for example, people seem sad and distant, while in South Africa the pleasantries feel much forced and status-driven, as if you were talking to a butler or a panhandler.</p>
+
+<p>Only in America do tellers ask you if you’ve had a good experience finding what you needed, say “please” and “thank you,” and strike up conversations while scanning in your purchases. Only in America is it not inconceivable to share a cab or an umbrella with a perfect stranger—in fact, I did both of those things just yesterday.</p>
+
+<p>What surprises me, then, is the disparity between that and the experience of actually getting here. The United States is notorious for its extremely paranoid and unfriendly security practices when it comes to travel and immigration control. Of all the countries I have travelled to or lived in (the list is quite large), the process for the United States has been and continues to be hands down the most painful I have experienced.</p>
+
+<p>This realization came to me when reading Mark Vanhoenacker’s <a href="http://nty" target="_blank">New York Times op-ed</a>, in which he writes:</p>
+
+<blockquote>
+  <p>No country’s border staff is perfect, as every traveler knows. But America — a land where strangers greet one another in elevators, waiters act as if they like you, stores deploy professional greeters and government serves the people — should aim to be the best. That means a smile or “hello” as we approach every agent, a “please” and “thank you” to bookend every official request and an occasional “welcome” as we cross a secure border.</p>
+</blockquote>
+                    
+
+    </article>
+
+    <article id="9977686483">
+        
+
+
+<div class="info">
+    <a href="/2011-09-08/how-to-fix-the-us-economy-in-one-week">
+         <div class="day">8th</div>
+        <div class="month">Sep</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="9977686483"
+        data-tumblr-notes="7"
+    ><span class="kudos-value">7</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">How to fix the US economy in a week*</h1>
+                        
+
+                        <p>* if the president had dictator-like powers and could bypass congress.</p>
+
+<p><strong>Monday:</strong> Morning coffee. Get ready for a crazy week. Declare economic state of emergency, or whatever other excuse will let a president do whatever he deems necessary for a week.</p>
+
+<p>Start with taxes. Abolish progressive taxes. Set fixed-rate income tax at 35% on any income above $30,000. (10% goes to states.)</p>
+
+<p><strong>Tuesday:</strong> Declare immediate retreat from all wars and “police actions” in the Middle East. Cut defense spending by 80%.</p>
+
+<p>Reinstate NASA space program, and reallocate ample funding. Pledge $500B to the construction of a high-speed rail network to cover the entire continental US. Work to be completed over 5 years by the private sector, with no union labor.</p>
+
+<p><strong>Wednesday:</strong> Abolish Social Security, Medicare and Medicaid—to be phased out by the end of the year. Announce new legislation to 1) force private insurers to offer a basic health plan with minimum benefits at a fixed rate, and 2) make health insurance mandatory.</p>
+
+<p>Announce immigration reform. Lower requirements and processing times of work visas, and instate new entrepreneurship visa program. Announce a one-time amnesty on illegal immigration, and announce legislation with severe consequences for future infractions.</p>
+
+<p><strong>Thursday:</strong> Abolish oil subsidies, let oil spike to $8/gallon. Order cities over 100,000 inhabitants to develop high-quality public transportation networks. Slash all street parking, and impose a parking tax to discourage car commute.</p>
+
+<p>Pledge $500B in state-owned nuclear and alternative energy developments.</p>
+
+<p><strong>Friday:</strong> Announce plan to subsidize employment in creative industries. Subsidize people working as artisans, journalists, artists in order to put to good use people who have been rendered obsolete by advances in technology.</p>
+
+<p>Drastically cut corporate income tax to 13%, in order incentivize corporations to remain headquartered in the US and keep employing US citizens.</p>
+
+<p>Sigh. Enjoy the cool breeze on the White House balcony, sip on a glass of single malt scotch, and get ready to take a much-deserved weekend rest.</p>
+                    
+
+    </article>
+
+    <article id="8275502957">
+        
+
+
+<div class="info">
+    <a href="/2011-07-30/hypocrisy">
+         <div class="day">30th</div>
+        <div class="month">Jul</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="8275502957"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">The Incredible Hypocrisy of Modern Citizens</h1>
+                        
+
+                        <p>One thing I’ve noticed about American culture from living in the USA for over two years now is that there’s a deep kind of hypocrisy running through our morals. We condemn many things for being indecent, while we allow much worse things to go under the guise of free speech. Meanwhile, individuals feel an incredible sense of entitlement when it comes to their perceived rights.</p>
+
+<p>One recent example was when my social network feeds were inundated with calls to sign a petition for Facebook to add transexual options to the gender option. Now, I don’t want to get into gay-rights politics, but I am fervently against the idea that Facebook has any kind of obligation to include a feature because not doing so would offend a minority of its users.</p>
+
+<p>I take issue with the idea that some people think they are entitled to the feature—that it is their fundamental right. They are not, and it is not. Should we start adding “Flying Spaghetti Monster” to the religion drop downs too, because some people want to identify with it? Point is, with any popular product, people will find something to rebel against. If not this, it would be something else. People need to realize that Facebook has a vision for their product, and that they need to be able to follow it unimpeded.</p>
+
+<p>One fundamental aspect of good design is that it has been curated by somebody who knows what they’re doing, and has intimate knowledge of what they’re designing. This is why when users tell you that you should implement a feature, and that it will make your product better (and make you money), they’re most often full of crap. This is why anything on 99designs.com is crap. This is why Apple products are so great, and why Facebook beat MySpace.</p>
+
+<p>Remember Henry Ford? “If I had asked people what they wanted, they would have said faster horses.”</p>
+
+<p>My goal as a developer and designer is to make a product that people will love, and will make the world better. However, the way I’m going to do that is by thinking about what’s best for the majority of my users. The truth is 99.9% of users don’t care for outlying setting such as transgender identity. Transgender identity is much trickier than just adding an “Other” drop down item. If you allow it, how do you then genderize all the pronouns? Do you default to “he,” “she,” or use the combination “he/she?” Or worse, do you turn the user into an object and go with “it?” Bottom line is, it’s just not worth doing for the 0.1% of user’s feelings. They’re convinced with all their might that, surly, they deserve special treatment. But really, they don’t.</p>
+
+<p>Secondly, I’m growing extremely tired of America’s prude culture. People are constantly getting offended at really silly things. Just look at video games, for example. You can’t sell a video game with “sexually suggestive” language to teenagers under 18, if you can put it on the market at all. Yet, there’s no problem with selling games to 10 year olds that vividly depicts ripping people in half.</p>
+
+<p>Meanwhile, in real life, some words are prohibited and frowned upon for the sake of political correctness, while much worse sentiments are perfectly acceptable. It’s perfectly fine to go on Fox News and say “Mexican Immigrants are mostly criminals and should be deported,” or even openly be a member of the Ku Klux Klan, because it’s free speech. On the other hand, though, exclaiming “Holy Shit!” on broadcast television when the Giants score a home run will get you a class action lawsuit.</p>
+
+<p>Personally, I think people should be able to say whatever they want—except for maybe hate speech. As for products, their owner have the right to design them however they want and let the general population vote with their actions. Isn’t that the founding principle of capitalism and the American Dream? Lastly, people really need to get off their high horse, when it comes to accusing everybody of discrimination.</p>
+                    
+
+    </article>
+
+    <article id="4616115078">
+        
+
+
+<div class="info">
+    <a href="/2011-04-14/php-agile-development">
+         <div class="day">14th</div>
+        <div class="month">Apr</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="4616115078"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Running a Modern Startup on PHP</h1>
+                        
+
+                        <p><em>I originally wrote this for the <a href="http://blog.chartboost.com/post/4591949888/php-agile-development" target="_blank">ChartBoost Blog</a>.</em></p>
+
+<p>In the modern world of agile startups and silicon valley, the buzz is all about Ruby, Python, and whatever the latest cool programming language or framework to come out is. Older technologies don’t get much love, and PHP especially has a bad reputation. In this post, I’m gonna go over why and how we use PHP as a modern technology, and the various other tools, techniques and development methodologies we employ to run as agilely and elegantly.</p>
+
+<h2>PHP</h2>
+
+<p>PHP is regarded as a clumsy and amateurish technology, best left to development newbies and $5-an-hour consultants. It’s almost bad enough to make me feel shame when I tell people we run on PHP. However, I don’t think this reputation is entirely deserved.</p>
+
+<p>The language itself is, after Perl, the oldest language to be adopted en-mass as a web technology. Its roots are as a text pre-processor, and over the past 16 years it has evolved from that into something much broader. Many of its fault stems from the way it has evolved, rather than being designed the way it is today from the ground up.</p>
+
+<p>I’m not going to argue PHP is the best language—it clearly isn’t. Frankly, it’s a mess. There’s no consistency in function and class names, even within the core library itself. The Object-Oriented features were tacked on at a later point and, while they’re getting better, are somewhat fragile. Here at ChartBoost, the core requirement is that we run on at least PHP 5.3, which introduced Late Static Bindings. Before that, building serious object-oriented code in PHP was impossible.</p>
+
+<p>Even for all its faults, PHP remains a major player online, and some of the most impressive technology companies (like Facebook) are using it. PHP remains one of the fastest language to code with, deploy and execute. Lastly, while this is mostly due to personal preference, I find its C-inspired syntax to be one of the best in the web development world. Braces, parenthesis and semicolons make it extremely clear what the code is doing, as opposed to Ruby’s mess of symbols, implied parenthesis and lack of statement endings.</p>
+
+<h2>MVC</h2>
+
+<p>It’s paramount for a modern web app to run on an MVC (Model-View-Controller) architecture. Unfortunately, PHP offers very little in terms of modern and agile MVC frameworks. The big ones (CodeIgniter, Symphony, etc.) are extremely bloated and actually tend to get in your way more than help. Also, most impose their vision of what the model &amp; database layers should look like.</p>
+
+<h3>Paraglide</h3>
+
+<p>Fortunately, one framework stands out from the pack. <a href="https://github.com/bgoldman/Paraglide" target="_blank">Paraglide</a> is a minimalist framework that takes care of routing requests to controllers, rendering views, and little else. It offers the basics in terms of setting up the environment, providing basic helpers and organizing your code. It also works on the command line and from a shell (more on this later.)</p>
+
+<p>Believe me when I say this, but Paraglide in mind-blowingly cool. It makes coding in PHP as elegant, and in some ways even more elegant, than the equivalent in Rails. It’s faster and lighter weight than Rails, but is easily extensible and works with pretty much any other code or package you throw its way.</p>
+
+<h2>MongoDB</h2>
+
+<p>Another decision core to our design ideals was the choice of <a href="http://www.mongodb.org/" target="_blank">MongoDB</a> as our main model layer. Mongo is an incredibly powerful and scalable database system. It’s fundamentally different from MySQL in that it is at its core a key-value store. Mongo is so incredibly efficient that we have in fact completely skipped the usually required step of using Memcached. Mongo also offers greater reliablility and safety than MySQL with features such as failure-proof replica sets, and a querying interface that’s invulnerable to injection attacks. Avoiding SQL altogether has also been extremely pleasant. One of Mongo’s biggest advantages is easy and powerful scaling through replica sets. When a node goes down, or is added, Mongo will automatically recognize it and rebalance itself, without causing any downtime. There is no single-point-of-failure.</p>
+
+<h3>MongoModel</h3>
+
+<p>A pet project of mine has been <a href="https://github.com/kballenegger/MongoModel" target="_blank">MongoModel</a>, and it is what we use as the third leg of our architecutre. MongoModel is an ORM which uses Mongo as its datastore, and adds features vital to a full-featured web application. It provides object-mapping, relationships, validations and is extremely elegant to use. Much like with Rails’ ActiveRecord, sensible defaults are deduced, and it’s schema-agnostic. You do not need to setup or even define what your database looks like. Rather, you just use the objects and MongoModel takes care of everything else.</p>
+
+<h2>Unit Testing</h2>
+
+<p>While we don’t practice Test-Driven-Development, we do have unit tests in place. PHP does not provide an elegant test library, so we built our own (soon-to-be open-sourced.)</p>
+
+<h2>Shell Development &amp; Scripting</h2>
+
+<p>Paraglide is, to my knowledge, the only PHP framework that works in command-line scripts and from an interactive shell. Script functionality is extremely important in order to run cron scripts and various other maintenance and administration tasks. Interactive shell access is a boon for quick development and debugging. We use <a href="http://jan.kneschke.de/projects/php-shell/" target="_blank">PHP-Shell</a> to interact with our code directly from the command line. This is quite similar to Rails’ <code>script/console</code>.</p>
+
+<h2>Git</h2>
+
+<p>Everything we do is stored in Git. Git’s virtues are well-known within the community, so I will only say that git has been incredibly useful in keeping track of our code, the history, and for collaboration. We even use git as a wiki, to keep track of our documentation and various other internal documents.</p>
+
+<h3>GitHub</h3>
+
+<p>All our git repositories are hosted on <a href="https://github.com/" target="_blank">GitHub</a>. The main value of this, besides the hosting and gorgeous user interface, has been to use the social features to keep track of who’s been doing what. GitHub makes it really easy to have an overview of what’s happening. It also manages user accounts and rights beautifully.</p>
+
+<h3>Capistrano</h3>
+
+<p>Our main server-side code lives in a Git repository. We have dedicated branches for production code. We use <a href="http://www.capistranorb.com/" target="_blank">Capistrano</a> for deployments. The git repository has a dedicated branch for production code, which we merge to as we deploy stuff. A script will automatically run unit tests on anything that is pushed to production.</p>
+
+<h2>Amazon Web Services</h2>
+
+<p>ChartBoost relies on Amazon Web Services’ many products, including <a href="http://aws.amazon.com/ec2/" target="_blank">EC2</a> for cloud servers, <a href="http://aws.amazon.com/s3/" target="_blank">S3</a> for data storage, <a href="http://aws.amazon.com/ses/" target="_blank">SES</a> for emailing and various other smaller services. This lets us pay for how much we use only, and allows for simple and fast scaling. We have an image ready to be deployed to new nodes, so we can handle any traffic thrown at our app.</p>
+
+<h2>Communications &amp; Internal Tools</h2>
+
+<p>Last but not least, there’s the tools we use internally to keep in sync. <a href="http://lighthouseapp.com/" target="_blank">Lighthouse</a> takes care of our bug-tracking needs, while its companion, <a href="http://tenderapp.com/" target="_blank">Tender</a> handles support. We use <a href="http://campfirenow.com/" target="_blank">Campfire</a> for group chats, and AIM for one-on-ones. Google Apps &amp; Gmail take care of our emails. Also check out companion Mac apps <a href="http://www.mcubedsw.com/software/lighthousekeeper" target="_blank">Lighthouse Keeper</a> for Lighthouse, and <a href="http://propaneapp.com/" target="_blank">Propane</a> for Campfire.</p>
+
+<p><br>
+If you read this far, you now have a good overview of the various tools and techniques we use to code agilely at <a href="http://www.chartboost.com" target="_blank">ChartBoost</a>. Even though we chose an unpopular language to base our technology on, I think it has helped us tremendously. With this post, I hope to spread the love again for PHP and these various ways of using it in a modern environment.</p>
+                    
+
+    </article>
+
+    <article id="3024765786">
+        
+
+
+<div class="info">
+    <a href="/2011-01-30/van-de-graaf">
+         <div class="day">30th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="3024765786"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://vandegraaf.azuretalon.com/">Van de Graaf Generator</a></h1>
+
+                        
+                            <p>If you’re a graphic designer, you’re probably familiar with <a href="http://en.wikipedia.org/wiki/Canons_of_page_construction" target="_blank">canons of page construction</a>. In book design, canons of page construction help you use aesthetically pleasing and balanced text block and margins. It has been used by many typographers throughout the ages, starting with the Gutenberg bible.</p>
+
+<p>Constructing them, though, is somewhat of a pain. You have to go through a long series of steps, either in illustrator or by hand, constructing the text block geometrically. So I decided to write a small web app to do it automatically. <a href="http://vandegraaf.azuretalon.com/" target="_blank">Check it out online!</a> Currently, only the most common canon is supported, but in the future I will add any canon I find the need to construct to the project.</p>
+
+<p>If you’re more of a developer, I’ve open sourced the project on <a href="https://github.com/kballenegger/Van-De-Graaf-Generator" target="_blank">github</a> under the Azure License.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="2912961840">
+        
+
+
+<div class="info">
+    <a href="/2011-01-24/compostmodern">
+         <div class="day">24th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2912961840"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p>On Saturday, I attended the <a href="http://compostmodern.org/" target="_blank">Compostmodern</a> conference on sustainable design. <em>Sustainability</em> is a fancy buzzword used by big corporations so that they can feel socially responsible. File it away with previous contenders such as <em>Synergy</em> and <em>Trickle-down,</em> and don’t ever use it. But beyond the ill-advised terminology lies an really important concept; which is that as we design, we have responsibilities that go beyond the client’s brief and balance sheet. Sure, those should always be the primary considerations—but we also have a responsibility to our environment and society. Sustainability is at the intersection of consideration for the environment, society and economy.</p>
+
+<p>In order to get the most out of the concepts from the conference, though, design must be defined as more than any or all of the professions suffixed with the word design. (Industrial, Graphic, Web, Interior, Interaction… you name it!) Design is—or should be—everything a company does. Every interaction anyone ever has with a company, good or bad, becomes part of its brand. One of the first concepts introduced by several of the speakers was that of 360° Design. With 360° Design, the challenge is to design a product or brand across all aspects of its presence, whether web, print, physical, or even the experience of using it. The concepts of sustainable design, though, apply to more than design. You can draw from it in entrepreneurship, leadership, or even as a way of life.</p>
+
+<p>For me, two nuggets of wisdom stood out from the various talks. The first one pertains to getting a message effectively across through what speaker Jonah Sachs calls the Myth Gap. A successful myth is the combination of explanation, meaning and story. Explanation serves the rational mind, while meaning serves the emotional. The last element, the story, is what engages the consumer. A successful story can be further divided up in three basic elements: freaks, cheats and familiars. Freaks are human characters that are extraordinary in some way. Cheats are those don’t follow the status quo. This includes both criminals (whom the viewer is against), or rebels (whom the viewer roots for). The last element is familiars: things which viewers can relate to. It is by combining all of these elements that most of the successful stories caught traction.</p>
+
+<p>Secondly, Lisa Gansky introduced attendees to the concept of <em>the mesh.</em> The mesh is about the sharing of experiences and physical things among people. The new wave of popular services provide access to experiences, rather than ownership of things. <a href="http://www.netflix.com/" target="_blank">Netflix</a>, for example, lets people experience movies without having to buy and own them. <a href="http://www.zipcar.com/" target="_blank">Zipcar</a>, similarly, allows for on-demand access to a car without having to own a car. <a href="http://www.airbnb.com/" target="_blank">Airbnb</a> provides peer-to-peer access to other members’ proprieties without having to rent a hotel room.</p>
+
+<p>The overarching theme of the conference, though, was sustainability. The common perception of sustainability is that of radical green-activism such as Greenpeace. Many, including myself, find this kind of activism off-putting. Not only does it alienate me with its holier-than-thou attitude, but it often does much less good than what can be achieved through friendlier means. The key to getting people involved in a project that benefits the greater good is to incentivize the better option. Give them an alternative that does not compromise their experience of the product.</p>
+
+<p>Green is not absolute. The goal should not be to have a green product, but rather a <strong>greener</strong> version of what people currently have and want. Sure, the warm feeling one gets when doing something good can be an incentive; but don’t kid yourself, people will always put their quality of lift first, and rightly so. After all, that is the whole basis of the american dream and the founding of this very nation—the pursuit of happiness. As Benjamin Franklin once said, “those who sacrifice liberty for security deserve neither.” Rephrasing his quote, I will boldly claim that those who sacrifice the pursuit of happiness for the hope of a better future deserve neither.</p>
+                    
+
+    </article>
+
+    <article id="2785664228">
+        
+
+
+<div class="info">
+    <a href="/2011-01-16/hacking-mac-apps">
+         <div class="day">16th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2785664228"
+        data-tumblr-notes="58"
+    ><span class="kudos-value">58</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">I Can Crack Your App With Just A Shell (And How To Stop Me)</h1>
+                        
+
+                        <p>Well, not <em>you</em> specifically, but by <em>you</em> I mean the average Mac developer. It’s too easy to crack Mac apps. Way too easy. By walking  through how I can hack your app with only one Terminal shell, I hope to shed some light on how this is most commonly done, and hopefully convince you to protect yourself against me. I’ll be ending this article with some tips to prevent this kind of hack.</p>
+
+<p>Disclaimer: I am fervently <em>against</em> software piracy, and I do not participate in piracy. Some will view this article as an endorsement of piracy, but rest assured that it is not. However, I do not believe that obscurity and ignoring the problem is an acceptable solution.</p>
+
+<p>In order to follow along you’re going to need a few command line utilities. You’re going to need the Xcode tools installed. And lastly, you’re going to need an app to operate on. I chose <a href="http://www.excesapp.com/" target="_blank">Exces</a>, a shareware App I wrote a long time ago.</p>
+
+<p>Let’s start by making sure we have the two utilities we need: <code>otx</code> and <code>class-dump</code>. I like to use <a href="http://mxcl.github.com/homebrew/" target="_blank">Homebrew</a> as my package manager of choice. Note that I will use command line utilities only, including <code>vim</code>. If you prefer GUIs, feel free to use your code editor of choice, HexFiend and <code>otx</code>'s GUI app.</p>
+
+<pre><code>$ sudo brew install otx
+$ sudo brew install class-dump
+</code></pre>
+
+<p>The first step is to poke into the target app’s headers, gentlemanly left intact by the unwitting developer.</p>
+
+<pre><code>$ cd Exces.app/Contents/MacOS
+$ class-dump Exces | vim
+</code></pre>
+
+<p>Browse around, and find the following gem:</p>
+
+<pre><code>@interface SSExcesAppController : NSObject
+{
+[...]
+    BOOL registred;
+[...]
+- (void)verifyLicenseFile:(id)arg1;
+- (id)verifyPath:(id)arg1;
+- (BOOL)registred;
+</code></pre>
+
+<p>What do we have here?! A (badly spelt) variable and what looks like three methods related to registration. We can now focus our efforts around these symbols. Let’s continue poking by disassembling the source code for these methods.</p>
+
+<pre><code>$ otx Exces -arch i386
+</code></pre>
+
+<p>Note that Exces is a universal binary, and that we need to ensure we only deal with the active architecture. In this case, Intel’s <code>i386</code>. Let us find out what <code>verifyLicenseFile:</code> does.</p>
+
+<pre><code>-(void)[SSExcesAppController verifyLicenseFile:]
+[...]
++34  0000521e  e8c21e0100              calll       0x000170e5                    -[(%esp,1) verifyPath:]
++39  00005223  85c0                    testl       %eax,%eax
++41  00005225  0f84e2000000            je          0x0000530d
+[...]
++226  000052de  c6472c01                movb        $0x01,0x2c(%edi)              (BOOL)registred
+[...]
+</code></pre>
+
+<p>This is not straight Objective-C code, but rather assembly—what C compiles into. The first part of each line, the offset, <code>+34</code>, shows how many bytes into the method the instruction is. <code>0000521e</code> is the address of the instruction within the program. <code>e8c21e0100</code> is the instruction in byte code. <code>calll 0x000170e5</code> is the instruction in assembly language. <code>-[(%esp,1) verifyPath:]</code> is what <code>otx</code> could gather the instruction to represent in Obj-C from the symbols left within the binary.</p>
+
+<p>With this in mind, we can realize that <code>verifyLicenseFile:</code> calls the method <code>verifyPath:</code> and later sets the boolean instance variable <code>registred</code>. We can guess that <code>verifyPath:</code> is probably the method that checks the validity of a license file. We can see from the header that <code>verifyPath:</code> returns an object and thus would be way too complex to patch. We need something that deals in booleans.</p>
+
+<p>Let’s launch Exces in the <code>gdb</code> debugger and check when <code>verifyLicenseFile:</code> is called.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController verifyLicenseFile:]
+Breakpoint 1 at 0x5205
+(gdb) run
+</code></pre>
+
+<p>No bite. The breakpoint is not hit on startup. We can assume that there’s a good reason why <code>verifyLicenseFile:</code> and <code>verifyPath:</code> are two separate methods. While we could patch <code>verifyLicenseFile:</code> to always set <code>registred</code> to true, <code>verifyLicenseFile:</code> is probably called only to check license files entered by the user. Quit <code>gdb</code> and let’s instead search for another piece of code that calls <code>verifyPath:</code>. In the <code>otx</code> dump, find the following in <code>awakeFromNib</code>:</p>
+
+<pre><code>-(void)[SSExcesAppController awakeFromNib]
+[...]
++885  00004c8c  a1a0410100              movl        0x000141a0,%eax               verifyPath:
++890  00004c91  89442404                movl        %eax,0x04(%esp)
++894  00004c95  e84b240100              calll       0x000170e5                    -[(%esp,1) verifyPath:]
++899  00004c9a  85c0                    testl       %eax,%eax
++901  00004c9c  7409                    je          0x00004ca7
++903  00004c9e  8b4508                  movl        0x08(%ebp),%eax
++906  00004ca1  c6402c01                movb        $0x01,0x2c(%eax)              (BOOL)registred
++910  00004ca5  eb7d                    jmp         0x00004d24                    return;
+[...]
+</code></pre>
+
+<p>The code is almost identical to <code>verifyLicenseFile:</code>. Here’s what happens:</p>
+
+<ul>
+<li>
+<code>verifyPath:</code> is called. (<code>+894 calll</code>)</li>
+<li>A test happens based on the result of the call. (<code>+899 testl</code>)</li>
+<li>Based on the result of the text, jump if equal. (<code>+901 je</code>) A <code>test</code> followed by a <code>je</code> or <code>jne</code> (jump if not equal) is assembly-speak for an if statement.</li>
+<li>The <code>registred</code> ivar is set, if we have not jumped away.</li>
+</ul>
+<p>Since <code>awakeFromNib</code> is executed at launch, we can safely assume that if we override this check, we can fool the app into thinking it’s registered. The easiest way to do that is to change the <code>je</code> into a <code>jne</code>, essentially reversing its meaning.</p>
+
+<p>Search the dump for any <code>jne</code> statement, and compare it to the <code>je</code>:</p>
+
+<pre><code>+901  00004c9c  7409                    je          0x00004ca7
++14  00004d9f  7534                     jne         0x00004dd5                    return;
+</code></pre>
+
+<p><code>7409</code> is the binary code for <code>je 0x00004ca7</code>. <code>7534</code> is a similar binary code. If we simply switch the binary code for the <code>je</code> to <code>7534</code>, at address <code>00004c9c</code>, we should have our crack. Let’s test it out in <code>gdb</code>.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController awakeFromNib]
+Breakpoint 1 at 0x4920
+(gdb) r
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0974
+</code></pre>
+
+<p>We break on <code>awakeFromNib</code> so we’re able to fiddle around while the app is frozen. <code>x/x</code> reads the code in memory at the given address.Now here’s the confusing thing to be aware of: <em>endianness</em>. While on disk, the binary code is normal, intel is a little-endian system which puts the most significant byte last, and thus reverses every four-byte block in memory. so while the code at address <code>0x4c9c</code> is printed as <code>0x458b0974</code>, it’s actually <code>0x74098b45</code>. We recognize the first two bytes <code>7409</code> from earlier.</p>
+
+<p>We need to switch the first two bytes to <code>7534</code>. Let’s start by disassembling the method so we can better see our way around. Find the relevant statement:</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  je     0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Now let’s edit code in memory.</p>
+
+<pre><code>(gdb) set {char}0x00004c9c=0x75
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0975
+(gdb) set {char}0x00004c9d=0x34
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b3475
+</code></pre>
+
+<p>Here we set the first byte at <code>0x00004c9c</code>. By simply counting in hexadecimal, we know that the next byte goes at address <code>0x00004c9d</code>, and set it as such. Let’s disassemble again to check if the change was done right.</p>
+
+<pre><code>(gdb) disas
+0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4cd2 &lt;-[SSExcesAppController awakeFromNib]+955&gt;
+</code></pre>
+
+<p>Whoops, we made a mistake and changed the destination of the jump from <code>+912</code> to <code>+955</code>. We realize that the first byte (<code>74</code>) of the byte code stands for the <code>je</code>/<code>jne</code> and the second byte is the offset, or how many bytes to jump by. We should only have changed <code>74</code> to <code>75</code>, and not <code>09</code> to <code>34</code>. Let’s fix our mistake.</p>
+
+<pre><code>(gdb) set {char}0x00004c9c=0x75
+(gdb) set {char}0x00004c9d=0x09
+</code></pre>
+
+<p>And check again…</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Hooray! This looks good! Let’s execute the app to admire our crack.</p>
+
+<pre><code>(gdb) continue
+</code></pre>
+
+<p>Woot! Victory! We’re in, and the app thinks we’re a legitimate customer. Time to get wasted and <strong>party</strong>! (I recommend Vessel nightclub in downtown San Francisco.) Well, not quite. We still need to make our change permanent. As it currently stands, everything will be erased as soon as we quit <code>gdb</code>. We need to edit the code on disk, in the actual binary file. Let’s find a chunk of our edited binary big enough that it likely won’t be repeated in the whole binary.</p>
+
+<pre><code>(gdb) x/8x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0975  0x2c40c608  0x8b7deb01  0xa4a10855
+0x4cac &lt;-[SSExcesAppController awakeFromNib]+917&gt;:  0x89000141  0x89082454  0x89042444  0x26e82414
+</code></pre>
+
+<p>That’s the memory representation of the code, a whole 8 blocks of four bytes starting at <code>0x00004c9c</code>. Taking endianness into account, we must reverse them and we get the following:</p>
+
+<pre><code>0x75098b45  0x08c6402c  0x01eb7d8b  0x5508a1a4
+0x41010089  0x54240889  0x44240489  0x1424e826
+</code></pre>
+
+<p>The very first byte of the series is the <code>74</code> that we switched into <code>75</code>. By changing it back, we can deduce the original binary code to be:</p>
+
+<pre><code>0x74098b45  0x08c6402c  0x01eb7d8b  0x5508a1a4
+0x41010089  0x54240889  0x44240489  0x1424e826
+</code></pre>
+
+<p>Let’s open the binary in a hex editor. I used <code>vim</code>, but feel free to use any hex editor at this point. HexFiend has a great GUI.</p>
+
+<pre><code>(gdb) quit
+$ vim Exces
+</code></pre>
+
+<p>This loads up the binary as ascii text, which is of little help. Convert it to hex thusly:</p>
+
+<pre><code>:%!xxd
+</code></pre>
+
+<p><code>vim</code> formats hex like this:</p>
+
+<pre><code>0000000: cafe babe 0000 0002 0000 0012 0000 0000  ................
+</code></pre>
+
+<p>The first part, before the colon, is the address of block. Following it are 16 bytes, broken off in two-byte segments. Incidentally, every Mach-O binary starts with the hex bytes <code>cafebabe</code>. Drunk Kernel programmers probably thought it’d be funny. Now that we have our beautiful hex code loaded up, let’s search for the first two bytes of our code to replace:</p>
+
+<pre><code>/7409
+</code></pre>
+
+<p>Shit. Too many results to make sense of. Let’s add another two bytes. Search for “<code>7409 8b45</code>" instead and boom, only one result:</p>
+
+<pre><code>001fc90: 0089 4424 04e8 4b24 0100 85c0 7409 8b45  ..D$..K$....t..E
+</code></pre>
+
+<p>Edit it to the following:</p>
+
+<pre><code>001fc90: 0089 4424 04e8 4b24 0100 85c0 7509 8b45  ..D$..K$....t..E
+</code></pre>
+
+<p>Convert it back to binary form, then save and quit:</p>
+
+<pre><code>:%!xxd -r
+:wq
+</code></pre>
+
+<p>And… We’re done! To check our work, launch the app in <code>gdb</code>, break to <code>[SSExcesAppController awakeFromNib]</code> and disassemble.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController awakeFromNib]
+Breakpoint 1 at 0x4c90
+(gdb) r
+(gdb) disas
+</code></pre>
+
+<p>Admire our work:</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Quit <code>gdb</code> and relaunch the app from the Finder, and bask in your <em>leet</em> glory.</p>
+
+<h1>How you can stop me</h1>
+
+<p>Objective-C makes it really easy to mess with an app’s internals. Try to program the licensing mechanism for your app in pure C, that will already make it harder for me to find my way around your binary. Also read <a href="http://www.seoxys.com/3-easy-tips-to-prevent-a-binary-crack/" target="_blank">this older article</a> of mine on three easy tips—stripping debug symbols, using PT_DENY_ATTACH, and doing a checksum of your binary—you can implement to make it a whole lot harder for your app to be cracked.</p>
+
+<p>A truly skilled hacker will always find his way around your protection, but implementing a bare minimum of security will weed out 99% of amateurs. I am not a skilled hacker—yet with some very basic knowledge I tore this apart in no time. Implementing the various easy tips above takes very little time, yet would have made it enough of a pain for me that I would have given up.</p>
+                    
+
+    </article>
+
+    <article id="2686511526">
+        
+
+
+<div class="info">
+    <a href="/2011-01-10/git-xcode-versioning">
+         <div class="day">10th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2686511526"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">The Ultimate Solution For Xcode Auto-Versioning With Git</h1>
+                        
+
+                        <p>After struggling with several suboptimal solutions for years, I have finally come to find the best Xcode versioning solution for git users. First off, tip of the hat to <a href="http://www.cimgf.com/2008/04/13/git-and-xcode-a-git-build-number-script/" target="_blank">Marcus Zarra</a> and <a href="http://heipei.net/2009/02/23/xcode-git-describe-in-your-infoplist/" target="_blank">Johannes Gilger</a> for posting their solutions, which inspired me in my search for the ultimate solution.</p>
+
+<p>A couple advantages that make this solution better than those I’ve used in the past:</p>
+
+<ul>
+<li>It’s completely filesystem independent. Save for the git binary location requirement, this would work across any Mac with no additional setup. (It should also be quite easy to edit the script to detect git using <code>which</code>.)</li>
+<li>It works across clones and systems.</li>
+<li>Because the version is the current git SHA1 hash, it always refer to a specific commit you can get back to when debugging later.</li>
+<li>It processes the version number at every build immediately. Some of the solutions I’ve used in the past required a double-build, because of Xcode’s tendency to run scripts after the preprocessor. Not so here.</li>
+<li>No duplication of code in projects with multiple targets.</li>
+<li>Works for iPhone, Mac App Store and Mac apps.</li>
+</ul>
+<p>So without further ado, my solution: I rely on an external target of type Shell Script which I call <em>Versioning.</em> Every other target sets <em>Versioning</em> as a Direct Dependency, ensuring its script is run before the preprocessor. <em>Versioning</em> contains the following Run Script:</p>
+
+<pre><code>cd "$PROJECT_DIR"
+VERSION=`/usr/local/bin/git rev-parse --short HEAD`
+
+cd "$PROJECT_TEMP_DIR"
+echo "#define GIT_VERSION $VERSION" &gt; revision.prefix
+
+cd "$PROJECT_DIR"
+touch Info.plist
+</code></pre>
+
+<p>In Info.plist, the <em>CFBundleShortVersionString</em> is set to <code>GIT_VERSION</code>. In the project’s main build settings, <em>Preprocess Info.plist</em> is turned on and <em>Info.plist Preprocessor Prefix File</em> is set to <code>$PROJECT_TEMP_DIR/revision.prefix</code>.</p>
+                    
+
+    </article>
+
+    <article id="2541316564">
+        
+
+
+<div class="info">
+    <a href="/2010-12-31/change-the-world">
+         <div class="day">31st</div>
+        <div class="month">Dec</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2541316564"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p><strong>How do you want to change the world?</strong></p>
+
+<p><em>This essay is part two of my application to the <a href="http://thielfellowship.org/" target="_blank">Thiel Fellowship</a>. It’s rare for an application essay to spark genuine reflection, but I think this helped me formulate and articulate what my beliefs and ambitions are.</em></p>
+
+<p>Problem-solving ability is the key to making the world a better place. People need to be presented with more—and better—solutions to the challenges they encounter in daily life. Technology needs to be made easy to use and understand, and must help make people’s lives better without involving a compromise. I intend to make the world a better place by creating software that is well designed and that will have a positive effect on as many people as possible.</p>
+
+<p>British philosopher and ethical theorist John Stuart Mill presented us with an interesting theory in the form of his Greatest Happiness Principle. The Principle is a doctrine by which to judge the ethicality of actions, and it states that the ethical course of action is that which will generate the most happiness for the greatest amount of people. I find that it is relevant when applied to the field of software. In that context, it states that what one should strive for is to build something which will generate great happiness for a great many people. Happiness is a loose term, in that it could refer to a game which will keep users happily entertained while waiting in line at the bank, or it could be an app or a service that can save lives, generating happiness on a much more profound level. The form does not matter, only that it has a net positive gain.</p>
+
+<p>Some examples come to mind. A product that I use and respect a great deal is Mint.com. Its founders saw a deficiency in the way people dealt with their financial lives (mostly ignoring it because of extreme complexity,) and decided to harness the power of technology to come up with a radical new solution. Mint has been of tremendous help to me personally, and to millions of others.  Another product I look up to is Tumblr. Taking a simple idea that already existed, Tumblr re-imagined what blogging could be, and presented their carefully redesigned solution to the world. Even though it does nothing to solve a fundamental life problem, it generates happiness and thus is a success in my books. Lastly, Instapaper is a highly underrated product from Tumblr’s ex-Lead Developer, Marco Arment. It was a side-product that Arment built to scratch his own itch, and that after polishing, he released for the public to enjoy. It has deservingly been enjoying growing success, and is a product that I use daily.</p>
+
+<p>My software projects have kept this in mind. My first foray into the world of development, Exces, was an app that sought to make encryption easy to use and understand for anybody. Geared towards the novice user, the application simplified and abstracted the complexities of secure encryption by using a metaphor that people are already familiar with: bank vaults. My next big project, iLaugh, was a lighthearted iPhone app which entertained users with jokes and funnies, while being a joy to use and keeping users engaged through carefully considered design decisions. My next big project is a cloud-based notes-to-self app which lets people quickly jot down thoughts from anywhere, and deal with them later.</p>
+
+<p>The feedback I have received from users show that I am already succeeding at making people’s lives slightly better. There is no better feeling than receiving an email from a happy user thanking me for my work. Though this is nowhere near the scale I envision eventually affecting people’s lives at, I see this as a step in the right direction. I moved from Switzerland to San Francisco in order surround myself with people who will make me better able to achieve that goal. I believe in taking every opportunity I get to learn something new and enrich my knowledge and world view. Because of this, I have gained various interest and hobbies, from graphic design, to languages, to software and business.</p>
+
+<p>What I hope to gain from the fellowship is a network of people who share my way of thinking, and who will be able to mentor me and eventually make me better able to change the world. I’m looking for a way to kickstart my journey in the world of the startup.</p>
+                    
+
+    </article>
+
+    <article id="2541308369">
+        
+
+
+<div class="info">
+    <a href="/2010-12-31/one-main-belief">
+         <div class="day">31st</div>
+        <div class="month">Dec</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2541308369"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p><strong>Tell us one thing about the world that you strongly believe is true, but that most people think is not true.</strong></p>
+
+<p><em>This essay was written for my application to the <a href="http://thielfellowship.org/" target="_blank">Thiel Fellowship</a>. It’s rare for an application essay to spark genuine reflection, but I think this helped me formulate and articulate what my beliefs and ambitions are.</em></p>
+
+<p>I believe that with enough willpower and effort, anybody can change the world for the better.</p>
+
+<p>While this statement may sound naive and cliché—it rings fundamentally true to me. It is the basis upon which the American Dream is built, and which has driven the United States through the past century. Unfortunately, the dream has been bastardized to the point that it is now more evocative of a fantasy than a dream.</p>
+
+<p>The american political landscape—in its constant bickering and back-and-forth—tries to capture the public’s goodwill by using and glamorizing ideas that appeal to their humanity. Things like religion, freedom, and the American Dream are prime topics to drive agreement and enthusiasm. This, unfortunately, has made the few who diverge from the status quo, and who think for themselves, wary of beliefs like that.</p>
+
+<p>Fundamentally, though, there is some truth to the idea that the world is a place where anybody has an opportunity to make a difference. It is not an easy thing to go against to the common wisdom, to persevere when everybody thinks you are crazy. It takes courage, self-confidence and determination. But time and time again, we have seen people do it and achieve inconceivable results—from Ghandi and Thomas Edison, to modern luminaries like Steve Jobs and Elon Musk.</p>
+
+<p>Achievements do not necessarily have to be of that magnitude either. Some of the people I respect most are neither famous nor widely known. But they are people who take their craft to heart and are determined to make a difference however they can. They strive to be the best at what they do, and in so doing make a positive difference in the world. A small difference, sure, but if the majority of people thought and acted that way, it would go a long way towards alleviating the world’s problems and making it a more pleasant place to live in.</p>
+
+<p>One of the qualities I respect most in people is their ability and willingness to think for themselves, and take action to back up their ideals. Think there’s a problem with an aspect of your life? Quit bitching and do something about it! (Within reason, of course.) Creativity and entrepreneurship are the basis for innovation, but they are fragile things. In today’s remix culture, it is far too easy to spend hours watching videos on YouTube, or shows on TV, or doing entertaining yet inconsequential things instead of actually creating something.</p>
+
+<p>Ambition is another important factor in making a difference. When you hear Musk or Jobs talk, they will tell you about having an insane utopian vision for the world. Jobs sees a world of interconnected and designed technology, that just works and is accessible for all to use and enjoy. Musk sees a world where every car is electric, where our energy is clean and solar, and where we have expanded into space. They see their current achievements as the first step towards their lofty goals. They probably won’t achieve those goals in their lifetimes. But, in trying to get there, they have already changed the world in a major way. If you set your goal far enough, even if you only get ten percent of the way there, you’ve already accomplished something amazing.</p>
+
+<p>These are all principles that I take to heart and try to apply to my life. My skills lie in software and design, and thus when I encounter a challenge in my life I try to design a better solution through software. If it is a challenge that other people may also encounter, I will polish my solution and turn it into an actual product. If, as a result, I have made a million people or just one person’s life more pleasant—I will have made a positive difference in the world. Originally from Switzerland, I moved to San Francisco by myself in order to be closer to a community of people who strive for the same thing I do. People who can enrich my knowledge and view of the world and will ultimately enable me to make an even bigger difference in the world.</p>
+
+<p>One project that caught my attention this summer is Diaspora. While TechCrunch and everybody on the internet were busy complaining about their disagreement with Facebook’s privacy policy change, a group of students from NYU decided to actually do something about it. I was compelled to donate to the project, because even if the project goes nowhere, their willingness to act is something to be encouraged. My belief is that with enough willpower and effort, I will be able to make a notable difference in the world. And my hope is that many other people will too.</p>
+                    
+
+    </article>
+
+    <article id="2420348405">
+        
+
+
+<div class="info">
+    <a href="/2010-12-22/wikileaks">
+         <div class="day">22nd</div>
+        <div class="month">Dec</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2420348405"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p>The more I think about it, the more I am opposed to the way in which Wikileaks and Julian Assange operate. While investigative journalism and the questioning of government are vital to a free society, I find myself increasingly convinced that Wikileaks does not constitute investigative journalism, but rather a random and harmful dump of classified information for the sake of making a political statement.</p>
+
+<p>There are valid reasons for secrets and “white lies.” Without them, civilization would collapse and social interaction would become pointless. In a well-reasoned and quite convincing article,  Jaron Lanier <a href="http://www.theatlantic.com/technology/archive/2010/12/the-hazards-of-nerd-supremacy-the-case-of-wikileaks/68217/" target="_blank">writes</a>:</p>
+
+<blockquote>
+  <p>What if we come to be able to read each other’s thoughts? Then there would be no thoughts. Your head has to be different from mine if you are to be a person with something to say to me. You need an interior space that is different from mine in order to have a different, exotic model of the world, so that our two models can meet, and have a conversation.</p>
+  
+  <p>[…]</p>
+  
+  <p>Asking whether secrets in the abstract are good or bad is ridiculous. A huge flow of data that one doesn’t know how to interpret in context is either useless or worse than useless, if you let it impress you too much. A contextualized flow of data that answers a question you know how to ask can be invaluable.</p>
+</blockquote>
+
+<p>On the argument for Wikileaks as investigative journalism:</p>
+
+<blockquote>
+  <p>If we want to understand all the sides of an argument, we have to do more than copy files. It’s not as though we are supporting reporters out there on the ground to do independent investigative journalism. Random leaking is no substitute for focused digging. The “everything must be free and open” ideal has nearly bankrupted the overseas news bureaus.</p>
+</blockquote>
+
+<p>I don’t mean to make this a pro-government rant. Don’t get me wrong, I think there’s plenty of things that are wrong with the US government and political landscape as it is. I just think Wikileaks’ approach to the problem is neither helpful nor ethical.</p>
+                    
+
+    </article>
+
+    <article id="1148591176">
+        
+
+
+<div class="info">
+    <a href="/2010-09-19/categorical-imperative">
+         <div class="day">19th</div>
+        <div class="month">Sep</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="1148591176"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Categorical Imperative</h1>
+                        
+
+                        <p><em>In response to an annoying philosophy assignment, I go all meta on them and write about whether to write the essay…</em></p>
+
+<p>At this very moment, I am faced with the dilemma of whether to write this paper. The brief clearly states to use a personal dilemma and relate it to Immanuel Kant’s <em>Categorical Imperative</em>, walking through one’s reasoning and eventual solution. However, a college student’s life does not make a good resource for interesting dilemmas.</p>
+
+<p>More importantly, though, I am morally opposed to assignments that require an essay based on personal experience for several reasons. A personal dilemma is by definition <em>personal</em>, ie. something that one might not necessarily want to share with one’s instructors and peers. If the aim of this paper is to demonstrate one’s understanding of Kant’s <em>Categorical Imperative</em>, why force students to use a personal but dubiously related dilemma, instead of using a hypothetical example that would better illustrate the concepts taught? Lastly, it puts students who have had different life experiences and have been faced with various kinds of dilemmas on unequal ground. Thus a student with a better understanding of the concept at hand but a less interesting personal history is at a disadvantage.</p>
+
+<p>Kant’s <em>Imperative</em> states that “I should never act except in such a way that I can also will that my maxim should become a universal law.” This means that one ought to act in a way one would find reasonable, were it applied as a rule to anybody else in the same situation. Kant has a concept of <em>goodwill</em>, which he explains as meaning that <em>goodness</em> comes from the intention. Acting to fulfills one’s <em>duty</em> is to do <em>good</em>, and one’s <em>duty</em> is to act in act in such a manner that one would want anybody else to act, in the same circumstances. Kant emphasizes reason over emotion, when faced with an ethically difficult situation.</p>
+
+<p>Faced with the dilemma which puts my will to complete the assignment as best I can against my moral objection with the form of the assignment, I need to reason objectively about which is the morally optimal solution. According to Kant, I need to act in the same way I would want any fellow student to act. Considering how I would feel if one of my fellow student were to get off easily without doing the assignment (that he is lazy, and deserving when he fails the assignment), that option is out of the question. On the other hand, I would not look up to a student who gives in and either makes up a fake dilemma, thus not following the assignment’s requirements, or uses a uncreative and boring situation from his past.</p>
+
+<p>What I need is a creative solution. One that will still follow the requirements and show that I understand the concepts taught, while minimizing my moral objections. In terms of absolutes, I chose to side with the assignment against my emotional distaste for essays based on personal experience. Hopefully, though, this is a creative and witty solution to a petty dilemma.</p>
+                    
+
+    </article>
+
+    <article id="786160311">
+        
+
+
+<div class="info">
+    <a href="/2010-07-08/iad-report">
+         <div class="day">8th</div>
+        <div class="month">Jul</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="786160311"
+        data-tumblr-notes="4"
+    ><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Report on iAd</h1>
+                        
+
+                        <p>I’ve been running iAd on relatively high traffic since day one. Here’s how – for me – it’s been performing, and how it breaks down against competing ad networks.</p>
+
+<p>First, the good. The eCPM is amazing. <a href="http://news.ycombinator.com/item?id=1496742" target="_blank">Some dude</a> reports getting $150 eCPM on his first day on iAd. While this is mind-blowingly high and in no way representative of the average on the network, eCPMs can be expected to be quite high. My eCPM averages $10-$15, which is quite good.</p>
+
+<p>Of course, we have to put these numbers in perspective. We cannot do a 1-to-1 comparaison with competing networks. Another important factor to consider: Most competing ad networks refresh their ads every 30s. iAd does it every 3min. Thus, for the time it takes iAd to display one ad, another network gets to show 6.</p>
+
+<p>For a fair comparaison, we need to adjust the eCPM. Taking the above into account, let’s divide the number by 6 to get something we can compare to networks that refresh every 30s. The resulting figure isn’t really an “effective cost per thousand impressions,” but rather something more like an “effective cost per 500min of ads being displayed.”</p>
+
+<p>Compared thusly, the eCPM on iAd is only worth about $1.60-$2.50. While still quite high, this is nowhere near the mind-blowing figures that have been thrown around.</p>
+
+<p><img src="http://akhun.com/seo/skitch/ecpm-20100708-115651.png" alt="eCPM"></p>
+
+<p>Last thing to consider: fill rates. They’re are appallingly low. Though this seems to be slowly improving, they remain below 10%. Compare this with most other non-premium networks which often get you 100% fill rate. A solution would be to run iAd as a first option, and fall back to another network for failed requests. Also, I would suggest keeping the ADBannerView around even when not displayed, leaving it to refresh in the background and once it does return an ad, displaying it.</p>
+
+<p><img src="http://akhun.com/seo/skitch/My_Apps-20100708-115815.png" alt="Fill Rate"></p>
+
+<p>I’m sure the fill rates will improve over time, and that iAd wil become a worthy competitor over time. Right now though, the reality is iAd generates less revenue than my previous first option, Google AdSense for mobile.</p>
+
+<p><strong>Update</strong>: Greg Yardley rightly <a href="http://yardley.ca/2010/07/08/iads-performance-now-and-later/" target="_blank">calls me out</a> on mistakenly stating Apple’s figures included their 40% cut. Article updated accordingly.</p>
+                    
+
+    </article>
+
+    <article id="774778112">
+        
+
+
+<div class="info">
+    <a href="/2010-07-05/obama-on-immigration-reform">
+         <div class="day">5th</div>
+        <div class="month">Jul</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="774778112"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p class="embed"><iframe width="500" height="281" src="https://www.youtube.com/embed/TzuqkiCfP4E?feature=oembed" frameborder="0" allowfullscreen></iframe></p>
+
+                        
+                            <p>President Obama on Immigration Reform:</p>
+
+<blockquote>
+  <p>So this steady stream of hardworking and talented people has made America the engine of the global economy and a beacon of hope around the world. And it’s allowed us to adapt and thrive in the face of technological and societal change. To this day, America reaps incredible economic rewards because we remain a magnet for the best and brightest from across the globe. Folks travel here in the hopes of being a part of a culture of entrepreneurship and ingenuity, and by doing so they strengthen and enrich that culture. Immigration also means we have a younger workforce -– and a faster-growing economy — than many of our competitors. And in an increasingly interconnected world, the diversity of our country is a powerful advantage in global competition.</p>
+  
+  <p>[…]</p>
+  
+  <p>And while we provide students from around the world visas to get engineering and computer science degrees at our top universities, our laws discourage them from using those skills to start a business or power a new industry right here in the United States. Instead of training entrepreneurs to create jobs on our shores, we train our competition.</p>
+</blockquote>
+
+<p>This is an issue that important to me. As a Swiss citizen, trying to integrate myself into the Silicon Valley culture, I am acutely aware of the deep problems in US immigration law. I am here under an F-1 student visa, which will eject me from the country once my studies are over.</p>
+
+<p>This summer, I landed an internship at Tapulous (<a href="http://tapulous.com/blog/2010/07/tapping-on/" target="_blank">now Disney</a>). I had to go to great lengths just to get approved by the government’s bureaucracy. For argument’s sake, imagine after the internship is complete they’d like to keep me. Because my visa does not allow for permanent employment, I wouldn’t be able to accept. I would have to apply for an H-1 visa, which would require me to leave the country while waiting for months (or maybe even years) for the process to be complete. All of this setting aside the fact that H-1 requires a completed bachelors degree, which – were I to drop out of school to take the opportunity – I would not have.</p>
+
+<p>If, hypothetically, I were eligible for the visa; its fine print puts a great burden on the employer, making me an unattractive prospective employee. The employer would have to sponsor me, spending a great deal of money on application and lawyer fees, all on the uncertain hopes that my visa gets approved. Additionally, they have to prove that they could not find a suitable employee who is a US citizen, with documentation showing that they interviewed other candidates and that none were fit for the position.</p>
+
+<p>All of this makes it very hard, or even impossible for me to start a career in Silicon Valley. I believe – if I may say so – that I would be an asset to the US economy, rather than a burden. Preventing me from being a part of this great country – which, even with all its faults, I love – makes no logical sense.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="693476890">
+        
+
+
+<div class="info">
+    <a href="/2010-06-13/power-of-cloud-computing">
+         <div class="day">13th</div>
+        <div class="month">Jun</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="693476890"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">The Power of the Cloud</h1>
+                        
+
+                        <p>a.k.a. What It Feels Like Having Two Months Of Your Digital Life Wiped, And Then Subsequently Restored Thanks To Cloud Computing</p>
+
+<p>I’m usually pretty diligent about backing up regularly. I’ve even got a terabyte drive and a Time Capsule both setup to backup automatically. But these last few months have been quite eventful. I’ve finished up my first year of college at the California College of the Arts, moved into a new apartment, and took up a job at <a href="http://tapulous.com/" target="_blank">Tapulous</a>. With all this commotion, I never managed to take the time to setup my Time Capsule.</p>
+
+<p>As luck would have it, my hard drive dies on me last Friday, literally the same day I get the Time Capsule out of its box and end up putting off setting it up to the weekend. At the moment, I paniced a little, thinking of how catastrophic a two-month data loss would be. All my photos, my music, my work, my whole digital life… gone!</p>
+
+<p>So, though a little depressed, I decided to take the opportunity to perform a much-needed clean install. As I was setting up my most frequently used software, and putting back in all my accounts, I realized that I had not lost as much as I feared. The first sign was in re-installing 1Password, the app which contained all my password and important banking credentials. Luckily, I had set its database to be stored in my free <a href="https://www.dropbox.com/referrals/NTI1NTQwMDI5" target="_blank">Dropbox</a>* folder, which syncs automatically to the cloud. Getting that restored was as easy as typing my Dropbox credentials in.</p>
+
+<p>Through MobileMe, all my emails, calendars, address book, keychain and settings were preserved. I managed to recover my lost photos and music from my iPhone using Ecamm’s great <a href="http://www.ecamm.com/mac/phoneview/" target="_blank">PhoneView</a> app. My work was under source control, and was regularly pushed back onto my servers (git is amazing, really!). My Things library synced back from my iPhone onto my Mac. Various other services (including Google’s) kept track of other aspects of my digital life. It’s amazing how much data was able to survive this otherwise catastrophic crash. What couldn’t be recovered was restored to its month-ago state. This include most of my schoolwork, and business data. Thankfully, I hand’t done any schoolwork in the last month, and the data loss on that front was pretty minor overall.</p>
+
+<p>In order to make sure this never happens again, though, I have committed to keeping all of my data in the cloud. I signed up for a <a href="https://www.dropbox.com/referrals/NTI1NTQwMDI5" target="_blank">Dropbox Pro</a> account, to which I moved my iPhoto Library, Things Library and any folder where I store documents. As a bonus, I get all that data now synced up between any Mac I own, and my iPhone and iPad.</p>
+
+<p>I am now fully convinced that Cloud Computing is the biggest step technology has taken since the invention of the computer.</p>
+
+<p>* Full Disclosure: referral link, gets me an extra 500MB of storage, and gives you an extra 250MB if you sign up using that link.</p>
+                    
+
+    </article>
+
+    <article id="519122955">
+        
+
+
+<div class="info">
+    <a href="/2010-04-20/us-alcohol-drinking-age">
+         <div class="day">20th</div>
+        <div class="month">Apr</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="519122955"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p>The USA has long had one of the strictest alcohol policy of the world. While countries like China or Italy have no age limit on alcohol, and most of the rest of the world sets the limit at 16 to 18 years of age, the US maintains a 21 year old drinking age.</p>
+
+<p>Some people argue that all alcohol is inherently bad. This sentiment is what brought about prohibition in the 20’s, and as history has taught us, it was an utter and total disaster. Alcohol consumption actually increased, a majority of American citizens were turned into criminals (spreading the notion that crime is okay) and organized crime rose up to fill the demand.</p>
+
+<p>Alcohol diminishes your social inhibitions, and some people grow into a pattern of chronic drinking and become aggressive and unpleasant to be around. We have to realize that this is only a small subset of the much larger drinking population. Should everybody be punished, prohibition-style, for the few people who abuse alcohol? I don’t see the governments banning knives because some use them to stab people…</p>
+
+<p>So then, what makes 21 a fair age to let people consume alcohol? The most common response is “Kids shouldn’t be drinking… under 21s aren’t mature enough to drink responsibly.” Yet, they consider us mature enough to get a job, live by ourselves, go to jail, pay taxes, or even enroll in the army to fight and die for our country.</p>
+
+<p>The most sensible argument for the 21 age limit states that the law saves lives, citing statistics from the brief time in the 70’s when some states lowered the drinking age as a response to the Vietnam War, and alcohol-related fatalities went up. However, it’s a biased interpretation. The vast majority of deaths were because of drunk driving, and the solution to the problem is not to prohibit drinking (which, by the way, most people are going to do regardless of the law), but rather to educate people that they should never drive under the influence.</p>
+
+<p>This brings up the parallel of sex and condoms. The argument used to be that one should not have sex before marriage, period. Of course, people would still engage in premarital sex, and with the growing spread of HIV and teen pregnancy, it became an issue much like drunk driving still is today. However, we moved past our moral block, and told people “If you’re gonna have sex, use a condom!” Through education, most people today now use condoms when they have sex outside of a serious relationship.</p>
+
+<p>When we look at European countries where alcohol is much more accepted (I would drink wine with my family during meals, for example), we don’t see the delinquent apocalypse that nay-sayers predict for America, should we ever lower the restrictions. In fact, the alcohol-abuse situation is much worse in the USA, with the law, than in restriction-less Italy, or the rest of Europe. Prohibiting alcohol just adds extra incentive for youngsters wanting to rebel.</p>
+
+<p>On the other hand, there are many disadvantages to the strict American laws, first of which is that it turns a great many teens into criminals, and prevents us from enjoying a drink or a party legally. Not only that, but it also makes it extra difficult for us to enjoy nightlife in great urban areas, to go out and enjoy our favorite bands or djs. Even for adults, other annoying laws force all alcohol sales to stop at a certain time, meaning that most venues will close at that time, cutting our night short at 2am, or whatever the time restriction I’d in your particular county / state.</p>
+
+<p>I really think the US would do well to lower its drinking age to 18 and start to educate people on alcohol, rather than blindly prohibit its consumption.</p>
+                    
+
+    </article>
+
+    <article id="494950111">
+        
+
+
+<div class="info">
+    <a href="/2010-04-03/tether-ipad-iphone">
+         <div class="day">3rd</div>
+        <div class="month">Apr</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="494950111"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Tethering your iPad to your iPhone</h1>
+                        
+
+                        <p>So you bought a WiFi iPad, and you already have an iPhone. You don’t want to pay extra for yet another monthly 3G subscription, and/or you don’t want to wait for the 3G iPad to come out later this month. Thankfully, you can use your iPhone’s 3G connection on your iPad using the following magic recipe.</p>
+
+<p>You will need:<br>
+- A jailbroken iPhone. (Google for “blackra1n” if you need help with this)<br>
+- $9.99<br>
+- Optional ingredient: an extra battery pack for your iPhone, because this is pretty draining on the iPhone.<br>
+- A pinch of fairy dust to make things go extra smooth. (Just kidding about that one)</p>
+
+<p>Search for the app MyWi on Cydia and install it. That’ll also install another package manager called Rock. You will have to create a Rock ID. This will allow you to have a free 10-day trial of MyWi, and then to purchase it using your credit card or PayPal account.</p>
+
+<p>Using MyWi, create a WiFi network from your iPhone. You may want to give it a password, to prevent strangers from leeching off your connection. Connect from your iPad, and watch the magic happen. Don’t forget to turn MyWi off on your phone when you aren’t using it, or it’ll drain your its battery dry in no time.</p>
+                    
+
+    </article>
+
+    <article id="421008577">
+        
+
+
+<div class="info">
+    <a href="/2010-03-01/app-review-solution">
+         <div class="day">1st</div>
+        <div class="month">Mar</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="421008577"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">My Proposed Solution to the App Review Situation</h1>
+                        
+
+                        <p>What if any app could be posted to the App Store instantaneously, without having to go through a review. Apple would still review each app, to even higher quality standards than currently. If an app is approved, it would receive some kind of “Apple-approved” badge. If denied, the app would live on, but without the badge. Apple would kindly provide the developer with a reason for why it was rejected, worded in english (as opposed to the legalese they use now).</p>
+
+<p>Only approved apps would show up when one browses the App Store and in the rankings. Rejected apps could still be accessed through search (though approved apps would get priority in search results), and by knowing the iTunes store URL. Important updates (such as critical bug-fixes) would be instantaneous.</p>
+
+<p>Users can opt to only allow verified apps on their phones, if safety is a concern to them. Developers have the security of knowing Apple won’t kill their business on a whim.</p>
+                    
+
+    </article>
+
+    <article id="370974300">
+        
+
+
+<div class="info">
+    <a href="/2010-02-04/dont-ask-dont-tell">
+         <div class="day">4th</div>
+        <div class="month">Feb</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="370974300"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">A Short Case for Don’t Ask Don’t Tell</h1>
+                        
+
+                        <p>I think we’re missing the point. The Don’t Ask Don’t Tell policy doesn’t withhold any rights from gay men and women serving in the military. Serving in the army is a very tough job, and the soldiers need to focus on the job to be done rather than on their differences.</p>
+
+<p>The policy is not asking gay men and women to lie, or renounce their sexual orientation. Rather, it’s about asking all soldiers to distance themselves from their personal feelings in order to give their full attention on the job to be done.</p>
+
+<p>Ideally, this would not be an issue and the military would be able to function just as well with openly gay members, but the reality is that that would make other members uncomfortable, cause a division within the force and damage the social dynamic of the military.</p>
+                    
+
+    </article>
+
+    <article id="355260908">
+        
+
+
+<div class="info">
+    <a href="/2010-01-26/imagine">
+         <div class="day">26th</div>
+        <div class="month">Jan</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="355260908"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p>Imagine a site or service that would analyze your whole Twitter stream and analyze each tweet to figure out your mood at the time. Imagine that it could aggregate that data, figure out patterns and report it in a meaningful way. Think of it as a <a href="http://www.mint.com/" target="_blank">Mint</a> for your happiness rather than for your financials.</p>
+
+<p>It could also help you correlate this data with other data, such as global / average happiness, Facebook data such as the friends you currently communicate most with or your relationship status, political and economical factors, your personal financials (by integrating with Mint), your eating habits, or anything else that could affect your happiness.</p>
+
+<p>Many of us record our thoughts and feelings online through Twitter. When we’re happy, maybe because we just saw the greatest movie ever (Avatar), or because we had a great date with our significant other, we tweet about it. When we’re drunk, angry, frustrated, tired, relaxed and so on, we’ll tweet about it. That’s one huge pile of seemingly useless and insignificant thoughts – we’ve all heard the stereotype of the Twitter-addict who tweets about what he had for breakfast – but used and compounded as statistical data, it could be very powerful.</p>
+                    
+
+    </article>
+
+
+            <!-- posts-end -->
+
+            
+
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-215884-12']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+
+
+</body>
+</html>
+
+
+

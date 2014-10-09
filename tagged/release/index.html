@@ -1,0 +1,504 @@
+
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+    <title>Posts Tagged &ldquo;release&rdquo; &mdash; Kenneth Ballenegger</title>
+    <meta name="description" content="Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at FreshPay. Previously, I was the architect behind Chartboost. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+" />
+
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+
+    <link href="//get.pictos.cc/fonts/2215/1" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <link rel="icon" href="/static/images/favicon.png" type="image/png" />
+
+    <script src="/static/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/jquery.lightbox.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/less-1.3.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/source.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <header>
+        <div id="title">
+            <a href="/">
+                <div id="crown"></div>
+                <h1>Kenneth Ballenegger</h1>
+                <p>“I’m a developer and designer. I love making cool stuff.”</p>
+            </a>
+        </div>
+    </header>
+
+    <div id="lightbox" class="hidden"></div>
+
+    <div id="container">
+
+        <div id="sidebar">
+
+    <p><img id="headshot" src="/static/images/photo.png" alt="Kenneth Ballenegger" /></p>
+    <p id="about">
+        Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at <a href="http://hello.freshpay.com/">FreshPay</a>. Previously, I was the architect behind <a href="https://www.chartboost.com">Chartboost</a>. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+
+    </p>
+
+    <nav>
+        <ul>
+            <li><span class="pictos">@</span><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
+            <li><span class="pictos">r</span><a href="http://kenneth.ballenegger.com/dl/resume2014.pdf" target="_blank">View my resum&eacute;</a></li>
+            <hr />
+            <div class="nav-section-title">Categories</div>
+            <li><span class="pictos">a</span><a href="/tagged/articles">Articles</a></li>
+            <li><span class="pictos">d</span><a href="/tagged/development">Software &amp; Development</a></li>
+            <li><span class="pictos">s</span><a href="/tagged/schoolwork">Schoolwork</a></li>
+            <li><span class="pictos">p</span><a href="/tagged/photography">Photography</a></li>
+        </ul>
+    </nav>
+
+    <footer>
+        <p><a href="/archive">Archive</a></p>
+        <p>Copyright © Kenneth Ballenegger</p>
+    </footer>
+
+</div>
+
+
+
+        <div id="content">
+
+            <!-- posts-start -->
+
+
+
+    <article id="36222697891">
+        
+
+
+<div class="info">
+    <a href="/2012-11-21/web-3-0-help-site-chartboost">
+         <div class="day">21st</div>
+        <div class="month">Nov</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="36222697891"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://blog.chartboost.com/post/36221629171/web-3-0-help-site">Web 3.0 at Chartboost</a></h1>
+
+                        
+                            <p><em>This is an article I originally wrote for the Chartboost blog.</em></p>
+
+<p>For the sake of brevity, we’re going to dub the next generation of web app development “Web 3.0.” This entails a collection of new technologies and new ideas, which have become possible only recently with the large advances made by modern browsers.</p>
+
+<p>What does this mean? This means creating web <em>applications</em>, not sites. We believe the server side is a web <em>service</em>, while the client side is the <em>application</em>. The server provides an API, and the client is a self-contained app which uses this API. A mobile app would be an equal citizen and use the exact same API.</p>
+
+<p>We think these ideas are the future, and as we grow our team and our capabilities, we are diving into them head first. The first of these projects—and somewhat of a testbed for what our dashboard is going to become—is none other than the new <a href="https://help.chartboost.com" target="_blank">Chartboost Help site</a>.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/desktop.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">The help site.</p>
+
+<p>So without further ado, these are some of the cool new things we’re trying with the new help site:</p>
+
+<h5>Push State</h5>
+
+<p>Perhaps the first thing you will notice is that navigating the site does not involve any page refreshes. Rather, this is done through a new technology called “Push State.” It lets a web app manipulate the browser history, essentially faking navigation and inserting its own JavaScript callbacks instead of reloads.</p>
+
+<p>When moving between pages, the HTML is never replaced, which means that elements of the app can stay on screen, and even be animated, while the new content is being loaded. On the help site, a great example of this is the animation in the title part of the content, as well as the bouncing icons on the left.</p>
+
+<p>This also makes the entire site feel more responsive and faster, since the user can be kept busy with animations, while a request to the server is happening in the background. That, and the requests are much smaller, since all that’s needed is the article content, and none of the layout or supporting files. Routing is done purely in JavaScript, and loading any URL natively from the server simply returns the same HTML file and routing code, which knows how to directly load the requested article.</p>
+
+<h5>JSON-API driven</h5>
+
+<p>This goes hand in hand with the above: now that we don’t require fully rendered HTML pages to be returned from the server, the server can now simply provide an elegant REST API. This API uses the full power of HTTP: versioning and authentication is done through headers, input is sent as JSON in the request body, and HTTP verbs are used.</p>
+
+<h5>Responsive</h5>
+
+<p>In an ever-connected world, and with the proliferation of mobile devices from smartphones to tablets, we think it’s becoming ever more important for the web to look its best on every device out there. Mobile-optimized sites just don’t cut it; a smartphone deserves to have the same full experience as a widescreen desktop computer.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/mobile.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">The help site, on an iPhone.</p>
+
+<p>The help site, as well as this very blog, are responsive designs. They adjust and are fully functional on all devices from iPhone to Cinema Displays. To achieve that, we make use of CSS <code>@media</code> queries as well as <code>rem</code> and percent-based sizing. We used the <a href="http://foundation.zurb.com/" target="_blank">Foundation</a> framework for its built-in responsive grid.</p>
+
+<h5>Vector (Icon Fonts &amp; CSS)</h5>
+
+<p>Another big recent change is the proliferation of “retina” (high-resolution) screens. They’ve been around for a while on iPhones, and are now expanding to Android devices, tablets, and computers. This is most commonly done by doubling the pixel-to-point ratio, and on iOS it is common to include double resolution assets by suffixing <code>@2x</code> to the image name.</p>
+
+<p>We think, however, that for UI work, native rendering and vector are much better options than images. So for the help site, we use a combination of icon fonts and CSS3 properties to build up the entirety of the UI. <strong>There are practically no images in the help site’s UI!</strong></p>
+
+<h5>SCSS</h5>
+
+<p>Another new technology we’ve made use of is CSS-preprocessing, through <a href="http://sass-lang.com/" target="_blank">SCSS</a>. This helps make our CSS code a lot cleaner and re-usable: using mixins (which are kind of like functions) for common prefixed properties, and variable dependencies on colors:</p>
+
+<pre><code>$button-green-one-textcolor : #FFFFFF;
+$button-green-one-border : saturate(darken($primary-    color,11%), 1%);
+$button-green-one-light-inset : #FFFFFF; /* Will be used inside an RGBA with opacity */
+$button-green-bg-gradient-start : darken($primary-color, 1%);
+$button-green-bg-gradient-end : saturate(lighten($primary-color, 7%), 7.5%); 
+</code></pre>
+
+<p>You might have noticed that this blog and the new help site look similar. They actually share the same SCSS source, with only few differences, like the primary color being changes from blue to green. That, along with some other neat SCSS features like nesting allow for much cleaner and much more reusable CSS code.</p>
+
+<h5>Markdown</h5>
+
+<p>We believe the entire team should be able to write and edit help articles. <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> is a fantastically simple markup language designed around the idea that it should look like plain text. A Markdown source file should be as readable as the output it produces; and indeed, it is far more natural to write in Markdown than HTML. Thus, our help articles are written in <a href="http://github.github.com/github-flavored-markdown/" target="_blank">GitHub-flavored Markdown</a>.</p>
+
+<p>Since our documentation contains a fair amount of code samples, it was important for us to support GitHub-style code blocks, as well as native syntax highlighting. As a simple example, here is our <a href="https://help.chartboost.com/documentation/ios" target="_blank">iOS Integration article</a>, and its <a href="https://raw.github.com/ChartBoost/articles/master/documentation/ios/index.md" target="_blank">source code</a>.</p>
+
+<h5>GitHub</h5>
+
+<p>Help content, much like source code, is something that multiple people collaborate on, and which can benefit from versioning and branching. Instead of re-inventing the wheel ourselves, we decided to pick a tool we already use every day as a team: git and <a href="https://www.github.com/" target="_blank">GitHub</a>. The source code for all of our help articles (and its messy history) is all hosted publicly on our GitHub. <a href="https://www.github.com/ChartBoost/articles" target="_blank">Check it out!</a> And who knows, maybe somebody will even send us a Pull Request at some point.</p>
+
+<h5>Design</h5>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/sketches.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">Original paper sketches</p>
+
+<p>Going into it, we knew design was going to be a crucial part of this. What we had before really sucked, and was not up to our standard.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/mocks.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">Alternate directions</p>
+
+<p>We went through several iterations over a week, before settling on the current design.</p>
+
+<hr>
+<p>We believe that the web is finally reaching a tipping point. The culmination of a decade of incremental improvements to web technologies is upon us, and lets us do things in a way that is radically new and better. If this is as exciting to you as it is to us, why don’t you throw us a line? <a href="https://chartboost.com/web/jobs" target="_blank">We’re hiring!</a></p>
+<p>(Source: <a href="http://chartboost.tumblr.com/post/36221629171/web-3-0-help-site" title="chartboost">chartboost</a>)</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="20668660473">
+        
+
+
+<div class="info">
+    <a href="/2012-04-07/redesign">
+         <div class="day">7th</div>
+        <div class="month">Apr</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="20668660473"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p><a href="http://kswizz.com/image/20668660473"><img src="http://33.media.tumblr.com/tumblr_m24lbvAFcj1qae51go1_1280.png" alt="Over the past week, I&amp;#8217;ve quietly redesigned this blog to be somewhat up to my current standards. Before, I was using a customized version of Jake Paul&amp;#8217;s theme, Solstice, which while attractive, was not my own work.
+
+There were quite a few things I wanted to achieve with this redesign:
+
+Most importantly, I wanted to have clear and easily legible typography on articles. This is, after all, a blog, and must serve its primary function above all. I also wanted to give myself a unique and somewhat more consistent personal brand, which I think this succeeds in doing.
+I wanted the header to be a window into a photographic snapshot. It will be either selected randomly from a selection of my best shots, or updated on a semi-regular schedule. The end goal being: to push myself to take more and better photos, more often.
+Lastly, I wanted to try to use some cool modern technologies and ideas. The header uses subtle parallax scrolling, which I think looks gorgeous. The styles is done in a LESS stylesheet, which makes coding CSS a breeze. I&amp;#8217;m using semantic HTML 5 tags, like header and article, and using a few CSS3 animations. All in all, this was a fun and light coding exercise.
+For a fun easter egg, click the little expand icon at the very top-left of any page.
+
+Overall, I&amp;#8217;m very satisfied with the result, but will no doubt keep tweaking it over time.
+
+Credit where credit is due: I&amp;#8217;ve drawn inspiration from many places, including: Sebastiaan de With, Dustin Curtis, and Hero's parallax header. I also used Andy Davies' pattern, light wool."></a></p>
+
+                        
+                            <p></p>
+<p>Over the past week, I’ve quietly redesigned this blog to be somewhat up to my current standards. Before, I was using a customized version of Jake Paul’s theme, <a href="http://solsticetheme.tumblr.com/post/294405565/solstice-theme" target="_blank">Solstice</a>, which while attractive, was not my own work.</p>
+
+<p>There were quite a few things I wanted to achieve with this redesign:</p>
+
+<ul>
+<li><p>Most importantly, I wanted to have clear and easily legible typography on articles. This is, after all, a blog, and must serve its primary function above all. I also wanted to give myself a unique and somewhat more consistent personal brand, which I think this succeeds in doing.</p></li>
+<li><p>I wanted the header to be a window into a photographic snapshot. It will be either selected randomly from a selection of my best shots, or updated on a semi-regular schedule. The end goal being: to push myself to take more and better photos, more often.</p></li>
+<li><p>Lastly, I wanted to try to use some cool modern technologies and ideas. The header uses subtle parallax scrolling, which I think looks gorgeous. The styles is done in a LESS stylesheet, which makes coding CSS a breeze. I’m using semantic HTML 5 tags, like <code>header</code> and <code>article</code>, and using a few CSS3 animations. All in all, this was a fun and light coding exercise.</p></li>
+</ul>
+<p><em>For a fun easter egg, click the little expand icon at the very top-left of any page.</em></p>
+
+<p>Overall, I’m very satisfied with the result, but will no doubt keep tweaking it over time.</p>
+
+<p><strong>Credit where credit is due</strong>: I’ve drawn inspiration from many places, including: <a href="http://dewith.com/" target="_blank">Sebastiaan de With</a>, <a href="http://dcurt.is/" target="_blank">Dustin Curtis</a>, and <a href="http://themetrust.com/demos/hero/" target="_blank">Hero</a>'s parallax header. I also used Andy Davies' pattern, <a href="http://subtlepatterns.com/?p=1153" target="_blank">light wool</a>.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="8624456381">
+        
+
+
+<div class="info">
+    <a href="/2011-08-07/macchiato">
+         <div class="day">7th</div>
+        <div class="month">Aug</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="8624456381"
+        data-tumblr-notes="7"
+    ><span class="kudos-value">7</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Macchiato</h1>
+                        
+
+                        <p>This past June, I attended my very first WWDC. The conference, the people and the parties were all amazing, and it was definitely a highlight. Inspired by the spirit of the conference, and all the new technologies presented, I set out to conquer my laziness and build and ship a new app.</p>
+
+<p>I’m a huge fan of <a href="http://daringfireball.net/projects/markdown/" target="_blank">Markdown</a>. So much so that I write nearly everything in it. From emails and notes, to documentation and blog posts. Unfortunately, writing Markdown meant one of two things for me: either launching TextEdit and switching it to plain text mode, or launching TextMate and writing in a code editor. Neither were really suited to the task.</p>
+
+<p>To remedy this, I built Macchiato. I made full use of Lion’s new technologies. In fact, Macchiato <em>only</em> works on Lion. You’ve got full-screen mode, auto-save and versioning. The internals of the app uses <code>NSRegularExpression</code>, sandboxing, Automatic Reference Counting, and several other Lion-only APIs.</p>
+
+<p>Macchiato is about being the very best at doing one thing: writing in Markdown. I’ve tried to keep an emphasis on usability, design and typography. I wanted to make it a joy to use, and for me it did the trick. I use it every day.</p>
+
+<p><a href="http://getmacchiato.com/" target="_blank">Check out Macchiato!</a></p>
+
+<p><a href="http://getmacchiato.com/" target="_blank"><img src="http://media.tumblr.com/tumblr_lpl4p7Pfh41qawml6.png" alt=""></a></p>
+                    
+
+    </article>
+
+    <article id="4152960241">
+        
+
+
+<div class="info">
+    <a href="/2011-03-27/mongomodel">
+         <div class="day">27th</div>
+        <div class="month">Mar</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="4152960241"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="https://github.com/kballenegger/MongoModel">MongoModel</a></h1>
+
+                        
+                            <p>MongoModel is a simple and lightweight ORM for MongoDB and PHP. I finally got around to posting it on GitHub. It’s a simple piece of code, but it’s the backbone for many of my recent projects, including <a href="http://kswizz.com/2011-03-25/meet-chartboost" target="_blank">ChartBoost</a>'s entire backend.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="4152521875">
+        
+
+
+<div class="info">
+    <a href="/2011-03-27/azure-license">
+         <div class="day">27th</div>
+        <div class="month">Mar</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="4152521875"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">The Azure License: Meaningful Attribution</h1>
+                        
+
+                        <p><em>I’m updating and re-releasing this from my old blog. Feel free to use the license in any project. No need to attribute me, the license itself is released into the public domain.</em></p>
+
+<p>Open-source licensing can be a real pain. Some licenses are nearly impossible to decipher, while some (namely—the GNU GPL) are just <a href="http://www.red-sweater.com/blog/825/getting-pretty-lonely" target="_blank">pure evil</a>.</p>
+
+<p>I have been trying to find a software license which, like the Creative Commons Attribution license, would let the licensee do pretty much anything with the software, except it would require attribution in a meaningful way. That is to say, a non-intrusive mention in the documentation or about box.</p>
+
+<p>The MIT license came closest to this, and it is the base on which the Azure License was written.</p>
+
+<p>A good way to give attribution, as required by the license, would be a friendly “Contains code by Copyright Holder [linked]” or “Special thanks to Copyright Holder [linked]” in the about box.</p>
+
+<pre><code>The Azure License
+
+Copyright (c) {Year} {Copyright Holder}
+
+Attribute to {Copyright Holder} - {url}
+
+You (the licensee) are hereby granted permission, free of charge,
+to deal in this software or source code (this "Software") without
+restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, and/or sublicense this
+Software, subject to the following conditions:
+
+You must give attribution to the party mentioned above, by name and
+by hyperlink, in the about box, credits document and/or
+documentation of any derivative work using a substantial portion of
+this Software.
+
+You may not use the name of the copyright holder(s) to endorse or
+promote products derived from this Software without specific prior
+written permission.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THIS SOFTWARE OR THE USE OR OTHER DEALINGS IN THIS
+SOFTWARE.
+
+<a href="http://license.azuretalon.com/" target="_blank">http://license.azuretalon.com/</a>
+</code></pre>
+                    
+
+    </article>
+
+    <article id="3024765786">
+        
+
+
+<div class="info">
+    <a href="/2011-01-30/van-de-graaf">
+         <div class="day">30th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="3024765786"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://vandegraaf.azuretalon.com/">Van de Graaf Generator</a></h1>
+
+                        
+                            <p>If you’re a graphic designer, you’re probably familiar with <a href="http://en.wikipedia.org/wiki/Canons_of_page_construction" target="_blank">canons of page construction</a>. In book design, canons of page construction help you use aesthetically pleasing and balanced text block and margins. It has been used by many typographers throughout the ages, starting with the Gutenberg bible.</p>
+
+<p>Constructing them, though, is somewhat of a pain. You have to go through a long series of steps, either in illustrator or by hand, constructing the text block geometrically. So I decided to write a small web app to do it automatically. <a href="http://vandegraaf.azuretalon.com/" target="_blank">Check it out online!</a> Currently, only the most common canon is supported, but in the future I will add any canon I find the need to construct to the project.</p>
+
+<p>If you’re more of a developer, I’ve open sourced the project on <a href="https://github.com/kballenegger/Van-De-Graaf-Generator" target="_blank">github</a> under the Azure License.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="752229763">
+        
+
+
+<div class="info">
+    <a href="/2010-06-29/ilaugh-lite-2-9">
+         <div class="day">29th</div>
+        <div class="month">Jun</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="752229763"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">iLaugh 2.9 is out!</h1>
+                        
+
+                        <p>iLaugh 2.9, in its Lite edition, is now out in the App Store, bringing to you a number of new features, fixes and enhancements.</p>
+
+<p>Here’s what’s new:</p>
+
+<ul>
+<li>iOS 4.0 compatibility</li>
+<li>Multitasking and fast app switching support: When you come back to iLaugh, you’ll be taken right back to the joke you were reading before you left</li>
+<li>Now loads a lot faster due to additional caching</li>
+<li>Less promotional messages</li>
+<li>Better ads, leveraging Apple’s iAd network (to be launched July 1st)</li>
+<li>Various UI improvements</li>
+<li>Important bug fixes</li>
+</ul>
+<p>Check for updates in iTunes – or if you haven’t yet, check out <a href="http://bit.ly/ilaughlite" target="_blank">iLaugh</a>!</p>
+                    
+
+    </article>
+
+    <article id="511763390">
+        
+
+
+<div class="info">
+    <a href="/2010-04-10/ilaugh-ipad">
+         <div class="day">10th</div>
+        <div class="month">Apr</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="511763390"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p><a href="http://bit.ly/ilaugh-ipad"><img src="http://www.tumblr.com/photo/1280/kswizz/511763390/1/tumblr_l0oruiwiK51qae51g" alt="iLaugh Premium is now available for the iPad.
+
+When running on an iPad, it features a new interface thought out specifically for the iPad.
+This version also fixes Facebook Share, for both iPhone and iPad.
+
+Only the Premium edition has iPad support. There currently are no plans to bring the Lite edition to the iPad. So if you&amp;#8217;ve been holding out for some great new features to buy the Premium edition, now is the time.
+
+Check your updates, or if you don&amp;#8217;t have iLaugh Premium yet, download it now!"></a></p>
+
+                        
+                            <p></p>
+<p>iLaugh Premium is now available for the iPad.</p>
+
+<p>When running on an iPad, it features a new interface thought out specifically for the iPad.<br>
+This version also fixes Facebook Share, for both iPhone and iPad.</p>
+
+<p>Only the Premium edition has iPad support. There currently are no plans to bring the Lite edition to the iPad. So if you’ve been holding out for some great new features to buy the Premium edition, now is the time.</p>
+
+<p>Check your updates, or if you don’t have iLaugh Premium yet, <a href="http://bit.ly/ilaugh-ipad" target="_blank">download it now!</a></p>
+                        
+
+                    
+
+    </article>
+
+
+            <!-- posts-end -->
+
+            
+
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-215884-12']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+
+
+</body>
+</html>
+
+
+

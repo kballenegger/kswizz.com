@@ -1,0 +1,1727 @@
+
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+    <title>Posts Tagged &ldquo;development&rdquo; &mdash; Kenneth Ballenegger</title>
+    <meta name="description" content="Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at FreshPay. Previously, I was the architect behind Chartboost. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+" />
+
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+
+    <link href="//get.pictos.cc/fonts/2215/1" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <link rel="icon" href="/static/images/favicon.png" type="image/png" />
+
+    <script src="/static/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/jquery.lightbox.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/less-1.3.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/source.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <header>
+        <div id="title">
+            <a href="/">
+                <div id="crown"></div>
+                <h1>Kenneth Ballenegger</h1>
+                <p>“I’m a developer and designer. I love making cool stuff.”</p>
+            </a>
+        </div>
+    </header>
+
+    <div id="lightbox" class="hidden"></div>
+
+    <div id="container">
+
+        <div id="sidebar">
+
+    <p><img id="headshot" src="/static/images/photo.png" alt="Kenneth Ballenegger" /></p>
+    <p id="about">
+        Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at <a href="http://hello.freshpay.com/">FreshPay</a>. Previously, I was the architect behind <a href="https://www.chartboost.com">Chartboost</a>. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+
+    </p>
+
+    <nav>
+        <ul>
+            <li><span class="pictos">@</span><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
+            <li><span class="pictos">r</span><a href="http://kenneth.ballenegger.com/dl/resume2014.pdf" target="_blank">View my resum&eacute;</a></li>
+            <hr />
+            <div class="nav-section-title">Categories</div>
+            <li><span class="pictos">a</span><a href="/tagged/articles">Articles</a></li>
+            <li><span class="pictos">d</span><a href="/tagged/development">Software &amp; Development</a></li>
+            <li><span class="pictos">s</span><a href="/tagged/schoolwork">Schoolwork</a></li>
+            <li><span class="pictos">p</span><a href="/tagged/photography">Photography</a></li>
+        </ul>
+    </nav>
+
+    <footer>
+        <p><a href="/archive">Archive</a></p>
+        <p>Copyright © Kenneth Ballenegger</p>
+    </footer>
+
+</div>
+
+
+
+        <div id="content">
+
+            <!-- posts-start -->
+
+
+
+    <article id="50429268286">
+        
+
+
+<div class="info">
+    <a href="/2013-05-14/fibonacci-the-y-combinator-in-c">
+         <div class="day">14th</div>
+        <div class="month">May</div>
+        <div class="year">2013</div>
+    </a>
+    <a class="kudos"
+        data-post-id="50429268286"
+        data-tumblr-notes="4"
+    ><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Fibonacci &amp; the Y-Combinator in C</h1>
+                        
+
+                        <p>Be warned, this post describes something you should <em>never</em> actually use in production code. However, we will get to play with some very cool concepts and techniques: <strong>functional programming in C</strong>, closures, implementing autorelease pools from scratch, data structures (linked lists and b-trees), bitwise operations, recursivity, memoization, and the Y-Combinator. If this sounds crazy, don’t be scared. It’s all fairly simple when broken down.</p>
+
+<p>Let’s back up for a second, however. What we’re going to create here is a program that returns a number in the <a href="https://en.wikipedia.org/wiki/Fibonacci_number" target="_blank">Fibonacci sequence</a>. The Fibonacci sequence is a sequence of numbers in which each integer is equal to the previous two integers added: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, etc.</p>
+
+<p>There are many ways of calculating Fibonacci numbers, but the naïve implementation which follows the mathematical definition is this:</p>
+
+<pre><code>unsigned long long fib(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+}
+</code></pre>
+
+<p>So let’s make a program out of this:</p>
+
+<pre><code>// fib.c
+
+#import &lt;stdlib.h&gt;
+#import &lt;stdio.h&gt;
+
+// let's make life easier for ourselves:
+typedef unsigned long long ull;
+
+ull fib(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+}
+
+int main(int argc, char **argv) {
+    int upto = 20; // which number to compute
+    if (argc &gt;= 2) upto = strtol(argv[1], NULL, 10);
+    printf("Calculating fib(%d)...\n", upto);
+    ull solution = fib(upto);
+    printf("fib(%d) == %llu\n", upto, solution);
+}
+</code></pre>
+
+<p>We’re going to be using <a href="http://clang.llvm.org/" target="_blank">clang</a> as our compiler. Let’s compile and run our program:</p>
+
+<pre><code>$ clang -o fib -O3 fib.c
+$ ./fib 17
+Calculating fib(17)...
+fib(17) == 1597
+</code></pre>
+
+<p>However, as you’ll see if you try to compute <code>fib(200)</code>, this will not scale. In computer science terms, fib is a function which requires exponential time as <code>n</code> increases. <code>O(2^n)</code>. For example:</p>
+
+<pre><code>fib(5) [A] calls fib(4) [B] and fib(3) [C]
+fib(4) [B] calls fib(3) [D] and fib(2) [E]
+fib(3) [C] calls fib(2) [F] and fib(1) [G]
+fib(3) [D] calls fib(2) [H] and fib(1) [I]
+fib(2) [E] returns 1
+fib(2) [F] returns 1
+fib(1) [G] returns 1
+fib(2) [H] returns 1
+fib(1) [I] returns 1
+</code></pre>
+
+<p>As you can see, the function is called multiple times with the same argument, and for every time <code>n</code> is decremented (until you reach 1 or 2), the number of function calls increases by a power of two. Imagine how much worse it would be for <code>fib(200)</code>. The number is so great that even given unlimited memory and energy, your computer would require billions of years to finish the computation.</p>
+
+<h3>Closures</h3>
+
+<p>A closure is an anonymous function which may use and capture variables from its parent scope. Imagine this code, in JavaScript:</p>
+
+<pre><code>function print_element_plus(x) {
+    return function(e) {
+        console.log("-&gt; " + (x + e));
+    }
+}
+[1, 2, 3].forEach(print_element_plus(2));
+// -&gt; 3
+// -&gt; 4
+// -&gt; 5
+</code></pre>
+
+<p><code>print_element_plus</code> returns an anonymous function (aka. a closure) which takes one argument and adds it to <code>x</code>. The variable <code>x</code> is captured by the closure, and even though it goes out of scope when <code>print_element_plus</code> returns, it is still retained by the closure until the closure itself goes out of scope and is freed.</p>
+
+<p>C does not natively support closures. Although similar functionality can be implemented in pure C fairly easily using a struct containing the environment and a function pointer, we’re going to instead take advantage of clang’s built-in support for the blocks extension to the language:</p>
+
+<pre><code>$ clang -fblocks -o fib -O3 fib.c -lBlocksRuntime
+</code></pre>
+
+<p>In C, a block is simply another name for a closure, and its syntax is very similar to defining a function pointer. So with that in mind, let’s rewrite our <code>fib</code> function as a block.</p>
+
+<pre><code>__block ull(^fib)(int) = ^ull(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+};
+</code></pre>
+
+<p><em>Note: this should go in <code>main()</code> and the <code>__block</code> is necessary to enable explicit recursion, so that the block may reference itself.</em></p>
+
+<h3>The Y-Combinator</h3>
+
+<p>Recursion implies that a function has a name by which to refer to itself, so it may call itself. While the example above works, it relies on the block capturing the variable to which it is assigned from the parent scope. This is not super clean, and relies on a implementation detail of the C programming language. Identical code would not work in, for example, lisp.</p>
+
+<p>Since we are giving ourself the restriction of not explicitly using the <code>fib</code> variable in order to recur, we will wrap the function in a function whose first and only argument is a function with which to recur. We’ll call this function the generator, because when called with <code>fib</code> as its argument, it will return the correct <code>fib</code> function.</p>
+
+<pre><code>typedef ull(^fib_f)(int);
+fib_f(^fib_generator)(fib_f) = ^fib_f(fib_f recur) {
+    return ^ull(int n) {
+        if (n &lt; 3) return 1;
+        return recur(n-1) + recur(n-2);
+    };
+};
+</code></pre>
+
+<p>This is where the Y-Combinator comes in handy. The <a href="http://mvanier.livejournal.com/2897.html" target="_blank">Y-Combinator</a> is a function which enables recursion, using only anonymous functions, and without using recursion in its implementation. It looks somewhat like this (in Scheme):</p>
+
+<pre><code>(define Y 
+  (lambda (f)
+    ((lambda (x) (x x))
+     (lambda (x) (f (lambda (y) ((x x) y)))))))
+</code></pre>
+
+<p><a href="http://mvanier.livejournal.com/2897.html" target="_blank">This article</a> by Mike Vanier does a far better job of explaining the Y-Combinator than I ever could. Suffice to say that when called with a generator function, as defined above, the Y-Combinator will return the recursive <code>fib</code> function. With the Y-Combinator, we could say:</p>
+
+<pre><code>fib_f fib = Y(fib_generator);
+</code></pre>
+
+<p>Due to C’s explicit typing, declaring higher-order functions can quickly become cumbersome, even with <code>typedef</code>s. So in order to get around that, we’re going to declare a single type to hold every function in our program. We’re going to call it <code>_l</code>, short for lambda.</p>
+
+<pre><code>typedef union _l_t *_l;
+typedef union _l_t {
+    ull(^function_f)(int);
+    _l(^generator_f)(_l);
+} _l_t;
+</code></pre>
+
+<p>Wrapping the type in an union allows it to refer to itself. We’ll be adding a couple more block types to this union shortly, but for now our only two options are: the signature of the fib function, and the generator which both takes and returns a lambda (containing a fib function, though that is unspecified).</p>
+
+<p>Since this type is declared as a pointer, it should live on the heap, and therefore we should write initializer functions for it:</p>
+
+<pre><code>_l function(ull(^f)(int)) {
+    _l data = malloc(sizeof(_l_t));
+    data-&gt;function_f = Block_copy(f);
+    return data;
+}
+_l generator(_l(^f)(_l)) { /* ... same thing ... */ }
+</code></pre>
+
+<p>Let’s ignore the fact that we’re leaking tons of memory for a moment (we’ll come back to that), and instead refactor our fib generator to use this new type:</p>
+
+<pre><code>_l fib_generator = generator(^_l(_l recur) {
+    return function(^ull(int n) {
+        if (n &lt;= 2) return 1;
+        return recur-&gt;function_f(n-1) + recur-&gt;function_f(n-2);
+    });
+});
+</code></pre>
+
+<p>In C, the basic Y-combinator above looks somewhat like this:</p>
+
+<pre><code>_l y_combine(_l fn) {
+    _l x = combiner(^_l(_l recur) {
+        return function(^ull(int n) {
+            _l resp = recur-&gt;combiner_f(recur);
+            return fn-&gt;generator_f(resp)-&gt;function_f(n);
+        });
+    });
+    return x-&gt;combiner_f(x);
+}
+</code></pre>
+
+<p>You will also need to add the combiner function type to your union, and create a constructor for it:</p>
+
+<pre><code>_l(^combiner_f)(_l);
+
+_l combiner(_l(^f)(_l)) { /* ... same as above ... */ }
+</code></pre>
+
+<p>We now have all the pieces in place to use the Y-combinator to replace our natively recursive implementation of <code>fib</code>:</p>
+
+<pre><code>_l fibonacci = y_combine(fib_generator);
+int upto = 20;
+if (argc &gt;= 2) upto = strtol(argv[1], NULL, 10);
+ull fib = fibonacci-&gt;function_f(upto);
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<h3>Auto-release pools</h3>
+
+<p>As you have probably noticed, the code above is unfortunately leaking tons of memory. Many of the functions we’ve written allocate <code>_l</code> unions, and these are never released. While we could attempt to always correctly release these as soon as they are no longer needed, a more interesting solution is to use an auto-release pool.</p>
+
+<p>Auto-release pools are a concept familiar to Objective-C programmers, since they are used extensively in all of Apple’s APIs. They work like this: You can create and flush pools, which nest like a stack. You can auto-release a pointer, which means that it is added to the topmost pool, and is freed when the pool is flushed.</p>
+
+<p>The simplest way of implementing auto-release pools is with two linked lists: the first to contain the objects that have been auto-released (this is the pool itself), and the second to contain the stack of pools. Lastly we’re going to need a static variable to refer to the top of the pool stack.</p>
+
+<pre><code>typedef struct autorelease_pool_t *autorelease_pool;
+typedef struct autorelease_pool_t {
+    void *p;
+    void(*fn)(void*);
+    autorelease_pool next;
+} autorelease_pool_t;
+
+typedef struct autorelease_pool_stack_t     *autorelease_pool_stack;
+typedef struct autorelease_pool_stack_t {
+    autorelease_pool head;
+    autorelease_pool_stack parent;
+} autorelease_pool_stack_t;
+
+static autorelease_pool_stack current_pool = NULL;
+</code></pre>
+
+<p>Creating a pool is easy, we just allocate a reference and push it to the top of the stack:</p>
+
+<pre><code>void push_autorelease_pool() {
+    autorelease_pool_stack new_pool = malloc(sizeof(autorelease_pool_stack_t));
+    new_pool-&gt;parent = current_pool;
+    new_pool-&gt;head = NULL;
+    current_pool = new_pool;
+}
+</code></pre>
+
+<p>Then we can write a function to add pointers to the pool. Since different types may have different free functions, we will also take a reference to the free function to use on the pointer as the second argument to the autorelease function:</p>
+
+<pre><code>void autorelease(void *p, void(*fn)(void*)) {
+    // If there is no current pool, we leak memory.
+    if (current_pool == NULL) return;
+
+    autorelease_pool head = malloc(sizeof(autorelease_pool_t));
+    head-&gt;p = p;
+    head-&gt;fn = fn;
+    head-&gt;next = current_pool-&gt;head;
+    current_pool-&gt;head = head;
+}
+</code></pre>
+
+<p>And finally, the magic happens when we flush the pool. We’ll simply loop through the current pool, call each element’s free function, and free the reference, and finally pop the pool off the stack:</p>
+
+<pre><code>void flush_autorelease_pool() {
+    while (current_pool-&gt;head != NULL) {
+        (*current_pool-&gt;head-&gt;fn)(current_pool-&gt;head-&gt;p);
+        autorelease_pool next = current_pool-&gt;head-&gt;next;
+        free(current_pool-&gt;head);
+        current_pool-&gt;head = next;
+    }
+    autorelease_pool_stack parent = current_pool-&gt;parent;
+    free(current_pool);
+    current_pool = parent;
+}
+</code></pre>
+
+<p>Now, in order to solve our memory leak issues in the code we wrote earlier, we must add code to auto-release the <code>_l</code> unions we allocate, and wrap <code>main</code> with an auto-release pool:</p>
+
+<pre><code>_l function(ull(^f)(int)) {
+    _l data = malloc(sizeof(_l_t));
+    data-&gt;function_f = Block_copy(f);
+
+    // these two lines have been added:
+    autorelease(data-&gt;function_f, (void(*)(void*))&amp;_Block_release);
+    autorelease(data, &amp;free);
+
+    return data;
+}
+</code></pre>
+
+<p>Since both y-combination and final execution allocate lambdas, we’ll want to wrap both main, and then the final execution itself in an auto-release pool:</p>
+
+<pre><code>int main(int argc, char **argv) {
+    // wrap in pool
+    push_autorelease_pool();
+
+    // ...
+
+    _l fibonacci = y_combine(fib_generator);
+    // ...
+
+    push_autorelease_pool();
+    ull fib = fibonacci-&gt;function_f(upto);
+    flush_autorelease_pool();
+
+    printf("Fibonacci number %d is %llu.\n", upto, fib);
+    flush_autorelease_pool();
+    return 0;
+}
+</code></pre>
+
+<h3>Memoization: Wrapping</h3>
+
+<p>While our code is now fully functional (ha, ha, coder pun…), it still is horribly inefficient. That’s because we still have not solved the inherent problem of the function having a time complexity of <code>O(2^n)</code>. This can be solved using <a href="https://en.wikipedia.org/wiki/Memoization" target="_blank">memoization</a>.</p>
+
+<p>Memoization is an optimization technique which consists of storing computations in memory when completed, so that they can be retrieved later on, instead of having to be re-computed. For <code>fib</code>, using memoization reduces the time complexity down to <code>O(n)</code>.</p>
+
+<p>In order to use memoization, we need a way to inject a function that will be executed before executing the <code>fib</code> function. We’ll call this wrapping, and as a first example, let’s just use wrapping to demonstrate how bad <code>O(2^n)</code> really is.</p>
+
+<pre><code>_l wrap(_l fn, _l wrap_with) {
+    return generator(^_l(_l recur) {
+        return function(^ull(int n) {
+
+            _l fn_ = function(^ull(int n) {
+                return fn-&gt;generator_f(recur)-&gt;function_f(n);
+            });
+            _l wrapped = function(^ull(int n) {
+                return wrap_with-&gt;wrapper_f(fn_, n);
+            });
+
+            return wrapped-&gt;function_f(n);
+        });
+    });
+}
+</code></pre>
+
+<p>Understanding this wrapping function still makes my brain hurt, but suffice to say that it takes a generator and a wrapper as arguments, and returns a generator. The resulting generator can be used in the Y-combinator, and every recursion of the original function will be replaced with a recursion of the wrapper function, which itself calls the original function.</p>
+
+<p>A simple wrapper function that will log every iteration looks like this:</p>
+
+<pre><code>_l log_wrapper = wrapper(^ull(_l f, int n) {
+    printf("About to generate # %d\n", n);
+    return f-&gt;function_f(n);
+});
+</code></pre>
+
+<p>And the final code that uses this looks like this:</p>
+
+<pre><code>_l wrapped_fibonacci = y_combine(wrap(fib_generator, log_wrapper));
+ull fib = wrapped_fibonacci-&gt;function_f(upto);
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<p>Your output should look <a href="https://gist.github.com/kballenegger/5566093" target="_blank">somewhat like this</a>. As you can see, calling <code>fib(20)</code> evaluates the function 13,529 times.</p>
+
+<h3>Memoization: Implementation</h3>
+
+<p>In order to write a memoization wrapper function, we need a data structure in which to store the results. Most examples of memoization use a hash table, but since the key in our case is an integer, I decided to go for something a little more exotic: a binary tree, based on the bits of the integer key.</p>
+
+<pre><code>typedef struct cache_node_t *cache_node;
+typedef struct cache_node_t {
+    bool is_leaf;
+    union {
+        struct {
+            cache_node one;
+            cache_node zero;
+        } node;
+        ull leaf;
+    } self;
+} cache_node_t;
+</code></pre>
+
+<p>We’ll also create some simple methods to create and destroy trees:</p>
+
+<pre><code>cache_node cache_tree_new() {
+    return calloc(1, sizeof(cache_node_t));
+}
+void cache_tree_free(cache_node node) {
+    if (!node-&gt;is_leaf) {
+        if (node-&gt;self.node.one != NULL) cache_tree_free(node-&gt;self.node.one);
+        if (node-&gt;self.node.zero != NULL) cache_tree_free(node-&gt;self.node.zero);
+    }
+    free(node);
+}
+</code></pre>
+
+<p>In order to store a value in the tree, we iterate through every bit in the int, traversing either through the <code>one</code> or <code>zero</code> node of the tree, and finally setting the <code>leaf</code> to the value we’re trying to cache:</p>
+
+<pre><code>void cache_tree_store(cache_node root, int key, ull value) {
+    cache_node node = root;
+    for (size_t i = 0; i &lt; sizeof(int) * 8; i++) {
+        bool direction = (bool)((key &gt;&gt; i) &amp; (unsigned int)1);
+        if (direction == 1) {
+            if (node-&gt;self.node.one == NULL) {
+                node-&gt;self.node.one = calloc(1, sizeof(cache_node_t));
+            }
+            node = node-&gt;self.node.one;
+        } else {
+            if (node-&gt;self.node.zero == NULL) {
+                node-&gt;self.node.zero = calloc(1, sizeof(cache_node_t));
+            }
+            node = node-&gt;self.node.zero;
+        }
+    }
+    // the last node should already be a leaf, if it isn't, we just created it
+    if (!node-&gt;is_leaf) {
+        node-&gt;is_leaf = true;
+    }
+    node-&gt;self.leaf = value;
+}
+</code></pre>
+
+<p>Looking up a value is essentially the same thing, with some additional code to report failures:</p>
+
+<pre><code>ull cache_tree_lookup(cache_node root, int key, bool *found) {
+    cache_node node = root;
+    for (size_t i = 0; i &lt; sizeof(int) * 8; i++) {
+        if (node == NULL || node-&gt;is_leaf) {
+            if (found) *found = false;
+            return 0;
+        }
+        bool direction = (bool)((key &gt;&gt; i) &amp; (unsigned int)1);
+        if (direction == 1) {
+            node = node-&gt;self.node.one;
+        } else {
+            node = node-&gt;self.node.zero;
+        }
+    }
+    if (node == NULL || !node-&gt;is_leaf) {
+        if (found) *found = false;
+        return 0;
+    }
+    if (found) *found = true;
+    return node-&gt;self.leaf;
+}
+</code></pre>
+
+<p>And finally, now that we have a tree in which to store cached results, we can write our memoization function. Here, we’re actually adding creating a function called <code>new_memoizer</code> which returns a new instance of the wrapper function with its own (auto-released) cache.</p>
+
+<pre><code>_l(^new_memoizer)() = ^_l {
+    cache_node root = cache_tree_new();
+    autorelease(root, (void(*)(void*))&amp;cache_tree_free);
+
+    return wrapper(^ull(_l f, int n) {
+        bool found;
+        ull cached = cache_tree_lookup(root, n, &amp;found);
+        if (found == true) {
+            return cached;
+        } else {
+            ull value = f-&gt;function_f(n);
+            cache_tree_store(root, n, value);
+            return value;
+        }
+    });
+};
+</code></pre>
+
+<p>So, with that, let’s try our program again, but with memoization:</p>
+
+<pre><code>_l fibonacci = y_combine(wrap(wrap(fib_generator, log_wrapper), new_memoizer()));
+
+push_autorelease_pool();
+ull fib = fibonacci-&gt;function_f(upto);
+flush_autorelease_pool();
+
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<p>As you can see in the output, this runs significantly faster:</p>
+
+<pre><code>Generate up to fib # 20...
+About to generate # 20
+About to generate # 19
+About to generate # 18
+About to generate # 17
+About to generate # 16
+About to generate # 15
+About to generate # 14
+About to generate # 13
+About to generate # 12
+About to generate # 11
+About to generate # 10
+About to generate # 9
+About to generate # 8
+About to generate # 7
+About to generate # 6
+About to generate # 5
+About to generate # 4
+About to generate # 3
+About to generate # 2
+About to generate # 1
+Fibonacci number 20 is 6765.
+</code></pre>
+
+<h3>Conclusion</h3>
+
+<p>You can peruse the final code used in this article in <a href="https://gist.github.com/kballenegger/5566254" target="_blank">this gist</a>.</p>
+
+<p>Now, that being said, if you ever have a need to implement a function to return a number in the Fibonacci sequence, it would be wise to forget everything I’ve said above, and just use the following:</p>
+
+<pre><code>ull fib(int n) {
+    if (n &lt;= 2) return 1;
+    ull first = 1, second = 1, tmp;
+    while (--n&gt;1) {
+        tmp = first + second;
+        first = second;
+        second = tmp;
+    }
+    return second;
+}
+</code></pre>
+                    
+
+    </article>
+
+    <article id="36222697891">
+        
+
+
+<div class="info">
+    <a href="/2012-11-21/web-3-0-help-site-chartboost">
+         <div class="day">21st</div>
+        <div class="month">Nov</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="36222697891"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://blog.chartboost.com/post/36221629171/web-3-0-help-site">Web 3.0 at Chartboost</a></h1>
+
+                        
+                            <p><em>This is an article I originally wrote for the Chartboost blog.</em></p>
+
+<p>For the sake of brevity, we’re going to dub the next generation of web app development “Web 3.0.” This entails a collection of new technologies and new ideas, which have become possible only recently with the large advances made by modern browsers.</p>
+
+<p>What does this mean? This means creating web <em>applications</em>, not sites. We believe the server side is a web <em>service</em>, while the client side is the <em>application</em>. The server provides an API, and the client is a self-contained app which uses this API. A mobile app would be an equal citizen and use the exact same API.</p>
+
+<p>We think these ideas are the future, and as we grow our team and our capabilities, we are diving into them head first. The first of these projects—and somewhat of a testbed for what our dashboard is going to become—is none other than the new <a href="https://help.chartboost.com" target="_blank">Chartboost Help site</a>.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/desktop.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">The help site.</p>
+
+<p>So without further ado, these are some of the cool new things we’re trying with the new help site:</p>
+
+<h5>Push State</h5>
+
+<p>Perhaps the first thing you will notice is that navigating the site does not involve any page refreshes. Rather, this is done through a new technology called “Push State.” It lets a web app manipulate the browser history, essentially faking navigation and inserting its own JavaScript callbacks instead of reloads.</p>
+
+<p>When moving between pages, the HTML is never replaced, which means that elements of the app can stay on screen, and even be animated, while the new content is being loaded. On the help site, a great example of this is the animation in the title part of the content, as well as the bouncing icons on the left.</p>
+
+<p>This also makes the entire site feel more responsive and faster, since the user can be kept busy with animations, while a request to the server is happening in the background. That, and the requests are much smaller, since all that’s needed is the article content, and none of the layout or supporting files. Routing is done purely in JavaScript, and loading any URL natively from the server simply returns the same HTML file and routing code, which knows how to directly load the requested article.</p>
+
+<h5>JSON-API driven</h5>
+
+<p>This goes hand in hand with the above: now that we don’t require fully rendered HTML pages to be returned from the server, the server can now simply provide an elegant REST API. This API uses the full power of HTTP: versioning and authentication is done through headers, input is sent as JSON in the request body, and HTTP verbs are used.</p>
+
+<h5>Responsive</h5>
+
+<p>In an ever-connected world, and with the proliferation of mobile devices from smartphones to tablets, we think it’s becoming ever more important for the web to look its best on every device out there. Mobile-optimized sites just don’t cut it; a smartphone deserves to have the same full experience as a widescreen desktop computer.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/mobile.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">The help site, on an iPhone.</p>
+
+<p>The help site, as well as this very blog, are responsive designs. They adjust and are fully functional on all devices from iPhone to Cinema Displays. To achieve that, we make use of CSS <code>@media</code> queries as well as <code>rem</code> and percent-based sizing. We used the <a href="http://foundation.zurb.com/" target="_blank">Foundation</a> framework for its built-in responsive grid.</p>
+
+<h5>Vector (Icon Fonts &amp; CSS)</h5>
+
+<p>Another big recent change is the proliferation of “retina” (high-resolution) screens. They’ve been around for a while on iPhones, and are now expanding to Android devices, tablets, and computers. This is most commonly done by doubling the pixel-to-point ratio, and on iOS it is common to include double resolution assets by suffixing <code>@2x</code> to the image name.</p>
+
+<p>We think, however, that for UI work, native rendering and vector are much better options than images. So for the help site, we use a combination of icon fonts and CSS3 properties to build up the entirety of the UI. <strong>There are practically no images in the help site’s UI!</strong></p>
+
+<h5>SCSS</h5>
+
+<p>Another new technology we’ve made use of is CSS-preprocessing, through <a href="http://sass-lang.com/" target="_blank">SCSS</a>. This helps make our CSS code a lot cleaner and re-usable: using mixins (which are kind of like functions) for common prefixed properties, and variable dependencies on colors:</p>
+
+<pre><code>$button-green-one-textcolor : #FFFFFF;
+$button-green-one-border : saturate(darken($primary-    color,11%), 1%);
+$button-green-one-light-inset : #FFFFFF; /* Will be used inside an RGBA with opacity */
+$button-green-bg-gradient-start : darken($primary-color, 1%);
+$button-green-bg-gradient-end : saturate(lighten($primary-color, 7%), 7.5%); 
+</code></pre>
+
+<p>You might have noticed that this blog and the new help site look similar. They actually share the same SCSS source, with only few differences, like the primary color being changes from blue to green. That, along with some other neat SCSS features like nesting allow for much cleaner and much more reusable CSS code.</p>
+
+<h5>Markdown</h5>
+
+<p>We believe the entire team should be able to write and edit help articles. <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> is a fantastically simple markup language designed around the idea that it should look like plain text. A Markdown source file should be as readable as the output it produces; and indeed, it is far more natural to write in Markdown than HTML. Thus, our help articles are written in <a href="http://github.github.com/github-flavored-markdown/" target="_blank">GitHub-flavored Markdown</a>.</p>
+
+<p>Since our documentation contains a fair amount of code samples, it was important for us to support GitHub-style code blocks, as well as native syntax highlighting. As a simple example, here is our <a href="https://help.chartboost.com/documentation/ios" target="_blank">iOS Integration article</a>, and its <a href="https://raw.github.com/ChartBoost/articles/master/documentation/ios/index.md" target="_blank">source code</a>.</p>
+
+<h5>GitHub</h5>
+
+<p>Help content, much like source code, is something that multiple people collaborate on, and which can benefit from versioning and branching. Instead of re-inventing the wheel ourselves, we decided to pick a tool we already use every day as a team: git and <a href="https://www.github.com/" target="_blank">GitHub</a>. The source code for all of our help articles (and its messy history) is all hosted publicly on our GitHub. <a href="https://www.github.com/ChartBoost/articles" target="_blank">Check it out!</a> And who knows, maybe somebody will even send us a Pull Request at some point.</p>
+
+<h5>Design</h5>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/sketches.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">Original paper sketches</p>
+
+<p>Going into it, we knew design was going to be a crucial part of this. What we had before really sucked, and was not up to our standard.</p>
+
+<p><img alt="Help Site on an iPhone" src="//chartboost.s3.amazonaws.com/blog_images/mocks.png" class="bleed" style="
+"></p>
+
+<p style="
+font-style: italic;
+">Alternate directions</p>
+
+<p>We went through several iterations over a week, before settling on the current design.</p>
+
+<hr>
+<p>We believe that the web is finally reaching a tipping point. The culmination of a decade of incremental improvements to web technologies is upon us, and lets us do things in a way that is radically new and better. If this is as exciting to you as it is to us, why don’t you throw us a line? <a href="https://chartboost.com/web/jobs" target="_blank">We’re hiring!</a></p>
+<p>(Source: <a href="http://chartboost.tumblr.com/post/36221629171/web-3-0-help-site" title="chartboost">chartboost</a>)</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="28710957277">
+        
+
+
+<div class="info">
+    <a href="/2012-08-04/critique-apple-developers">
+         <div class="day">4th</div>
+        <div class="month">Aug</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="28710957277"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">A critique of the Apple indie developer community</h1>
+                        
+
+                        <p>The Apple developer community has bred some of the most skilled engineers I know. Specifically, I’m talking about those who, like me, were writing Objective-C code before the iPhone and before there was any money in it.</p>
+
+<p>Objective-C is a hard language to learn. It’s unsafe, manually memory managed, and full of easy mistakes. But once learnt, it’s one of the most rewarding programming languages to know. It will teach you about fundamental concepts like memory, pointers, and object-orientation. Indie developers also have Apple’s mostly exemplary lead when it comes to crafting easy to use software. It’s no wonder, then, that skilled independent Mac and iPhone developers make some of the best software I’ve had the pleasure of using.</p>
+
+<p>And yet, for all of their application-crafting prowesses, they fail to understand the internet. They look at every problem as a nail for their Cocoa hammer. We’ve moved beyond the point where software is downloaded and installed, and simply runs on the host computer. Today, software is social, cloud-hosted, and continuously updated. When’s the last time you updated Chrome? Right… Never, because it updates itself transparently. Even apps that would traditionally have been perfect candidates for a desktop application, such as a <a href="http://culturedcode.com/things/" target="_blank">todo manager</a>, are moving onto the cloud.</p>
+
+<p>We have many computing devices; Macs, iPhones, and iPads, and we want to be able to pick up any of them and have access to our data. They need to sync instantly and effortlessly. This means that they require a backend web software component. This means running and maintaining servers. Writing code in a foreign programming language and dealing with a wholly new class of problems. (How do you scale your backend software? Which language / platform / framework do you use? At which point do you re-architect for a distributed system? Wait, this shit runs on <em>Linux</em>?)</p>
+
+<p>Your average indie Mac developer is wholly unprepared for this. He’s been living in a perfect and comfortable little bubble, shielded from the ugliness of web programming, and the cloud just popped it.</p>
+
+<p>Take Panic’s <a href="http://www.panic.com/Coda/" target="_blank">Coda</a>, for example. I really hate to criticize Panic, because they’re probably one of the best development shop out there. But Coda is an example of this mentality; it’s built for a world where web development meant throwing a website together with Apache, PHP, and MySQL. And when it came to interacting with software, the <a href="http://weblog.rogueamoeba.com/2012/06/30/the-developer-news-window/" target="_blank">backend for Mac software</a> would simply be a <code>.php</code> file that generated a <a href="https://en.wikipedia.org/wiki/Plist" target="_blank">property list</a>. But that world died back in the mid-’00s. Today, web development involves MVC, newer NoSQL data stores, caching layers, load balancing, message queues, background job processing, service-oriented architectures, version control (git), code deployment systems, and so on. These make the Coda approach of editing PHP files on a live server and checking the output in a preview tab completely obsolete.<sup id="fnref:p28710957277-1"><a href="#fn:p28710957277-1" rel="footnote" target="_blank">1</a></sup></p>
+
+<p>Independent developers wanting to get in on the cloud action have been avoiding the problem, by taking the approach of building third-party clients for first-party providers. Witness the inundation of the app stores with client apps for Twitter, Instagram, or Google Reader. There’s even a series of app that use a Dropbox folder as an alternative to a web backend. That’s all well and good, and the community makes some fantastic client software that I use daily, but that approach can backfire when the first-party provider changes its mind. When Twitter decides to kill access to its API, or when Apple decides to throw you off their store for a bullshit reason.</p>
+
+<p>I grew up writing Mac applications, and I used to be very involved in the Apple developer community. To this day, Objective-C remains my favorite programming language for its speed, power, and elegance. And yet, I’ve lost touch with the community as I moved beyond just Cocoa software. I realized that there’s more to be done. I didn’t want to spend the rest of my life writing client software, I wanted to write the next world-changing service that spawns countless clients. And that was never going to happen writing just Cocoa software.</p>
+
+<p>There’s a ton of smart people doing great things in the wider software development community that Apple developers could learn from. And inversely, the rest of the software development community could greatly benefit from an influx of smart and quality-driven Cocoa developers. My hope is that Cocoa developers will come to embrace polyglotism and web software and make software that truly makes a difference.</p>
+
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn:p28710957277-1">
+<p>It could be said that Coda is just not meant for web developers, it’s meant for making restaurant websites… <a href="#fnref:p28710957277-1" rev="footnote" target="_blank">↩</a></p>
+</li>
+
+</ol>
+</div>
+                    
+
+    </article>
+
+    <article id="21793314740">
+        
+
+
+<div class="info">
+    <a href="/2012-04-25/wwdc">
+         <div class="day">25th</div>
+        <div class="month">Apr</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="21793314740"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">WWDC</h1>
+                        
+
+                        <p>This story will sound familiar to a lot of people this morning, I fear: I woke up to a handful of text messages, emails and IM messages saying Apple had opened sales for WWDC tickets at 5:30 am. I frantically jumped out of bed and to my computer, to try and buy one immediately. Of course, as it were, all tickets were sold out.</p>
+
+<p>The rules this year around state that a personal Apple developer account can only get one ticket, and a company account can get five. Tickets are non-transferable to and non-refundable prevent scalping.</p>
+
+<p>I appreciate the fact that Apple is trying to prevent scalping, and tickets going on sale for double the price on Ebay and Craigslist, but I think they’ve only exacerbated the problem. Now, legitimate developers such as myself do not even have a third-party recourse to buy a ticket at a premium.</p>
+
+<p>Here are some things Apple could have done instead:</p>
+
+<ul>
+<li><p>If first-come first-served is really the approach they wanted, a better way would have been to announce when the tickets go on sale in advance, and let everybody set their alarm and fairly race for the ticket.</p></li>
+<li><p>They could have staggered the ticket sales over the course of the day; making 500 new tickets available every hour.</p></li>
+<li><p>They could have used a criteria other than luck to decide who gets a ticket. Perhaps limit it to developers that have apps in the store, developers who can solve a programming puzzle. Even an application where developers have to state what they hope to get out of the conference.</p></li>
+<li><p>They could have solved the supply / demand problem by making the price proportional to the amount of tickets left. Every ticket sold augments the value of the remaining tickets. The 1000th ticket could have been worth $2250, the 2000th $3000, and so on, going up in price as the supply dwindles.</p></li>
+</ul>
+<p>I don’t think any of these solutions are perfect. But I think any of them would have been better than the way Apple chose to go, screwing legitimate west-coast developers out of the most important conference and learning experience of the year.</p>
+                    
+
+    </article>
+
+    <article id="20853612338">
+        
+
+
+<div class="info">
+    <a href="/2012-04-10/a-fractal-of-bad-design">
+         <div class="day">10th</div>
+        <div class="month">Apr</div>
+        <div class="year">2012</div>
+    </a>
+    <a class="kudos"
+        data-post-id="20853612338"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/">A fractal of bad design</a></h1>
+
+                        
+                            <p>Alex Munroe:</p>
+
+<blockquote>
+  <p>I can’t even say what’s wrong with PHP, because— okay. Imagine you have uh, a toolbox. A set of tools. Looks okay, standard stuff in there.</p>
+  
+  <p>You pull out a screwdriver, and you see it’s one of those weird tri-headed things. Okay, well, that’s not very useful to you, but you guess it comes in handy sometimes.</p>
+  
+  <p>You pull out the hammer, but to your dismay, it has the claw part on both sides. Still serviceable though, I mean, you can hit nails with the middle of the head holding it sideways.</p>
+  
+  <p>You pull out the pliers, but they don’t have those serrated surfaces; it’s flat and smooth. That’s less useful, but it still turns bolts well enough, so whatever.</p>
+  
+  <p>And on you go. Everything in the box is kind of weird and quirky, but maybe not enough to make it completely worthless. And there’s no clear problem with the set as a whole; it still has all the tools.</p>
+  
+  <p>Now imagine you meet millions of carpenters using this toolbox who tell you “well hey what’s the problem with these tools? They’re all I’ve ever used and they work fine!” And the carpenters show you the houses they’ve built, where every room is a pentagon and the roof is upside-down. And you knock on the front door and it just collapses inwards and they all yell at you for breaking their door.</p>
+  
+  <p>That’s what’s wrong with PHP.</p>
+</blockquote>
+
+<p>PHP can be used to build some awesome stuff (Facebook is living proof!), but it’s important to realize that it’s also a fundamentally awful language.  It’s like crack. It’s useful enough that it keeps us using it over and over again, while systematically destroying our productivity with its quirks.</p>
+
+<p>When I complain about PHP at work, some like to remind me that I’m a hypocrite, since I wrote a blog post <a href="http://kswizz.com/2011-04-14/php-agile-development" target="_blank">praising PHP</a>. Or, rather, claiming that it’s possible to code PHP smartly and avoid its pitfalls. I’m not sure if I still agree with it today, but I sure do feel my brain turning to Jell-O whenever PHP fucks me over with one of its silly, silly idiosyncrasies.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="8624456381">
+        
+
+
+<div class="info">
+    <a href="/2011-08-07/macchiato">
+         <div class="day">7th</div>
+        <div class="month">Aug</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="8624456381"
+        data-tumblr-notes="7"
+    ><span class="kudos-value">7</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Macchiato</h1>
+                        
+
+                        <p>This past June, I attended my very first WWDC. The conference, the people and the parties were all amazing, and it was definitely a highlight. Inspired by the spirit of the conference, and all the new technologies presented, I set out to conquer my laziness and build and ship a new app.</p>
+
+<p>I’m a huge fan of <a href="http://daringfireball.net/projects/markdown/" target="_blank">Markdown</a>. So much so that I write nearly everything in it. From emails and notes, to documentation and blog posts. Unfortunately, writing Markdown meant one of two things for me: either launching TextEdit and switching it to plain text mode, or launching TextMate and writing in a code editor. Neither were really suited to the task.</p>
+
+<p>To remedy this, I built Macchiato. I made full use of Lion’s new technologies. In fact, Macchiato <em>only</em> works on Lion. You’ve got full-screen mode, auto-save and versioning. The internals of the app uses <code>NSRegularExpression</code>, sandboxing, Automatic Reference Counting, and several other Lion-only APIs.</p>
+
+<p>Macchiato is about being the very best at doing one thing: writing in Markdown. I’ve tried to keep an emphasis on usability, design and typography. I wanted to make it a joy to use, and for me it did the trick. I use it every day.</p>
+
+<p><a href="http://getmacchiato.com/" target="_blank">Check out Macchiato!</a></p>
+
+<p><a href="http://getmacchiato.com/" target="_blank"><img src="http://media.tumblr.com/tumblr_lpl4p7Pfh41qawml6.png" alt=""></a></p>
+                    
+
+    </article>
+
+    <article id="8366489075">
+        
+
+
+<div class="info">
+    <a href="/2011-08-01/human-decency-silicon-valley">
+         <div class="day">1st</div>
+        <div class="month">Aug</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="8366489075"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p><a href="http://techcrunch.com/2011/07/30/humbug/" target="_blank">Paul Carr</a>:</p>
+
+<blockquote>
+  <p>To make money — real money — at this game you have to attract millions, or tens of millions, of users. And when you’re dealing with those kinds of numbers, it’s literally impossible not to treat your users as pieces of data. It’s ironic, but depressingly unsurprising, that web 2.0 is using faux socialization and democratization to create a world where everyone is reduced to a number on a spreadsheet.</p>
+</blockquote>
+
+<p>I’m having a hard time keeping the quoting-paul-carr to actual content ratio reasonable, but as with so much of his writing, this is spot on.</p>
+
+<p>(tip of the hat to Nik Fletcher for <a href="http://nikf.org/post/8310737487/a-billion-dollars-isnt-cool-you-know-whats-cool" target="_blank">reblogging this first</a>)</p>
+                    
+
+    </article>
+
+    <article id="5135183376">
+        
+
+
+<div class="info">
+    <a href="/2011-05-02/on-creativity">
+         <div class="day">2nd</div>
+        <div class="month">May</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="5135183376"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p>I do not pride myself in my skills as a programmer. Complex algorithms scare me, and I stay away from them as much as I can. Rather, what I am good at is creating elegant solutions to problems. I’m good at imagining how things could work together, how something could be improved through programming. I’m good at building real-life products and streamlining processes. Breadth, rather than depth.</p>
+
+<p>I also do not pride myself in knowing a language fully. I am good at understanding concepts, code and documentation, and when asked a specific question in a job interview I am not afraid to say that I don’t know, but could easily figure it out with 5min and access to the internet.</p>
+
+<p>What I’m getting at is that I value resourcefulness, scrappiness and creativity more than knowledge and intelligence. This is why I’m not taking a computer science course, but rather am instead studying alternate approaches to problem-solving in the world of design. I think it will be a lot more valuable in my life in building an intellectually well-rounded personality, and an ability to pick up new skills quickly and bend them to suit my purposes. In the end, what truly matters is what I’m able to create, not how intelligent I may be.</p>
+                    
+
+    </article>
+
+    <article id="4616115078">
+        
+
+
+<div class="info">
+    <a href="/2011-04-14/php-agile-development">
+         <div class="day">14th</div>
+        <div class="month">Apr</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="4616115078"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Running a Modern Startup on PHP</h1>
+                        
+
+                        <p><em>I originally wrote this for the <a href="http://blog.chartboost.com/post/4591949888/php-agile-development" target="_blank">ChartBoost Blog</a>.</em></p>
+
+<p>In the modern world of agile startups and silicon valley, the buzz is all about Ruby, Python, and whatever the latest cool programming language or framework to come out is. Older technologies don’t get much love, and PHP especially has a bad reputation. In this post, I’m gonna go over why and how we use PHP as a modern technology, and the various other tools, techniques and development methodologies we employ to run as agilely and elegantly.</p>
+
+<h2>PHP</h2>
+
+<p>PHP is regarded as a clumsy and amateurish technology, best left to development newbies and $5-an-hour consultants. It’s almost bad enough to make me feel shame when I tell people we run on PHP. However, I don’t think this reputation is entirely deserved.</p>
+
+<p>The language itself is, after Perl, the oldest language to be adopted en-mass as a web technology. Its roots are as a text pre-processor, and over the past 16 years it has evolved from that into something much broader. Many of its fault stems from the way it has evolved, rather than being designed the way it is today from the ground up.</p>
+
+<p>I’m not going to argue PHP is the best language—it clearly isn’t. Frankly, it’s a mess. There’s no consistency in function and class names, even within the core library itself. The Object-Oriented features were tacked on at a later point and, while they’re getting better, are somewhat fragile. Here at ChartBoost, the core requirement is that we run on at least PHP 5.3, which introduced Late Static Bindings. Before that, building serious object-oriented code in PHP was impossible.</p>
+
+<p>Even for all its faults, PHP remains a major player online, and some of the most impressive technology companies (like Facebook) are using it. PHP remains one of the fastest language to code with, deploy and execute. Lastly, while this is mostly due to personal preference, I find its C-inspired syntax to be one of the best in the web development world. Braces, parenthesis and semicolons make it extremely clear what the code is doing, as opposed to Ruby’s mess of symbols, implied parenthesis and lack of statement endings.</p>
+
+<h2>MVC</h2>
+
+<p>It’s paramount for a modern web app to run on an MVC (Model-View-Controller) architecture. Unfortunately, PHP offers very little in terms of modern and agile MVC frameworks. The big ones (CodeIgniter, Symphony, etc.) are extremely bloated and actually tend to get in your way more than help. Also, most impose their vision of what the model &amp; database layers should look like.</p>
+
+<h3>Paraglide</h3>
+
+<p>Fortunately, one framework stands out from the pack. <a href="https://github.com/bgoldman/Paraglide" target="_blank">Paraglide</a> is a minimalist framework that takes care of routing requests to controllers, rendering views, and little else. It offers the basics in terms of setting up the environment, providing basic helpers and organizing your code. It also works on the command line and from a shell (more on this later.)</p>
+
+<p>Believe me when I say this, but Paraglide in mind-blowingly cool. It makes coding in PHP as elegant, and in some ways even more elegant, than the equivalent in Rails. It’s faster and lighter weight than Rails, but is easily extensible and works with pretty much any other code or package you throw its way.</p>
+
+<h2>MongoDB</h2>
+
+<p>Another decision core to our design ideals was the choice of <a href="http://www.mongodb.org/" target="_blank">MongoDB</a> as our main model layer. Mongo is an incredibly powerful and scalable database system. It’s fundamentally different from MySQL in that it is at its core a key-value store. Mongo is so incredibly efficient that we have in fact completely skipped the usually required step of using Memcached. Mongo also offers greater reliablility and safety than MySQL with features such as failure-proof replica sets, and a querying interface that’s invulnerable to injection attacks. Avoiding SQL altogether has also been extremely pleasant. One of Mongo’s biggest advantages is easy and powerful scaling through replica sets. When a node goes down, or is added, Mongo will automatically recognize it and rebalance itself, without causing any downtime. There is no single-point-of-failure.</p>
+
+<h3>MongoModel</h3>
+
+<p>A pet project of mine has been <a href="https://github.com/kballenegger/MongoModel" target="_blank">MongoModel</a>, and it is what we use as the third leg of our architecutre. MongoModel is an ORM which uses Mongo as its datastore, and adds features vital to a full-featured web application. It provides object-mapping, relationships, validations and is extremely elegant to use. Much like with Rails’ ActiveRecord, sensible defaults are deduced, and it’s schema-agnostic. You do not need to setup or even define what your database looks like. Rather, you just use the objects and MongoModel takes care of everything else.</p>
+
+<h2>Unit Testing</h2>
+
+<p>While we don’t practice Test-Driven-Development, we do have unit tests in place. PHP does not provide an elegant test library, so we built our own (soon-to-be open-sourced.)</p>
+
+<h2>Shell Development &amp; Scripting</h2>
+
+<p>Paraglide is, to my knowledge, the only PHP framework that works in command-line scripts and from an interactive shell. Script functionality is extremely important in order to run cron scripts and various other maintenance and administration tasks. Interactive shell access is a boon for quick development and debugging. We use <a href="http://jan.kneschke.de/projects/php-shell/" target="_blank">PHP-Shell</a> to interact with our code directly from the command line. This is quite similar to Rails’ <code>script/console</code>.</p>
+
+<h2>Git</h2>
+
+<p>Everything we do is stored in Git. Git’s virtues are well-known within the community, so I will only say that git has been incredibly useful in keeping track of our code, the history, and for collaboration. We even use git as a wiki, to keep track of our documentation and various other internal documents.</p>
+
+<h3>GitHub</h3>
+
+<p>All our git repositories are hosted on <a href="https://github.com/" target="_blank">GitHub</a>. The main value of this, besides the hosting and gorgeous user interface, has been to use the social features to keep track of who’s been doing what. GitHub makes it really easy to have an overview of what’s happening. It also manages user accounts and rights beautifully.</p>
+
+<h3>Capistrano</h3>
+
+<p>Our main server-side code lives in a Git repository. We have dedicated branches for production code. We use <a href="http://www.capistranorb.com/" target="_blank">Capistrano</a> for deployments. The git repository has a dedicated branch for production code, which we merge to as we deploy stuff. A script will automatically run unit tests on anything that is pushed to production.</p>
+
+<h2>Amazon Web Services</h2>
+
+<p>ChartBoost relies on Amazon Web Services’ many products, including <a href="http://aws.amazon.com/ec2/" target="_blank">EC2</a> for cloud servers, <a href="http://aws.amazon.com/s3/" target="_blank">S3</a> for data storage, <a href="http://aws.amazon.com/ses/" target="_blank">SES</a> for emailing and various other smaller services. This lets us pay for how much we use only, and allows for simple and fast scaling. We have an image ready to be deployed to new nodes, so we can handle any traffic thrown at our app.</p>
+
+<h2>Communications &amp; Internal Tools</h2>
+
+<p>Last but not least, there’s the tools we use internally to keep in sync. <a href="http://lighthouseapp.com/" target="_blank">Lighthouse</a> takes care of our bug-tracking needs, while its companion, <a href="http://tenderapp.com/" target="_blank">Tender</a> handles support. We use <a href="http://campfirenow.com/" target="_blank">Campfire</a> for group chats, and AIM for one-on-ones. Google Apps &amp; Gmail take care of our emails. Also check out companion Mac apps <a href="http://www.mcubedsw.com/software/lighthousekeeper" target="_blank">Lighthouse Keeper</a> for Lighthouse, and <a href="http://propaneapp.com/" target="_blank">Propane</a> for Campfire.</p>
+
+<p><br>
+If you read this far, you now have a good overview of the various tools and techniques we use to code agilely at <a href="http://www.chartboost.com" target="_blank">ChartBoost</a>. Even though we chose an unpopular language to base our technology on, I think it has helped us tremendously. With this post, I hope to spread the love again for PHP and these various ways of using it in a modern environment.</p>
+                    
+
+    </article>
+
+    <article id="4152960241">
+        
+
+
+<div class="info">
+    <a href="/2011-03-27/mongomodel">
+         <div class="day">27th</div>
+        <div class="month">Mar</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="4152960241"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="https://github.com/kballenegger/MongoModel">MongoModel</a></h1>
+
+                        
+                            <p>MongoModel is a simple and lightweight ORM for MongoDB and PHP. I finally got around to posting it on GitHub. It’s a simple piece of code, but it’s the backbone for many of my recent projects, including <a href="http://kswizz.com/2011-03-25/meet-chartboost" target="_blank">ChartBoost</a>'s entire backend.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="4152521875">
+        
+
+
+<div class="info">
+    <a href="/2011-03-27/azure-license">
+         <div class="day">27th</div>
+        <div class="month">Mar</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="4152521875"
+        data-tumblr-notes="1"
+    ><span class="kudos-value">1</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">The Azure License: Meaningful Attribution</h1>
+                        
+
+                        <p><em>I’m updating and re-releasing this from my old blog. Feel free to use the license in any project. No need to attribute me, the license itself is released into the public domain.</em></p>
+
+<p>Open-source licensing can be a real pain. Some licenses are nearly impossible to decipher, while some (namely—the GNU GPL) are just <a href="http://www.red-sweater.com/blog/825/getting-pretty-lonely" target="_blank">pure evil</a>.</p>
+
+<p>I have been trying to find a software license which, like the Creative Commons Attribution license, would let the licensee do pretty much anything with the software, except it would require attribution in a meaningful way. That is to say, a non-intrusive mention in the documentation or about box.</p>
+
+<p>The MIT license came closest to this, and it is the base on which the Azure License was written.</p>
+
+<p>A good way to give attribution, as required by the license, would be a friendly “Contains code by Copyright Holder [linked]” or “Special thanks to Copyright Holder [linked]” in the about box.</p>
+
+<pre><code>The Azure License
+
+Copyright (c) {Year} {Copyright Holder}
+
+Attribute to {Copyright Holder} - {url}
+
+You (the licensee) are hereby granted permission, free of charge,
+to deal in this software or source code (this "Software") without
+restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, and/or sublicense this
+Software, subject to the following conditions:
+
+You must give attribution to the party mentioned above, by name and
+by hyperlink, in the about box, credits document and/or
+documentation of any derivative work using a substantial portion of
+this Software.
+
+You may not use the name of the copyright holder(s) to endorse or
+promote products derived from this Software without specific prior
+written permission.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THIS SOFTWARE OR THE USE OR OTHER DEALINGS IN THIS
+SOFTWARE.
+
+<a href="http://license.azuretalon.com/" target="_blank">http://license.azuretalon.com/</a>
+</code></pre>
+                    
+
+    </article>
+
+    <article id="4094728053">
+        
+
+
+<div class="info">
+    <a href="/2011-03-25/meet-chartboost">
+         <div class="day">25th</div>
+        <div class="month">Mar</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="4094728053"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Meet ChartBoost</h1>
+                        
+
+                        <p><img alt="ChartBoost team" src="http://media.tumblr.com/tumblr_limpq9GOmj1qawml6.png"></p>
+
+<blockquote>
+  <p>We’re a small team of Tapulous alumni who banded together to package up everything we learnt about marketing iPhone apps and turn it into an awesome product. We’ve worked on building, running and marketing hit apps and, through trial and error, figured out what worked and what didn’t. Now, we’re building a service that brings together the best cross-promotion and marketing techniques.</p>
+</blockquote>
+
+<p>I haven’t had a chance to mention this yet, but I’ve left Tapulous to join two good friends of mine, Sean and Maria, at an exciting new startup in San Francisco city. I’m very excited to see what we can build here, and look forward to sharing some of what I learn on this blog in the future.</p>
+<p>(Source: <a href="http://chartboost.tumblr.com/post/4089319267/meet-chartboost" title="chartboost">chartboost</a>)</p>
+                    
+
+    </article>
+
+    <article id="3024765786">
+        
+
+
+<div class="info">
+    <a href="/2011-01-30/van-de-graaf">
+         <div class="day">30th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="3024765786"
+        data-tumblr-notes="2"
+    ><span class="kudos-value">2</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://vandegraaf.azuretalon.com/">Van de Graaf Generator</a></h1>
+
+                        
+                            <p>If you’re a graphic designer, you’re probably familiar with <a href="http://en.wikipedia.org/wiki/Canons_of_page_construction" target="_blank">canons of page construction</a>. In book design, canons of page construction help you use aesthetically pleasing and balanced text block and margins. It has been used by many typographers throughout the ages, starting with the Gutenberg bible.</p>
+
+<p>Constructing them, though, is somewhat of a pain. You have to go through a long series of steps, either in illustrator or by hand, constructing the text block geometrically. So I decided to write a small web app to do it automatically. <a href="http://vandegraaf.azuretalon.com/" target="_blank">Check it out online!</a> Currently, only the most common canon is supported, but in the future I will add any canon I find the need to construct to the project.</p>
+
+<p>If you’re more of a developer, I’ve open sourced the project on <a href="https://github.com/kballenegger/Van-De-Graaf-Generator" target="_blank">github</a> under the Azure License.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="2785664228">
+        
+
+
+<div class="info">
+    <a href="/2011-01-16/hacking-mac-apps">
+         <div class="day">16th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2785664228"
+        data-tumblr-notes="58"
+    ><span class="kudos-value">58</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">I Can Crack Your App With Just A Shell (And How To Stop Me)</h1>
+                        
+
+                        <p>Well, not <em>you</em> specifically, but by <em>you</em> I mean the average Mac developer. It’s too easy to crack Mac apps. Way too easy. By walking  through how I can hack your app with only one Terminal shell, I hope to shed some light on how this is most commonly done, and hopefully convince you to protect yourself against me. I’ll be ending this article with some tips to prevent this kind of hack.</p>
+
+<p>Disclaimer: I am fervently <em>against</em> software piracy, and I do not participate in piracy. Some will view this article as an endorsement of piracy, but rest assured that it is not. However, I do not believe that obscurity and ignoring the problem is an acceptable solution.</p>
+
+<p>In order to follow along you’re going to need a few command line utilities. You’re going to need the Xcode tools installed. And lastly, you’re going to need an app to operate on. I chose <a href="http://www.excesapp.com/" target="_blank">Exces</a>, a shareware App I wrote a long time ago.</p>
+
+<p>Let’s start by making sure we have the two utilities we need: <code>otx</code> and <code>class-dump</code>. I like to use <a href="http://mxcl.github.com/homebrew/" target="_blank">Homebrew</a> as my package manager of choice. Note that I will use command line utilities only, including <code>vim</code>. If you prefer GUIs, feel free to use your code editor of choice, HexFiend and <code>otx</code>'s GUI app.</p>
+
+<pre><code>$ sudo brew install otx
+$ sudo brew install class-dump
+</code></pre>
+
+<p>The first step is to poke into the target app’s headers, gentlemanly left intact by the unwitting developer.</p>
+
+<pre><code>$ cd Exces.app/Contents/MacOS
+$ class-dump Exces | vim
+</code></pre>
+
+<p>Browse around, and find the following gem:</p>
+
+<pre><code>@interface SSExcesAppController : NSObject
+{
+[...]
+    BOOL registred;
+[...]
+- (void)verifyLicenseFile:(id)arg1;
+- (id)verifyPath:(id)arg1;
+- (BOOL)registred;
+</code></pre>
+
+<p>What do we have here?! A (badly spelt) variable and what looks like three methods related to registration. We can now focus our efforts around these symbols. Let’s continue poking by disassembling the source code for these methods.</p>
+
+<pre><code>$ otx Exces -arch i386
+</code></pre>
+
+<p>Note that Exces is a universal binary, and that we need to ensure we only deal with the active architecture. In this case, Intel’s <code>i386</code>. Let us find out what <code>verifyLicenseFile:</code> does.</p>
+
+<pre><code>-(void)[SSExcesAppController verifyLicenseFile:]
+[...]
++34  0000521e  e8c21e0100              calll       0x000170e5                    -[(%esp,1) verifyPath:]
++39  00005223  85c0                    testl       %eax,%eax
++41  00005225  0f84e2000000            je          0x0000530d
+[...]
++226  000052de  c6472c01                movb        $0x01,0x2c(%edi)              (BOOL)registred
+[...]
+</code></pre>
+
+<p>This is not straight Objective-C code, but rather assembly—what C compiles into. The first part of each line, the offset, <code>+34</code>, shows how many bytes into the method the instruction is. <code>0000521e</code> is the address of the instruction within the program. <code>e8c21e0100</code> is the instruction in byte code. <code>calll 0x000170e5</code> is the instruction in assembly language. <code>-[(%esp,1) verifyPath:]</code> is what <code>otx</code> could gather the instruction to represent in Obj-C from the symbols left within the binary.</p>
+
+<p>With this in mind, we can realize that <code>verifyLicenseFile:</code> calls the method <code>verifyPath:</code> and later sets the boolean instance variable <code>registred</code>. We can guess that <code>verifyPath:</code> is probably the method that checks the validity of a license file. We can see from the header that <code>verifyPath:</code> returns an object and thus would be way too complex to patch. We need something that deals in booleans.</p>
+
+<p>Let’s launch Exces in the <code>gdb</code> debugger and check when <code>verifyLicenseFile:</code> is called.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController verifyLicenseFile:]
+Breakpoint 1 at 0x5205
+(gdb) run
+</code></pre>
+
+<p>No bite. The breakpoint is not hit on startup. We can assume that there’s a good reason why <code>verifyLicenseFile:</code> and <code>verifyPath:</code> are two separate methods. While we could patch <code>verifyLicenseFile:</code> to always set <code>registred</code> to true, <code>verifyLicenseFile:</code> is probably called only to check license files entered by the user. Quit <code>gdb</code> and let’s instead search for another piece of code that calls <code>verifyPath:</code>. In the <code>otx</code> dump, find the following in <code>awakeFromNib</code>:</p>
+
+<pre><code>-(void)[SSExcesAppController awakeFromNib]
+[...]
++885  00004c8c  a1a0410100              movl        0x000141a0,%eax               verifyPath:
++890  00004c91  89442404                movl        %eax,0x04(%esp)
++894  00004c95  e84b240100              calll       0x000170e5                    -[(%esp,1) verifyPath:]
++899  00004c9a  85c0                    testl       %eax,%eax
++901  00004c9c  7409                    je          0x00004ca7
++903  00004c9e  8b4508                  movl        0x08(%ebp),%eax
++906  00004ca1  c6402c01                movb        $0x01,0x2c(%eax)              (BOOL)registred
++910  00004ca5  eb7d                    jmp         0x00004d24                    return;
+[...]
+</code></pre>
+
+<p>The code is almost identical to <code>verifyLicenseFile:</code>. Here’s what happens:</p>
+
+<ul>
+<li>
+<code>verifyPath:</code> is called. (<code>+894 calll</code>)</li>
+<li>A test happens based on the result of the call. (<code>+899 testl</code>)</li>
+<li>Based on the result of the text, jump if equal. (<code>+901 je</code>) A <code>test</code> followed by a <code>je</code> or <code>jne</code> (jump if not equal) is assembly-speak for an if statement.</li>
+<li>The <code>registred</code> ivar is set, if we have not jumped away.</li>
+</ul>
+<p>Since <code>awakeFromNib</code> is executed at launch, we can safely assume that if we override this check, we can fool the app into thinking it’s registered. The easiest way to do that is to change the <code>je</code> into a <code>jne</code>, essentially reversing its meaning.</p>
+
+<p>Search the dump for any <code>jne</code> statement, and compare it to the <code>je</code>:</p>
+
+<pre><code>+901  00004c9c  7409                    je          0x00004ca7
++14  00004d9f  7534                     jne         0x00004dd5                    return;
+</code></pre>
+
+<p><code>7409</code> is the binary code for <code>je 0x00004ca7</code>. <code>7534</code> is a similar binary code. If we simply switch the binary code for the <code>je</code> to <code>7534</code>, at address <code>00004c9c</code>, we should have our crack. Let’s test it out in <code>gdb</code>.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController awakeFromNib]
+Breakpoint 1 at 0x4920
+(gdb) r
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0974
+</code></pre>
+
+<p>We break on <code>awakeFromNib</code> so we’re able to fiddle around while the app is frozen. <code>x/x</code> reads the code in memory at the given address.Now here’s the confusing thing to be aware of: <em>endianness</em>. While on disk, the binary code is normal, intel is a little-endian system which puts the most significant byte last, and thus reverses every four-byte block in memory. so while the code at address <code>0x4c9c</code> is printed as <code>0x458b0974</code>, it’s actually <code>0x74098b45</code>. We recognize the first two bytes <code>7409</code> from earlier.</p>
+
+<p>We need to switch the first two bytes to <code>7534</code>. Let’s start by disassembling the method so we can better see our way around. Find the relevant statement:</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  je     0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Now let’s edit code in memory.</p>
+
+<pre><code>(gdb) set {char}0x00004c9c=0x75
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0975
+(gdb) set {char}0x00004c9d=0x34
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b3475
+</code></pre>
+
+<p>Here we set the first byte at <code>0x00004c9c</code>. By simply counting in hexadecimal, we know that the next byte goes at address <code>0x00004c9d</code>, and set it as such. Let’s disassemble again to check if the change was done right.</p>
+
+<pre><code>(gdb) disas
+0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4cd2 &lt;-[SSExcesAppController awakeFromNib]+955&gt;
+</code></pre>
+
+<p>Whoops, we made a mistake and changed the destination of the jump from <code>+912</code> to <code>+955</code>. We realize that the first byte (<code>74</code>) of the byte code stands for the <code>je</code>/<code>jne</code> and the second byte is the offset, or how many bytes to jump by. We should only have changed <code>74</code> to <code>75</code>, and not <code>09</code> to <code>34</code>. Let’s fix our mistake.</p>
+
+<pre><code>(gdb) set {char}0x00004c9c=0x75
+(gdb) set {char}0x00004c9d=0x09
+</code></pre>
+
+<p>And check again…</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Hooray! This looks good! Let’s execute the app to admire our crack.</p>
+
+<pre><code>(gdb) continue
+</code></pre>
+
+<p>Woot! Victory! We’re in, and the app thinks we’re a legitimate customer. Time to get wasted and <strong>party</strong>! (I recommend Vessel nightclub in downtown San Francisco.) Well, not quite. We still need to make our change permanent. As it currently stands, everything will be erased as soon as we quit <code>gdb</code>. We need to edit the code on disk, in the actual binary file. Let’s find a chunk of our edited binary big enough that it likely won’t be repeated in the whole binary.</p>
+
+<pre><code>(gdb) x/8x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0975  0x2c40c608  0x8b7deb01  0xa4a10855
+0x4cac &lt;-[SSExcesAppController awakeFromNib]+917&gt;:  0x89000141  0x89082454  0x89042444  0x26e82414
+</code></pre>
+
+<p>That’s the memory representation of the code, a whole 8 blocks of four bytes starting at <code>0x00004c9c</code>. Taking endianness into account, we must reverse them and we get the following:</p>
+
+<pre><code>0x75098b45  0x08c6402c  0x01eb7d8b  0x5508a1a4
+0x41010089  0x54240889  0x44240489  0x1424e826
+</code></pre>
+
+<p>The very first byte of the series is the <code>74</code> that we switched into <code>75</code>. By changing it back, we can deduce the original binary code to be:</p>
+
+<pre><code>0x74098b45  0x08c6402c  0x01eb7d8b  0x5508a1a4
+0x41010089  0x54240889  0x44240489  0x1424e826
+</code></pre>
+
+<p>Let’s open the binary in a hex editor. I used <code>vim</code>, but feel free to use any hex editor at this point. HexFiend has a great GUI.</p>
+
+<pre><code>(gdb) quit
+$ vim Exces
+</code></pre>
+
+<p>This loads up the binary as ascii text, which is of little help. Convert it to hex thusly:</p>
+
+<pre><code>:%!xxd
+</code></pre>
+
+<p><code>vim</code> formats hex like this:</p>
+
+<pre><code>0000000: cafe babe 0000 0002 0000 0012 0000 0000  ................
+</code></pre>
+
+<p>The first part, before the colon, is the address of block. Following it are 16 bytes, broken off in two-byte segments. Incidentally, every Mach-O binary starts with the hex bytes <code>cafebabe</code>. Drunk Kernel programmers probably thought it’d be funny. Now that we have our beautiful hex code loaded up, let’s search for the first two bytes of our code to replace:</p>
+
+<pre><code>/7409
+</code></pre>
+
+<p>Shit. Too many results to make sense of. Let’s add another two bytes. Search for “<code>7409 8b45</code>" instead and boom, only one result:</p>
+
+<pre><code>001fc90: 0089 4424 04e8 4b24 0100 85c0 7409 8b45  ..D$..K$....t..E
+</code></pre>
+
+<p>Edit it to the following:</p>
+
+<pre><code>001fc90: 0089 4424 04e8 4b24 0100 85c0 7509 8b45  ..D$..K$....t..E
+</code></pre>
+
+<p>Convert it back to binary form, then save and quit:</p>
+
+<pre><code>:%!xxd -r
+:wq
+</code></pre>
+
+<p>And… We’re done! To check our work, launch the app in <code>gdb</code>, break to <code>[SSExcesAppController awakeFromNib]</code> and disassemble.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController awakeFromNib]
+Breakpoint 1 at 0x4c90
+(gdb) r
+(gdb) disas
+</code></pre>
+
+<p>Admire our work:</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Quit <code>gdb</code> and relaunch the app from the Finder, and bask in your <em>leet</em> glory.</p>
+
+<h1>How you can stop me</h1>
+
+<p>Objective-C makes it really easy to mess with an app’s internals. Try to program the licensing mechanism for your app in pure C, that will already make it harder for me to find my way around your binary. Also read <a href="http://www.seoxys.com/3-easy-tips-to-prevent-a-binary-crack/" target="_blank">this older article</a> of mine on three easy tips—stripping debug symbols, using PT_DENY_ATTACH, and doing a checksum of your binary—you can implement to make it a whole lot harder for your app to be cracked.</p>
+
+<p>A truly skilled hacker will always find his way around your protection, but implementing a bare minimum of security will weed out 99% of amateurs. I am not a skilled hacker—yet with some very basic knowledge I tore this apart in no time. Implementing the various easy tips above takes very little time, yet would have made it enough of a pain for me that I would have given up.</p>
+                    
+
+    </article>
+
+    <article id="2686511526">
+        
+
+
+<div class="info">
+    <a href="/2011-01-10/git-xcode-versioning">
+         <div class="day">10th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2686511526"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">The Ultimate Solution For Xcode Auto-Versioning With Git</h1>
+                        
+
+                        <p>After struggling with several suboptimal solutions for years, I have finally come to find the best Xcode versioning solution for git users. First off, tip of the hat to <a href="http://www.cimgf.com/2008/04/13/git-and-xcode-a-git-build-number-script/" target="_blank">Marcus Zarra</a> and <a href="http://heipei.net/2009/02/23/xcode-git-describe-in-your-infoplist/" target="_blank">Johannes Gilger</a> for posting their solutions, which inspired me in my search for the ultimate solution.</p>
+
+<p>A couple advantages that make this solution better than those I’ve used in the past:</p>
+
+<ul>
+<li>It’s completely filesystem independent. Save for the git binary location requirement, this would work across any Mac with no additional setup. (It should also be quite easy to edit the script to detect git using <code>which</code>.)</li>
+<li>It works across clones and systems.</li>
+<li>Because the version is the current git SHA1 hash, it always refer to a specific commit you can get back to when debugging later.</li>
+<li>It processes the version number at every build immediately. Some of the solutions I’ve used in the past required a double-build, because of Xcode’s tendency to run scripts after the preprocessor. Not so here.</li>
+<li>No duplication of code in projects with multiple targets.</li>
+<li>Works for iPhone, Mac App Store and Mac apps.</li>
+</ul>
+<p>So without further ado, my solution: I rely on an external target of type Shell Script which I call <em>Versioning.</em> Every other target sets <em>Versioning</em> as a Direct Dependency, ensuring its script is run before the preprocessor. <em>Versioning</em> contains the following Run Script:</p>
+
+<pre><code>cd "$PROJECT_DIR"
+VERSION=`/usr/local/bin/git rev-parse --short HEAD`
+
+cd "$PROJECT_TEMP_DIR"
+echo "#define GIT_VERSION $VERSION" &gt; revision.prefix
+
+cd "$PROJECT_DIR"
+touch Info.plist
+</code></pre>
+
+<p>In Info.plist, the <em>CFBundleShortVersionString</em> is set to <code>GIT_VERSION</code>. In the project’s main build settings, <em>Preprocess Info.plist</em> is turned on and <em>Info.plist Preprocessor Prefix File</em> is set to <code>$PROJECT_TEMP_DIR/revision.prefix</code>.</p>
+                    
+
+    </article>
+
+    <article id="2639508996">
+        
+
+
+<div class="info">
+    <a href="/2011-01-07/mac-app-store">
+         <div class="day">7th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2639508996"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">My Mac App Store Plans</h1>
+                        
+
+                        <p>The recently unveiled Mac App Store is, unfortunately, an affront to Mac developers. Importing the iOS’ closed model and applying it to the Mac, the new store carries with it all of the major disadvantages of its smartphone equivalent. I can’t stand the thought of losing thirty percent of my revenue, in return for which I get harsh restrictions on what I may do, week-long approval queues (even for critical updates,) a public expecting a ridiculously low price, months of revenue held off by Apple, and the risk of being cut out from said revenue at any time.</p>
+
+<p>I’m not even going to get into how I will lose control over my own customers because Apple won’t let me send them promotional emails or sign up for an account. It won’t let me give away my software either, or have flexible pricing structure, educational discounts, volume discounts, promotions or giveaways.</p>
+
+<p>Most excruciatingly, though, the App Store itself rocks. It’s beautifully designed and as a user, it is pure joy to use. Unfortunately, I am not willing to sign my soul to the devil to be a part of it. I was willing to deal with the limitations on the iOS platform, because it was presented as a new option, an is still somewhat reasonable on a smartphone. However, on the Mac, where we’ve been restriction-free for decades, this is most unwelcome. So here are my plans regarding the App Store:</p>
+
+<ol>
+<li><p>My apps will always be available from my own store. This will function the same way it always has: Sparkle updates and email-based licenses and trial versions.</p></li>
+<li><p>My apps will also be available on the Mac App Store (provided they get approved), crippled however Apple may wish. They will have a 30% price premium over the standard price, to make up for Apple’s cut. I will make sure that the standalone version is never inferior to the App Store version and I will advertise the cheaper, standalone version heavily.</p></li>
+</ol>
+                    
+
+    </article>
+
+    <article id="786160311">
+        
+
+
+<div class="info">
+    <a href="/2010-07-08/iad-report">
+         <div class="day">8th</div>
+        <div class="month">Jul</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="786160311"
+        data-tumblr-notes="4"
+    ><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Report on iAd</h1>
+                        
+
+                        <p>I’ve been running iAd on relatively high traffic since day one. Here’s how – for me – it’s been performing, and how it breaks down against competing ad networks.</p>
+
+<p>First, the good. The eCPM is amazing. <a href="http://news.ycombinator.com/item?id=1496742" target="_blank">Some dude</a> reports getting $150 eCPM on his first day on iAd. While this is mind-blowingly high and in no way representative of the average on the network, eCPMs can be expected to be quite high. My eCPM averages $10-$15, which is quite good.</p>
+
+<p>Of course, we have to put these numbers in perspective. We cannot do a 1-to-1 comparaison with competing networks. Another important factor to consider: Most competing ad networks refresh their ads every 30s. iAd does it every 3min. Thus, for the time it takes iAd to display one ad, another network gets to show 6.</p>
+
+<p>For a fair comparaison, we need to adjust the eCPM. Taking the above into account, let’s divide the number by 6 to get something we can compare to networks that refresh every 30s. The resulting figure isn’t really an “effective cost per thousand impressions,” but rather something more like an “effective cost per 500min of ads being displayed.”</p>
+
+<p>Compared thusly, the eCPM on iAd is only worth about $1.60-$2.50. While still quite high, this is nowhere near the mind-blowing figures that have been thrown around.</p>
+
+<p><img src="http://akhun.com/seo/skitch/ecpm-20100708-115651.png" alt="eCPM"></p>
+
+<p>Last thing to consider: fill rates. They’re are appallingly low. Though this seems to be slowly improving, they remain below 10%. Compare this with most other non-premium networks which often get you 100% fill rate. A solution would be to run iAd as a first option, and fall back to another network for failed requests. Also, I would suggest keeping the ADBannerView around even when not displayed, leaving it to refresh in the background and once it does return an ad, displaying it.</p>
+
+<p><img src="http://akhun.com/seo/skitch/My_Apps-20100708-115815.png" alt="Fill Rate"></p>
+
+<p>I’m sure the fill rates will improve over time, and that iAd wil become a worthy competitor over time. Right now though, the reality is iAd generates less revenue than my previous first option, Google AdSense for mobile.</p>
+
+<p><strong>Update</strong>: Greg Yardley rightly <a href="http://yardley.ca/2010/07/08/iads-performance-now-and-later/" target="_blank">calls me out</a> on mistakenly stating Apple’s figures included their 40% cut. Article updated accordingly.</p>
+                    
+
+    </article>
+
+    <article id="504562317">
+        
+
+
+<div class="info">
+    <a href="/2010-04-07/apple-rejects-ipad-app-for-pinch-to-expand">
+         <div class="day">7th</div>
+        <div class="month">Apr</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="504562317"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://www.tuaw.com/2010/04/07/apple-rejects-ipad-app-for-pinch-to-expand/">Apple rejects iPad app for pinch-to-expand</a></h1>
+
+                        
+                            <blockquote>
+  <p>An iPad app called Web Albums HD has reportedly been rejected from the App Store for including a pinch-to-expand feature in its Picasa albums viewing functionality. The developers allegedly hand-coded a pinch-to-expand feature for their galleries to match Apple’s official photo app, but were told by App Store editors that the feature was “associated solely with Apple applications.”</p>
+</blockquote>
+
+<p>This is what scares me about developing for Apple’s closed App Store. I’ve experienced some <a href="http://www.seoxys.com/apples-increasingly-ridiculous-rejections/" target="_blank">nasty rejections</a>, and there’s definitely no worse feeling than having to throw away your hard work because of Apple’s whim.</p>
+
+<p>(via <a href="http://www.tuaw.com/2010/04/07/apple-rejects-ipad-app-for-pinch-to-expand/" target="_blank">TUAW</a>)</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="494950111">
+        
+
+
+<div class="info">
+    <a href="/2010-04-03/tether-ipad-iphone">
+         <div class="day">3rd</div>
+        <div class="month">Apr</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="494950111"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Tethering your iPad to your iPhone</h1>
+                        
+
+                        <p>So you bought a WiFi iPad, and you already have an iPhone. You don’t want to pay extra for yet another monthly 3G subscription, and/or you don’t want to wait for the 3G iPad to come out later this month. Thankfully, you can use your iPhone’s 3G connection on your iPad using the following magic recipe.</p>
+
+<p>You will need:<br>
+- A jailbroken iPhone. (Google for “blackra1n” if you need help with this)<br>
+- $9.99<br>
+- Optional ingredient: an extra battery pack for your iPhone, because this is pretty draining on the iPhone.<br>
+- A pinch of fairy dust to make things go extra smooth. (Just kidding about that one)</p>
+
+<p>Search for the app MyWi on Cydia and install it. That’ll also install another package manager called Rock. You will have to create a Rock ID. This will allow you to have a free 10-day trial of MyWi, and then to purchase it using your credit card or PayPal account.</p>
+
+<p>Using MyWi, create a WiFi network from your iPhone. You may want to give it a password, to prevent strangers from leeching off your connection. Connect from your iPad, and watch the magic happen. Don’t forget to turn MyWi off on your phone when you aren’t using it, or it’ll drain your its battery dry in no time.</p>
+                    
+
+    </article>
+
+    <article id="434411249">
+        
+
+
+<div class="info">
+    <a href="/2010-03-08/justin-williams-on-prmacs-ray-barber">
+         <div class="day">8th</div>
+        <div class="month">Mar</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="434411249"
+        data-tumblr-notes="3"
+    ><span class="kudos-value">3</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://carpeaqua.com/2010/02/20/pr-isnt-just-a-press-release/?utm_source=feedburner&amp;utm_medium=feed&amp;utm_campaign=Feed%3A+carpeaqua+%28carpeaqua%29">Justin Williams On PRMac's Ray Barber</a></h1>
+
+                        
+                            <p>Justin Williams:</p>
+
+<blockquote>
+  <p>I think my biggest pet-peeve by far is how PRMac handles itself in public. Anytime there is a question on the MacSB mailing list about advertising, press releases or anything remotely related, the site’s proprietor chimes in to plug his service. Just because you wrap your self promotion with <em> :)</em> doesn’t make it right.</p>
+</blockquote>
+
+<p>As the creator of <a href="http://groups.google.com/group/iphonesb" target="_blank">iPhoneSB</a>, I’ve experienced the same thing. I’ve had to privately ask PRMac’s owner to tone down the self-promotion multiple times.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="422446898">
+        
+
+
+<div class="info">
+    <a href="/2010-03-02/iphoneappreview-shakedown">
+         <div class="day">2nd</div>
+        <div class="month">Mar</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="422446898"
+        data-tumblr-notes="336"
+    ><span class="kudos-value">336</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <p><a href="http://kswizz.com/image/422446898"><img src="http://www.tumblr.com/photo/1280/kswizz/422446898/1/tumblr_kymphh3iBj1qz4ml7" alt="I get at least one email like this every day. I just ignore them."></a></p>
+
+                        
+                            <p></p>
+<p>I get at least one email like this every day. I just ignore them.</p>
+                        
+
+                    
+
+    </article>
+
+    <article id="421008577">
+        
+
+
+<div class="info">
+    <a href="/2010-03-01/app-review-solution">
+         <div class="day">1st</div>
+        <div class="month">Mar</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="421008577"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">My Proposed Solution to the App Review Situation</h1>
+                        
+
+                        <p>What if any app could be posted to the App Store instantaneously, without having to go through a review. Apple would still review each app, to even higher quality standards than currently. If an app is approved, it would receive some kind of “Apple-approved” badge. If denied, the app would live on, but without the badge. Apple would kindly provide the developer with a reason for why it was rejected, worded in english (as opposed to the legalese they use now).</p>
+
+<p>Only approved apps would show up when one browses the App Store and in the rankings. Rejected apps could still be accessed through search (though approved apps would get priority in search results), and by knowing the iTunes store URL. Important updates (such as critical bug-fixes) would be instantaneous.</p>
+
+<p>Users can opt to only allow verified apps on their phones, if safety is a concern to them. Developers have the security of knowing Apple won’t kill their business on a whim.</p>
+                    
+
+    </article>
+
+    <article id="325963643">
+        
+
+
+<div class="info">
+    <a href="/2010-01-09/pop-software">
+         <div class="day">9th</div>
+        <div class="month">Jan</div>
+        <div class="year">2010</div>
+    </a>
+    <a class="kudos"
+        data-post-id="325963643"
+        data-tumblr-notes="0"
+    ><span class="kudos-value">0</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1><a class="title" href="http://kickingbear.com/blog/archives/67">Pop Software</a></h1>
+
+                        
+                            <p>Guy English:</p>
+
+<blockquote>
+  <p>The thing is these people don’t buy Applications, they download Apps. “Software” is dead, don’t bother putting that word on a sell sheet. Have you written “a program” recently? That’s nice, find a place in line behind all the other nerds but try not to step on the Coke-bottle glasses they tend to drop. “Oh … you’ve developed an application … is it something my doctor would know about”? People, lots and lots of people, people who have no idea what software even is, will download Apps like they’re snacking on potatoe chips. What’s my proof? Well, two million downloads of an App in a week supports that and I’d argue that a total of three billion Apps downloaded backs up my argument too. Also, I spell potatoe with an ‘e’, as God intended, so you know I’m right about this.</p>
+  
+  <p>“Apps” is fun. It’s fun to say, it sounds unthreatening, it’s a word sufficiently abbreviated that it takes on a life of its own without dragging to the forefront of peoples minds the more sterile and technical sounding “application”. Apps are not Applications – they are their own things. They are smaller. They are more fun. Apps are treats atop your technological sundae. They are not potential time sinks. They are neither burden nor investment. They each represent a nugget of fun, of fleeting amusement. Apps are gobbled up in the millions by people who would never rush so willy nilly to buy desktop software. Apps are Pop Software writ large in blinking neon lights.</p>
+</blockquote>
+                        
+
+                    
+
+    </article>
+
+
+            <!-- posts-end -->
+
+            
+
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-215884-12']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+
+
+</body>
+</html>
+
+
+

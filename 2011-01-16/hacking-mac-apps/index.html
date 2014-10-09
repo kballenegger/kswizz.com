@@ -1,0 +1,340 @@
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+    <title>I Can Crack Your App With Just A Shell (And How To Stop Me) &mdash; Kenneth Ballenegger</title>
+    <meta name="description" content="Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at FreshPay. Previously, I was the architect behind Chartboost. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+" />
+
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+
+    <link href="//get.pictos.cc/fonts/2215/1" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <link rel="icon" href="/static/images/favicon.png" type="image/png" />
+
+    <script src="/static/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/jquery.lightbox.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/less-1.3.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/source.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <header>
+        <div id="title">
+            <a href="/">
+                <div id="crown"></div>
+                <h1>Kenneth Ballenegger</h1>
+                <p>“I’m a developer and designer. I love making cool stuff.”</p>
+            </a>
+        </div>
+    </header>
+
+    <div id="lightbox" class="hidden"></div>
+
+    <div id="container">
+
+        <div id="sidebar">
+
+    <p><img id="headshot" src="/static/images/photo.png" alt="Kenneth Ballenegger" /></p>
+    <p id="about">
+        Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at <a href="http://hello.freshpay.com/">FreshPay</a>. Previously, I was the architect behind <a href="https://www.chartboost.com">Chartboost</a>. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+
+    </p>
+
+    <nav>
+        <ul>
+            <li><span class="pictos">@</span><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
+            <li><span class="pictos">r</span><a href="http://kenneth.ballenegger.com/dl/resume2014.pdf" target="_blank">View my resum&eacute;</a></li>
+            <hr />
+            <div class="nav-section-title">Categories</div>
+            <li><span class="pictos">a</span><a href="/tagged/articles">Articles</a></li>
+            <li><span class="pictos">d</span><a href="/tagged/development">Software &amp; Development</a></li>
+            <li><span class="pictos">s</span><a href="/tagged/schoolwork">Schoolwork</a></li>
+            <li><span class="pictos">p</span><a href="/tagged/photography">Photography</a></li>
+        </ul>
+    </nav>
+
+    <footer>
+        <p><a href="/archive">Archive</a></p>
+        <p>Copyright © Kenneth Ballenegger</p>
+    </footer>
+
+</div>
+
+
+
+        <div id="content">
+
+            <!-- posts-start -->
+
+
+
+
+<article id="2785664228">
+    
+
+
+<div class="info">
+    <a href="/2011-01-16/hacking-mac-apps">
+         <div class="day">16th</div>
+        <div class="month">Jan</div>
+        <div class="year">2011</div>
+    </a>
+    <a class="kudos"
+        data-post-id="2785664228"
+        data-tumblr-notes="58"
+    ><span class="kudos-value">58</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                <h1 class="title">I Can Crack Your App With Just A Shell (And How To Stop Me)</h1>
+                        
+
+                        <p>Well, not <em>you</em> specifically, but by <em>you</em> I mean the average Mac developer. It’s too easy to crack Mac apps. Way too easy. By walking  through how I can hack your app with only one Terminal shell, I hope to shed some light on how this is most commonly done, and hopefully convince you to protect yourself against me. I’ll be ending this article with some tips to prevent this kind of hack.</p>
+
+<p>Disclaimer: I am fervently <em>against</em> software piracy, and I do not participate in piracy. Some will view this article as an endorsement of piracy, but rest assured that it is not. However, I do not believe that obscurity and ignoring the problem is an acceptable solution.</p>
+
+<p>In order to follow along you’re going to need a few command line utilities. You’re going to need the Xcode tools installed. And lastly, you’re going to need an app to operate on. I chose <a href="http://www.excesapp.com/" target="_blank">Exces</a>, a shareware App I wrote a long time ago.</p>
+
+<p>Let’s start by making sure we have the two utilities we need: <code>otx</code> and <code>class-dump</code>. I like to use <a href="http://mxcl.github.com/homebrew/" target="_blank">Homebrew</a> as my package manager of choice. Note that I will use command line utilities only, including <code>vim</code>. If you prefer GUIs, feel free to use your code editor of choice, HexFiend and <code>otx</code>'s GUI app.</p>
+
+<pre><code>$ sudo brew install otx
+$ sudo brew install class-dump
+</code></pre>
+
+<p>The first step is to poke into the target app’s headers, gentlemanly left intact by the unwitting developer.</p>
+
+<pre><code>$ cd Exces.app/Contents/MacOS
+$ class-dump Exces | vim
+</code></pre>
+
+<p>Browse around, and find the following gem:</p>
+
+<pre><code>@interface SSExcesAppController : NSObject
+{
+[...]
+    BOOL registred;
+[...]
+- (void)verifyLicenseFile:(id)arg1;
+- (id)verifyPath:(id)arg1;
+- (BOOL)registred;
+</code></pre>
+
+<p>What do we have here?! A (badly spelt) variable and what looks like three methods related to registration. We can now focus our efforts around these symbols. Let’s continue poking by disassembling the source code for these methods.</p>
+
+<pre><code>$ otx Exces -arch i386
+</code></pre>
+
+<p>Note that Exces is a universal binary, and that we need to ensure we only deal with the active architecture. In this case, Intel’s <code>i386</code>. Let us find out what <code>verifyLicenseFile:</code> does.</p>
+
+<pre><code>-(void)[SSExcesAppController verifyLicenseFile:]
+[...]
++34  0000521e  e8c21e0100              calll       0x000170e5                    -[(%esp,1) verifyPath:]
++39  00005223  85c0                    testl       %eax,%eax
++41  00005225  0f84e2000000            je          0x0000530d
+[...]
++226  000052de  c6472c01                movb        $0x01,0x2c(%edi)              (BOOL)registred
+[...]
+</code></pre>
+
+<p>This is not straight Objective-C code, but rather assembly—what C compiles into. The first part of each line, the offset, <code>+34</code>, shows how many bytes into the method the instruction is. <code>0000521e</code> is the address of the instruction within the program. <code>e8c21e0100</code> is the instruction in byte code. <code>calll 0x000170e5</code> is the instruction in assembly language. <code>-[(%esp,1) verifyPath:]</code> is what <code>otx</code> could gather the instruction to represent in Obj-C from the symbols left within the binary.</p>
+
+<p>With this in mind, we can realize that <code>verifyLicenseFile:</code> calls the method <code>verifyPath:</code> and later sets the boolean instance variable <code>registred</code>. We can guess that <code>verifyPath:</code> is probably the method that checks the validity of a license file. We can see from the header that <code>verifyPath:</code> returns an object and thus would be way too complex to patch. We need something that deals in booleans.</p>
+
+<p>Let’s launch Exces in the <code>gdb</code> debugger and check when <code>verifyLicenseFile:</code> is called.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController verifyLicenseFile:]
+Breakpoint 1 at 0x5205
+(gdb) run
+</code></pre>
+
+<p>No bite. The breakpoint is not hit on startup. We can assume that there’s a good reason why <code>verifyLicenseFile:</code> and <code>verifyPath:</code> are two separate methods. While we could patch <code>verifyLicenseFile:</code> to always set <code>registred</code> to true, <code>verifyLicenseFile:</code> is probably called only to check license files entered by the user. Quit <code>gdb</code> and let’s instead search for another piece of code that calls <code>verifyPath:</code>. In the <code>otx</code> dump, find the following in <code>awakeFromNib</code>:</p>
+
+<pre><code>-(void)[SSExcesAppController awakeFromNib]
+[...]
++885  00004c8c  a1a0410100              movl        0x000141a0,%eax               verifyPath:
++890  00004c91  89442404                movl        %eax,0x04(%esp)
++894  00004c95  e84b240100              calll       0x000170e5                    -[(%esp,1) verifyPath:]
++899  00004c9a  85c0                    testl       %eax,%eax
++901  00004c9c  7409                    je          0x00004ca7
++903  00004c9e  8b4508                  movl        0x08(%ebp),%eax
++906  00004ca1  c6402c01                movb        $0x01,0x2c(%eax)              (BOOL)registred
++910  00004ca5  eb7d                    jmp         0x00004d24                    return;
+[...]
+</code></pre>
+
+<p>The code is almost identical to <code>verifyLicenseFile:</code>. Here’s what happens:</p>
+
+<ul>
+<li>
+<code>verifyPath:</code> is called. (<code>+894 calll</code>)</li>
+<li>A test happens based on the result of the call. (<code>+899 testl</code>)</li>
+<li>Based on the result of the text, jump if equal. (<code>+901 je</code>) A <code>test</code> followed by a <code>je</code> or <code>jne</code> (jump if not equal) is assembly-speak for an if statement.</li>
+<li>The <code>registred</code> ivar is set, if we have not jumped away.</li>
+</ul>
+<p>Since <code>awakeFromNib</code> is executed at launch, we can safely assume that if we override this check, we can fool the app into thinking it’s registered. The easiest way to do that is to change the <code>je</code> into a <code>jne</code>, essentially reversing its meaning.</p>
+
+<p>Search the dump for any <code>jne</code> statement, and compare it to the <code>je</code>:</p>
+
+<pre><code>+901  00004c9c  7409                    je          0x00004ca7
++14  00004d9f  7534                     jne         0x00004dd5                    return;
+</code></pre>
+
+<p><code>7409</code> is the binary code for <code>je 0x00004ca7</code>. <code>7534</code> is a similar binary code. If we simply switch the binary code for the <code>je</code> to <code>7534</code>, at address <code>00004c9c</code>, we should have our crack. Let’s test it out in <code>gdb</code>.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController awakeFromNib]
+Breakpoint 1 at 0x4920
+(gdb) r
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0974
+</code></pre>
+
+<p>We break on <code>awakeFromNib</code> so we’re able to fiddle around while the app is frozen. <code>x/x</code> reads the code in memory at the given address.Now here’s the confusing thing to be aware of: <em>endianness</em>. While on disk, the binary code is normal, intel is a little-endian system which puts the most significant byte last, and thus reverses every four-byte block in memory. so while the code at address <code>0x4c9c</code> is printed as <code>0x458b0974</code>, it’s actually <code>0x74098b45</code>. We recognize the first two bytes <code>7409</code> from earlier.</p>
+
+<p>We need to switch the first two bytes to <code>7534</code>. Let’s start by disassembling the method so we can better see our way around. Find the relevant statement:</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  je     0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Now let’s edit code in memory.</p>
+
+<pre><code>(gdb) set {char}0x00004c9c=0x75
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0975
+(gdb) set {char}0x00004c9d=0x34
+(gdb) x/x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b3475
+</code></pre>
+
+<p>Here we set the first byte at <code>0x00004c9c</code>. By simply counting in hexadecimal, we know that the next byte goes at address <code>0x00004c9d</code>, and set it as such. Let’s disassemble again to check if the change was done right.</p>
+
+<pre><code>(gdb) disas
+0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4cd2 &lt;-[SSExcesAppController awakeFromNib]+955&gt;
+</code></pre>
+
+<p>Whoops, we made a mistake and changed the destination of the jump from <code>+912</code> to <code>+955</code>. We realize that the first byte (<code>74</code>) of the byte code stands for the <code>je</code>/<code>jne</code> and the second byte is the offset, or how many bytes to jump by. We should only have changed <code>74</code> to <code>75</code>, and not <code>09</code> to <code>34</code>. Let’s fix our mistake.</p>
+
+<pre><code>(gdb) set {char}0x00004c9c=0x75
+(gdb) set {char}0x00004c9d=0x09
+</code></pre>
+
+<p>And check again…</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Hooray! This looks good! Let’s execute the app to admire our crack.</p>
+
+<pre><code>(gdb) continue
+</code></pre>
+
+<p>Woot! Victory! We’re in, and the app thinks we’re a legitimate customer. Time to get wasted and <strong>party</strong>! (I recommend Vessel nightclub in downtown San Francisco.) Well, not quite. We still need to make our change permanent. As it currently stands, everything will be erased as soon as we quit <code>gdb</code>. We need to edit the code on disk, in the actual binary file. Let’s find a chunk of our edited binary big enough that it likely won’t be repeated in the whole binary.</p>
+
+<pre><code>(gdb) x/8x 0x00004c9c
+0x4c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  0x458b0975  0x2c40c608  0x8b7deb01  0xa4a10855
+0x4cac &lt;-[SSExcesAppController awakeFromNib]+917&gt;:  0x89000141  0x89082454  0x89042444  0x26e82414
+</code></pre>
+
+<p>That’s the memory representation of the code, a whole 8 blocks of four bytes starting at <code>0x00004c9c</code>. Taking endianness into account, we must reverse them and we get the following:</p>
+
+<pre><code>0x75098b45  0x08c6402c  0x01eb7d8b  0x5508a1a4
+0x41010089  0x54240889  0x44240489  0x1424e826
+</code></pre>
+
+<p>The very first byte of the series is the <code>74</code> that we switched into <code>75</code>. By changing it back, we can deduce the original binary code to be:</p>
+
+<pre><code>0x74098b45  0x08c6402c  0x01eb7d8b  0x5508a1a4
+0x41010089  0x54240889  0x44240489  0x1424e826
+</code></pre>
+
+<p>Let’s open the binary in a hex editor. I used <code>vim</code>, but feel free to use any hex editor at this point. HexFiend has a great GUI.</p>
+
+<pre><code>(gdb) quit
+$ vim Exces
+</code></pre>
+
+<p>This loads up the binary as ascii text, which is of little help. Convert it to hex thusly:</p>
+
+<pre><code>:%!xxd
+</code></pre>
+
+<p><code>vim</code> formats hex like this:</p>
+
+<pre><code>0000000: cafe babe 0000 0002 0000 0012 0000 0000  ................
+</code></pre>
+
+<p>The first part, before the colon, is the address of block. Following it are 16 bytes, broken off in two-byte segments. Incidentally, every Mach-O binary starts with the hex bytes <code>cafebabe</code>. Drunk Kernel programmers probably thought it’d be funny. Now that we have our beautiful hex code loaded up, let’s search for the first two bytes of our code to replace:</p>
+
+<pre><code>/7409
+</code></pre>
+
+<p>Shit. Too many results to make sense of. Let’s add another two bytes. Search for “<code>7409 8b45</code>" instead and boom, only one result:</p>
+
+<pre><code>001fc90: 0089 4424 04e8 4b24 0100 85c0 7409 8b45  ..D$..K$....t..E
+</code></pre>
+
+<p>Edit it to the following:</p>
+
+<pre><code>001fc90: 0089 4424 04e8 4b24 0100 85c0 7509 8b45  ..D$..K$....t..E
+</code></pre>
+
+<p>Convert it back to binary form, then save and quit:</p>
+
+<pre><code>:%!xxd -r
+:wq
+</code></pre>
+
+<p>And… We’re done! To check our work, launch the app in <code>gdb</code>, break to <code>[SSExcesAppController awakeFromNib]</code> and disassemble.</p>
+
+<pre><code>$ gdb Exces 
+(gdb) break [SSExcesAppController awakeFromNib]
+Breakpoint 1 at 0x4c90
+(gdb) r
+(gdb) disas
+</code></pre>
+
+<p>Admire our work:</p>
+
+<pre><code>0x00004c9c &lt;-[SSExcesAppController awakeFromNib]+901&gt;:  jne    0x4ca7 &lt;-[SSExcesAppController awakeFromNib]+912&gt;
+</code></pre>
+
+<p>Quit <code>gdb</code> and relaunch the app from the Finder, and bask in your <em>leet</em> glory.</p>
+
+<h1>How you can stop me</h1>
+
+<p>Objective-C makes it really easy to mess with an app’s internals. Try to program the licensing mechanism for your app in pure C, that will already make it harder for me to find my way around your binary. Also read <a href="http://www.seoxys.com/3-easy-tips-to-prevent-a-binary-crack/" target="_blank">this older article</a> of mine on three easy tips—stripping debug symbols, using PT_DENY_ATTACH, and doing a checksum of your binary—you can implement to make it a whole lot harder for your app to be cracked.</p>
+
+<p>A truly skilled hacker will always find his way around your protection, but implementing a bare minimum of security will weed out 99% of amateurs. I am not a skilled hacker—yet with some very basic knowledge I tore this apart in no time. Implementing the various easy tips above takes very little time, yet would have made it enough of a pain for me that I would have given up.</p>
+                    
+
+</article>
+
+
+            <!-- posts-end -->
+
+            
+
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-215884-12']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,601 @@
+
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+    <title>Posts Tagged &ldquo;programming&rdquo; &mdash; Kenneth Ballenegger</title>
+    <meta name="description" content="Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at FreshPay. Previously, I was the architect behind Chartboost. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+" />
+
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+
+    <link href="//get.pictos.cc/fonts/2215/1" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="screen" charset="utf-8" />
+
+    <link rel="icon" href="/static/images/favicon.png" type="image/png" />
+
+    <script src="/static/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/jquery.lightbox.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/less-1.3.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/source.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <header>
+        <div id="title">
+            <a href="/">
+                <div id="crown"></div>
+                <h1>Kenneth Ballenegger</h1>
+                <p>“I’m a developer and designer. I love making cool stuff.”</p>
+            </a>
+        </div>
+    </header>
+
+    <div id="lightbox" class="hidden"></div>
+
+    <div id="container">
+
+        <div id="sidebar">
+
+    <p><img id="headshot" src="/static/images/photo.png" alt="Kenneth Ballenegger" /></p>
+    <p id="about">
+        Hi there. My name is Kenneth and I’m a Swiss transplant in San Francisco. I’m co-founder & CTO at <a href="http://hello.freshpay.com/">FreshPay</a>. Previously, I was the architect behind <a href="https://www.chartboost.com">Chartboost</a>. When I'm not working, you can find me either photographing some corner of the world, or hacking away on an ever-changing side project.
+
+    </p>
+
+    <nav>
+        <ul>
+            <li><span class="pictos">@</span><a href="mailto:kenneth@ballenegger.com">Send me an email</a></li>
+            <li><span class="pictos">r</span><a href="http://kenneth.ballenegger.com/dl/resume2014.pdf" target="_blank">View my resum&eacute;</a></li>
+            <hr />
+            <div class="nav-section-title">Categories</div>
+            <li><span class="pictos">a</span><a href="/tagged/articles">Articles</a></li>
+            <li><span class="pictos">d</span><a href="/tagged/development">Software &amp; Development</a></li>
+            <li><span class="pictos">s</span><a href="/tagged/schoolwork">Schoolwork</a></li>
+            <li><span class="pictos">p</span><a href="/tagged/photography">Photography</a></li>
+        </ul>
+    </nav>
+
+    <footer>
+        <p><a href="/archive">Archive</a></p>
+        <p>Copyright © Kenneth Ballenegger</p>
+    </footer>
+
+</div>
+
+
+
+        <div id="content">
+
+            <!-- posts-start -->
+
+
+
+    <article id="50429268286">
+        
+
+
+<div class="info">
+    <a href="/2013-05-14/fibonacci-the-y-combinator-in-c">
+         <div class="day">14th</div>
+        <div class="month">May</div>
+        <div class="year">2013</div>
+    </a>
+    <a class="kudos"
+        data-post-id="50429268286"
+        data-tumblr-notes="4"
+    ><span class="kudos-value">4</span> <span class="info-caption">Kudos</span></a>
+</div>
+
+                                    <h1 class="title">Fibonacci &amp; the Y-Combinator in C</h1>
+                        
+
+                        <p>Be warned, this post describes something you should <em>never</em> actually use in production code. However, we will get to play with some very cool concepts and techniques: <strong>functional programming in C</strong>, closures, implementing autorelease pools from scratch, data structures (linked lists and b-trees), bitwise operations, recursivity, memoization, and the Y-Combinator. If this sounds crazy, don’t be scared. It’s all fairly simple when broken down.</p>
+
+<p>Let’s back up for a second, however. What we’re going to create here is a program that returns a number in the <a href="https://en.wikipedia.org/wiki/Fibonacci_number" target="_blank">Fibonacci sequence</a>. The Fibonacci sequence is a sequence of numbers in which each integer is equal to the previous two integers added: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, etc.</p>
+
+<p>There are many ways of calculating Fibonacci numbers, but the naïve implementation which follows the mathematical definition is this:</p>
+
+<pre><code>unsigned long long fib(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+}
+</code></pre>
+
+<p>So let’s make a program out of this:</p>
+
+<pre><code>// fib.c
+
+#import &lt;stdlib.h&gt;
+#import &lt;stdio.h&gt;
+
+// let's make life easier for ourselves:
+typedef unsigned long long ull;
+
+ull fib(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+}
+
+int main(int argc, char **argv) {
+    int upto = 20; // which number to compute
+    if (argc &gt;= 2) upto = strtol(argv[1], NULL, 10);
+    printf("Calculating fib(%d)...\n", upto);
+    ull solution = fib(upto);
+    printf("fib(%d) == %llu\n", upto, solution);
+}
+</code></pre>
+
+<p>We’re going to be using <a href="http://clang.llvm.org/" target="_blank">clang</a> as our compiler. Let’s compile and run our program:</p>
+
+<pre><code>$ clang -o fib -O3 fib.c
+$ ./fib 17
+Calculating fib(17)...
+fib(17) == 1597
+</code></pre>
+
+<p>However, as you’ll see if you try to compute <code>fib(200)</code>, this will not scale. In computer science terms, fib is a function which requires exponential time as <code>n</code> increases. <code>O(2^n)</code>. For example:</p>
+
+<pre><code>fib(5) [A] calls fib(4) [B] and fib(3) [C]
+fib(4) [B] calls fib(3) [D] and fib(2) [E]
+fib(3) [C] calls fib(2) [F] and fib(1) [G]
+fib(3) [D] calls fib(2) [H] and fib(1) [I]
+fib(2) [E] returns 1
+fib(2) [F] returns 1
+fib(1) [G] returns 1
+fib(2) [H] returns 1
+fib(1) [I] returns 1
+</code></pre>
+
+<p>As you can see, the function is called multiple times with the same argument, and for every time <code>n</code> is decremented (until you reach 1 or 2), the number of function calls increases by a power of two. Imagine how much worse it would be for <code>fib(200)</code>. The number is so great that even given unlimited memory and energy, your computer would require billions of years to finish the computation.</p>
+
+<h3>Closures</h3>
+
+<p>A closure is an anonymous function which may use and capture variables from its parent scope. Imagine this code, in JavaScript:</p>
+
+<pre><code>function print_element_plus(x) {
+    return function(e) {
+        console.log("-&gt; " + (x + e));
+    }
+}
+[1, 2, 3].forEach(print_element_plus(2));
+// -&gt; 3
+// -&gt; 4
+// -&gt; 5
+</code></pre>
+
+<p><code>print_element_plus</code> returns an anonymous function (aka. a closure) which takes one argument and adds it to <code>x</code>. The variable <code>x</code> is captured by the closure, and even though it goes out of scope when <code>print_element_plus</code> returns, it is still retained by the closure until the closure itself goes out of scope and is freed.</p>
+
+<p>C does not natively support closures. Although similar functionality can be implemented in pure C fairly easily using a struct containing the environment and a function pointer, we’re going to instead take advantage of clang’s built-in support for the blocks extension to the language:</p>
+
+<pre><code>$ clang -fblocks -o fib -O3 fib.c -lBlocksRuntime
+</code></pre>
+
+<p>In C, a block is simply another name for a closure, and its syntax is very similar to defining a function pointer. So with that in mind, let’s rewrite our <code>fib</code> function as a block.</p>
+
+<pre><code>__block ull(^fib)(int) = ^ull(int n) {
+    if (n &lt; 3) return 1;
+    return fib(n-1) + fib(n-2);
+};
+</code></pre>
+
+<p><em>Note: this should go in <code>main()</code> and the <code>__block</code> is necessary to enable explicit recursion, so that the block may reference itself.</em></p>
+
+<h3>The Y-Combinator</h3>
+
+<p>Recursion implies that a function has a name by which to refer to itself, so it may call itself. While the example above works, it relies on the block capturing the variable to which it is assigned from the parent scope. This is not super clean, and relies on a implementation detail of the C programming language. Identical code would not work in, for example, lisp.</p>
+
+<p>Since we are giving ourself the restriction of not explicitly using the <code>fib</code> variable in order to recur, we will wrap the function in a function whose first and only argument is a function with which to recur. We’ll call this function the generator, because when called with <code>fib</code> as its argument, it will return the correct <code>fib</code> function.</p>
+
+<pre><code>typedef ull(^fib_f)(int);
+fib_f(^fib_generator)(fib_f) = ^fib_f(fib_f recur) {
+    return ^ull(int n) {
+        if (n &lt; 3) return 1;
+        return recur(n-1) + recur(n-2);
+    };
+};
+</code></pre>
+
+<p>This is where the Y-Combinator comes in handy. The <a href="http://mvanier.livejournal.com/2897.html" target="_blank">Y-Combinator</a> is a function which enables recursion, using only anonymous functions, and without using recursion in its implementation. It looks somewhat like this (in Scheme):</p>
+
+<pre><code>(define Y 
+  (lambda (f)
+    ((lambda (x) (x x))
+     (lambda (x) (f (lambda (y) ((x x) y)))))))
+</code></pre>
+
+<p><a href="http://mvanier.livejournal.com/2897.html" target="_blank">This article</a> by Mike Vanier does a far better job of explaining the Y-Combinator than I ever could. Suffice to say that when called with a generator function, as defined above, the Y-Combinator will return the recursive <code>fib</code> function. With the Y-Combinator, we could say:</p>
+
+<pre><code>fib_f fib = Y(fib_generator);
+</code></pre>
+
+<p>Due to C’s explicit typing, declaring higher-order functions can quickly become cumbersome, even with <code>typedef</code>s. So in order to get around that, we’re going to declare a single type to hold every function in our program. We’re going to call it <code>_l</code>, short for lambda.</p>
+
+<pre><code>typedef union _l_t *_l;
+typedef union _l_t {
+    ull(^function_f)(int);
+    _l(^generator_f)(_l);
+} _l_t;
+</code></pre>
+
+<p>Wrapping the type in an union allows it to refer to itself. We’ll be adding a couple more block types to this union shortly, but for now our only two options are: the signature of the fib function, and the generator which both takes and returns a lambda (containing a fib function, though that is unspecified).</p>
+
+<p>Since this type is declared as a pointer, it should live on the heap, and therefore we should write initializer functions for it:</p>
+
+<pre><code>_l function(ull(^f)(int)) {
+    _l data = malloc(sizeof(_l_t));
+    data-&gt;function_f = Block_copy(f);
+    return data;
+}
+_l generator(_l(^f)(_l)) { /* ... same thing ... */ }
+</code></pre>
+
+<p>Let’s ignore the fact that we’re leaking tons of memory for a moment (we’ll come back to that), and instead refactor our fib generator to use this new type:</p>
+
+<pre><code>_l fib_generator = generator(^_l(_l recur) {
+    return function(^ull(int n) {
+        if (n &lt;= 2) return 1;
+        return recur-&gt;function_f(n-1) + recur-&gt;function_f(n-2);
+    });
+});
+</code></pre>
+
+<p>In C, the basic Y-combinator above looks somewhat like this:</p>
+
+<pre><code>_l y_combine(_l fn) {
+    _l x = combiner(^_l(_l recur) {
+        return function(^ull(int n) {
+            _l resp = recur-&gt;combiner_f(recur);
+            return fn-&gt;generator_f(resp)-&gt;function_f(n);
+        });
+    });
+    return x-&gt;combiner_f(x);
+}
+</code></pre>
+
+<p>You will also need to add the combiner function type to your union, and create a constructor for it:</p>
+
+<pre><code>_l(^combiner_f)(_l);
+
+_l combiner(_l(^f)(_l)) { /* ... same as above ... */ }
+</code></pre>
+
+<p>We now have all the pieces in place to use the Y-combinator to replace our natively recursive implementation of <code>fib</code>:</p>
+
+<pre><code>_l fibonacci = y_combine(fib_generator);
+int upto = 20;
+if (argc &gt;= 2) upto = strtol(argv[1], NULL, 10);
+ull fib = fibonacci-&gt;function_f(upto);
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<h3>Auto-release pools</h3>
+
+<p>As you have probably noticed, the code above is unfortunately leaking tons of memory. Many of the functions we’ve written allocate <code>_l</code> unions, and these are never released. While we could attempt to always correctly release these as soon as they are no longer needed, a more interesting solution is to use an auto-release pool.</p>
+
+<p>Auto-release pools are a concept familiar to Objective-C programmers, since they are used extensively in all of Apple’s APIs. They work like this: You can create and flush pools, which nest like a stack. You can auto-release a pointer, which means that it is added to the topmost pool, and is freed when the pool is flushed.</p>
+
+<p>The simplest way of implementing auto-release pools is with two linked lists: the first to contain the objects that have been auto-released (this is the pool itself), and the second to contain the stack of pools. Lastly we’re going to need a static variable to refer to the top of the pool stack.</p>
+
+<pre><code>typedef struct autorelease_pool_t *autorelease_pool;
+typedef struct autorelease_pool_t {
+    void *p;
+    void(*fn)(void*);
+    autorelease_pool next;
+} autorelease_pool_t;
+
+typedef struct autorelease_pool_stack_t     *autorelease_pool_stack;
+typedef struct autorelease_pool_stack_t {
+    autorelease_pool head;
+    autorelease_pool_stack parent;
+} autorelease_pool_stack_t;
+
+static autorelease_pool_stack current_pool = NULL;
+</code></pre>
+
+<p>Creating a pool is easy, we just allocate a reference and push it to the top of the stack:</p>
+
+<pre><code>void push_autorelease_pool() {
+    autorelease_pool_stack new_pool = malloc(sizeof(autorelease_pool_stack_t));
+    new_pool-&gt;parent = current_pool;
+    new_pool-&gt;head = NULL;
+    current_pool = new_pool;
+}
+</code></pre>
+
+<p>Then we can write a function to add pointers to the pool. Since different types may have different free functions, we will also take a reference to the free function to use on the pointer as the second argument to the autorelease function:</p>
+
+<pre><code>void autorelease(void *p, void(*fn)(void*)) {
+    // If there is no current pool, we leak memory.
+    if (current_pool == NULL) return;
+
+    autorelease_pool head = malloc(sizeof(autorelease_pool_t));
+    head-&gt;p = p;
+    head-&gt;fn = fn;
+    head-&gt;next = current_pool-&gt;head;
+    current_pool-&gt;head = head;
+}
+</code></pre>
+
+<p>And finally, the magic happens when we flush the pool. We’ll simply loop through the current pool, call each element’s free function, and free the reference, and finally pop the pool off the stack:</p>
+
+<pre><code>void flush_autorelease_pool() {
+    while (current_pool-&gt;head != NULL) {
+        (*current_pool-&gt;head-&gt;fn)(current_pool-&gt;head-&gt;p);
+        autorelease_pool next = current_pool-&gt;head-&gt;next;
+        free(current_pool-&gt;head);
+        current_pool-&gt;head = next;
+    }
+    autorelease_pool_stack parent = current_pool-&gt;parent;
+    free(current_pool);
+    current_pool = parent;
+}
+</code></pre>
+
+<p>Now, in order to solve our memory leak issues in the code we wrote earlier, we must add code to auto-release the <code>_l</code> unions we allocate, and wrap <code>main</code> with an auto-release pool:</p>
+
+<pre><code>_l function(ull(^f)(int)) {
+    _l data = malloc(sizeof(_l_t));
+    data-&gt;function_f = Block_copy(f);
+
+    // these two lines have been added:
+    autorelease(data-&gt;function_f, (void(*)(void*))&amp;_Block_release);
+    autorelease(data, &amp;free);
+
+    return data;
+}
+</code></pre>
+
+<p>Since both y-combination and final execution allocate lambdas, we’ll want to wrap both main, and then the final execution itself in an auto-release pool:</p>
+
+<pre><code>int main(int argc, char **argv) {
+    // wrap in pool
+    push_autorelease_pool();
+
+    // ...
+
+    _l fibonacci = y_combine(fib_generator);
+    // ...
+
+    push_autorelease_pool();
+    ull fib = fibonacci-&gt;function_f(upto);
+    flush_autorelease_pool();
+
+    printf("Fibonacci number %d is %llu.\n", upto, fib);
+    flush_autorelease_pool();
+    return 0;
+}
+</code></pre>
+
+<h3>Memoization: Wrapping</h3>
+
+<p>While our code is now fully functional (ha, ha, coder pun…), it still is horribly inefficient. That’s because we still have not solved the inherent problem of the function having a time complexity of <code>O(2^n)</code>. This can be solved using <a href="https://en.wikipedia.org/wiki/Memoization" target="_blank">memoization</a>.</p>
+
+<p>Memoization is an optimization technique which consists of storing computations in memory when completed, so that they can be retrieved later on, instead of having to be re-computed. For <code>fib</code>, using memoization reduces the time complexity down to <code>O(n)</code>.</p>
+
+<p>In order to use memoization, we need a way to inject a function that will be executed before executing the <code>fib</code> function. We’ll call this wrapping, and as a first example, let’s just use wrapping to demonstrate how bad <code>O(2^n)</code> really is.</p>
+
+<pre><code>_l wrap(_l fn, _l wrap_with) {
+    return generator(^_l(_l recur) {
+        return function(^ull(int n) {
+
+            _l fn_ = function(^ull(int n) {
+                return fn-&gt;generator_f(recur)-&gt;function_f(n);
+            });
+            _l wrapped = function(^ull(int n) {
+                return wrap_with-&gt;wrapper_f(fn_, n);
+            });
+
+            return wrapped-&gt;function_f(n);
+        });
+    });
+}
+</code></pre>
+
+<p>Understanding this wrapping function still makes my brain hurt, but suffice to say that it takes a generator and a wrapper as arguments, and returns a generator. The resulting generator can be used in the Y-combinator, and every recursion of the original function will be replaced with a recursion of the wrapper function, which itself calls the original function.</p>
+
+<p>A simple wrapper function that will log every iteration looks like this:</p>
+
+<pre><code>_l log_wrapper = wrapper(^ull(_l f, int n) {
+    printf("About to generate # %d\n", n);
+    return f-&gt;function_f(n);
+});
+</code></pre>
+
+<p>And the final code that uses this looks like this:</p>
+
+<pre><code>_l wrapped_fibonacci = y_combine(wrap(fib_generator, log_wrapper));
+ull fib = wrapped_fibonacci-&gt;function_f(upto);
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<p>Your output should look <a href="https://gist.github.com/kballenegger/5566093" target="_blank">somewhat like this</a>. As you can see, calling <code>fib(20)</code> evaluates the function 13,529 times.</p>
+
+<h3>Memoization: Implementation</h3>
+
+<p>In order to write a memoization wrapper function, we need a data structure in which to store the results. Most examples of memoization use a hash table, but since the key in our case is an integer, I decided to go for something a little more exotic: a binary tree, based on the bits of the integer key.</p>
+
+<pre><code>typedef struct cache_node_t *cache_node;
+typedef struct cache_node_t {
+    bool is_leaf;
+    union {
+        struct {
+            cache_node one;
+            cache_node zero;
+        } node;
+        ull leaf;
+    } self;
+} cache_node_t;
+</code></pre>
+
+<p>We’ll also create some simple methods to create and destroy trees:</p>
+
+<pre><code>cache_node cache_tree_new() {
+    return calloc(1, sizeof(cache_node_t));
+}
+void cache_tree_free(cache_node node) {
+    if (!node-&gt;is_leaf) {
+        if (node-&gt;self.node.one != NULL) cache_tree_free(node-&gt;self.node.one);
+        if (node-&gt;self.node.zero != NULL) cache_tree_free(node-&gt;self.node.zero);
+    }
+    free(node);
+}
+</code></pre>
+
+<p>In order to store a value in the tree, we iterate through every bit in the int, traversing either through the <code>one</code> or <code>zero</code> node of the tree, and finally setting the <code>leaf</code> to the value we’re trying to cache:</p>
+
+<pre><code>void cache_tree_store(cache_node root, int key, ull value) {
+    cache_node node = root;
+    for (size_t i = 0; i &lt; sizeof(int) * 8; i++) {
+        bool direction = (bool)((key &gt;&gt; i) &amp; (unsigned int)1);
+        if (direction == 1) {
+            if (node-&gt;self.node.one == NULL) {
+                node-&gt;self.node.one = calloc(1, sizeof(cache_node_t));
+            }
+            node = node-&gt;self.node.one;
+        } else {
+            if (node-&gt;self.node.zero == NULL) {
+                node-&gt;self.node.zero = calloc(1, sizeof(cache_node_t));
+            }
+            node = node-&gt;self.node.zero;
+        }
+    }
+    // the last node should already be a leaf, if it isn't, we just created it
+    if (!node-&gt;is_leaf) {
+        node-&gt;is_leaf = true;
+    }
+    node-&gt;self.leaf = value;
+}
+</code></pre>
+
+<p>Looking up a value is essentially the same thing, with some additional code to report failures:</p>
+
+<pre><code>ull cache_tree_lookup(cache_node root, int key, bool *found) {
+    cache_node node = root;
+    for (size_t i = 0; i &lt; sizeof(int) * 8; i++) {
+        if (node == NULL || node-&gt;is_leaf) {
+            if (found) *found = false;
+            return 0;
+        }
+        bool direction = (bool)((key &gt;&gt; i) &amp; (unsigned int)1);
+        if (direction == 1) {
+            node = node-&gt;self.node.one;
+        } else {
+            node = node-&gt;self.node.zero;
+        }
+    }
+    if (node == NULL || !node-&gt;is_leaf) {
+        if (found) *found = false;
+        return 0;
+    }
+    if (found) *found = true;
+    return node-&gt;self.leaf;
+}
+</code></pre>
+
+<p>And finally, now that we have a tree in which to store cached results, we can write our memoization function. Here, we’re actually adding creating a function called <code>new_memoizer</code> which returns a new instance of the wrapper function with its own (auto-released) cache.</p>
+
+<pre><code>_l(^new_memoizer)() = ^_l {
+    cache_node root = cache_tree_new();
+    autorelease(root, (void(*)(void*))&amp;cache_tree_free);
+
+    return wrapper(^ull(_l f, int n) {
+        bool found;
+        ull cached = cache_tree_lookup(root, n, &amp;found);
+        if (found == true) {
+            return cached;
+        } else {
+            ull value = f-&gt;function_f(n);
+            cache_tree_store(root, n, value);
+            return value;
+        }
+    });
+};
+</code></pre>
+
+<p>So, with that, let’s try our program again, but with memoization:</p>
+
+<pre><code>_l fibonacci = y_combine(wrap(wrap(fib_generator, log_wrapper), new_memoizer()));
+
+push_autorelease_pool();
+ull fib = fibonacci-&gt;function_f(upto);
+flush_autorelease_pool();
+
+printf("Fibonacci number %d is %llu.\n", upto, fib);
+</code></pre>
+
+<p>As you can see in the output, this runs significantly faster:</p>
+
+<pre><code>Generate up to fib # 20...
+About to generate # 20
+About to generate # 19
+About to generate # 18
+About to generate # 17
+About to generate # 16
+About to generate # 15
+About to generate # 14
+About to generate # 13
+About to generate # 12
+About to generate # 11
+About to generate # 10
+About to generate # 9
+About to generate # 8
+About to generate # 7
+About to generate # 6
+About to generate # 5
+About to generate # 4
+About to generate # 3
+About to generate # 2
+About to generate # 1
+Fibonacci number 20 is 6765.
+</code></pre>
+
+<h3>Conclusion</h3>
+
+<p>You can peruse the final code used in this article in <a href="https://gist.github.com/kballenegger/5566254" target="_blank">this gist</a>.</p>
+
+<p>Now, that being said, if you ever have a need to implement a function to return a number in the Fibonacci sequence, it would be wise to forget everything I’ve said above, and just use the following:</p>
+
+<pre><code>ull fib(int n) {
+    if (n &lt;= 2) return 1;
+    ull first = 1, second = 1, tmp;
+    while (--n&gt;1) {
+        tmp = first + second;
+        first = second;
+        second = tmp;
+    }
+    return second;
+}
+</code></pre>
+                    
+
+    </article>
+
+
+            <!-- posts-end -->
+
+            
+
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-215884-12']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+
+
+</body>
+</html>
+
+
+
