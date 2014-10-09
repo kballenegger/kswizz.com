@@ -1,8 +1,6 @@
 #!/bin/sh
 # NOTE: always execute from the right repo root otherwise VERY BAD THINGS happen
 
-set -e
-
 if [ -z "$(git status --porcelain)" ]; then
     branch="$(git rev-parse --abbrev-ref HEAD)"
     jekyll build
