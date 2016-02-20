@@ -7,3 +7,4 @@ permalink: "/:year-:month-:day/:title"
 paginate: 10
 paginate_path: 'p/:num'
 exclude: [bin, backend, public]
+gems: [jekyll-paginate]
